@@ -1,0 +1,20 @@
+{
+  "name": "smartfloor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Nishad MP",
+  "license": "ISC",
+  "description": "This is an e-commerce application for flooring products.",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mongoose": "^9.0.0"
+  }
+}
