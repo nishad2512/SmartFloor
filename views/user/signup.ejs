@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Create Account - FlooringCo</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link
+            crossorigin=""
+            href="https://fonts.gstatic.com"
+            rel="preconnect"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&amp;display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+            rel="stylesheet"
+        />
+        <script id="tailwind-config">
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: "#136dec",
+                            "background-light": "#f6f7f8",
+                            "background-dark": "#101822",
+                        },
+                        fontFamily: {
+                            display: ["Poppins", "Noto Sans", "sans-serif"],
+                        },
+                        borderRadius: {
+                            DEFAULT: "0.25rem",
+                            lg: "0.5rem",
+                            xl: "0.75rem",
+                            full: "9999px",
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            .error-message {
+                color: #dc2626;
+                font-size: 0.875rem;
+                margin-top: 0.35rem;
+                display: none;
+            }
+            .error-message.show { display: block; }
+            .input-error { border-color: #dc2626 !important; }
+        </style>
+    </head>
+    <body class="font-display">
+        <div
+            class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden"
+        >
+            <div class="layout-container flex h-full grow flex-col">
+                <main class="flex-grow w-full">
+                    <div
+                        class="flex items-center justify-center min-h-screen p-4"
+                    >
+                        <div class="w-full max-w-md space-y-8">
+                            <div class="text-center flex flex-col gap-3">
+                                <h1
+                                    class="text-[#111418] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                                >
+                                    Create Your Account
+                                </h1>
+                                <p
+                                    class="text-[#617289] dark:text-gray-400 text-base font-normal leading-normal"
+                                >
+                                    Join Us &amp; Find Your Perfect Floor.
+                                </p>
+                            </div>
+                            <form id="signupForm" action="/signup" class="space-y-6" method="POST">
+                                <div class="flex flex-col gap-1">
+                                    <label
+                                        class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal"
+                                        for="full-name"
+                                        >Full Name</label
+                                    >
+                                    <input
+                                        autocomplete="name"
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-zinc-800 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-600 bg-white/50 dark:bg-zinc-800/50 focus:border-primary h-12 placeholder:text-[#617289] dark:placeholder-gray-500 p-[15px] text-base font-normal leading-normal"
+                                        id="full-name"
+                                        name="name"
+                                        placeholder="Enter your full name"
+                                        required=""
+                                        type="text"
+                                    />
+                                    <div id="nameError" class="error-message"></div>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label
+                                        class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal"
+                                        for="email-address"
+                                        >Email Address</label
+                                    >
+                                    <input
+                                        autocomplete="email"
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-zinc-800 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-600 bg-white/50 dark:bg-zinc-800/50 focus:border-primary h-12 placeholder:text-[#617289] dark:placeholder-gray-500 p-[15px] text-base font-normal leading-normal"
+                                        id="email-address"
+                                        name="email"
+                                        placeholder="you@example.com"
+                                        required=""
+                                        type="email"
+                                    />
+                                    <div id="emailError" class="error-message"></div>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label
+                                        class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal"
+                                        for="password"
+                                        >Password (8+ characters)</label
+                                    >
+                                    <div
+                                        class="relative flex w-full flex-1 items-stretch"
+                                    >
+                                        <input
+                                            autocomplete="new-password"
+                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-zinc-800 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-600 bg-white/50 dark:bg-zinc-800/50 focus:border-primary h-12 placeholder:text-[#617289] dark:placeholder-gray-500 p-[15px] pr-10 text-base font-normal leading-normal"
+                                            id="password"
+                                            name="password"
+                                            placeholder="Enter your password"
+                                            required=""
+                                            type="password"
+                                        />
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center justify-center pr-4 text-[#617289] dark:text-gray-400 cursor-pointer"
+                                            id="togglePassword"
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                                style="font-size: 24px"
+                                                id="toggleIcon"
+                                                >visibility_off</span
+                                            >
+                                        </div>
+                                    </div>
+                                            <div id="passwordError" class="error-message"></div>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label
+                                        class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal"
+                                        for="confirm-password"
+                                        >Confirm Password</label
+                                    >
+                                    <div
+                                        class="relative flex w-full flex-1 items-stretch"
+                                    >
+                                        <input
+                                            autocomplete="new-password"
+                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-zinc-800 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-600 bg-white/50 dark:bg-zinc-800/50 focus:border-primary h-12 placeholder:text-[#617289] dark:placeholder-gray-500 p-[15px] pr-10 text-base font-normal leading-normal"
+                                            id="confirm-password"
+                                            name="confirmPassword"
+                                            placeholder="Confirm your password"
+                                            required=""
+                                            type="password"
+                                        />
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center justify-center pr-4 text-[#617289] dark:text-gray-400 cursor-pointer"
+                                            id="ctogglePassword"
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                                style="font-size: 24px"
+                                                id="ctoggleIcon"
+                                                >visibility_off</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div id="confirmError" class="error-message"></div>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label
+                                        class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal"
+                                        for="full-name"
+                                        >Referral (optional)</label
+                                    >
+                                    <input
+                                        autocomplete="name"
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-zinc-800 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-600 bg-white/50 dark:bg-zinc-800/50 focus:border-primary h-12 placeholder:text-[#617289] dark:placeholder-gray-500 p-[15px] text-base font-normal leading-normal"
+                                        id="referral-code"
+                                        name="referral"
+                                        placeholder="Enter referral code"
+                                        
+                                        type="text"
+                                    />
+                                </div>
+                                    <div id="referralError" class="error-message"></div>
+                                <div>
+                                    <button
+                                        class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-black text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:bg-white dark:text-black dark:hover:bg-gray-200"
+                                        type="submit"
+                                    >
+                                        <span class="truncate"
+                                            >Create Account</span
+                                        >
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div
+                                        class="w-full border-t border-gray-300 dark:border-gray-700"
+                                    ></div>
+                                </div>
+                                <div
+                                    class="relative flex justify-center text-sm"
+                                >
+                                    <span
+                                        class="bg-background-light dark:bg-background-dark px-2 text-gray-500 dark:text-gray-400"
+                                        >OR</span
+                                    >
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <button
+                                    class="flex h-14 w-full items-center justify-center gap-3 rounded-lg border border-[#dbe0e6] bg-white text-base font-medium text-[#111418] transition-colors hover:bg-gray-50 dark:bg-transparent dark:border-gray-600 dark:text-white dark:hover:bg-white/5"
+                                >
+                                    <svg
+                                        class="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M21.9999 12.2273C21.9999 11.3977 21.9205 10.5864 21.7727 9.80682H12.2045V14.3318H17.8068C17.5568 15.8977 16.7386 17.2614 15.4205 18.1364V20.8409H19.2159C20.9886 19.25 21.9999 16.9432 21.9999 14.2386V12.2273Z"
+                                            fill="#4285F4"
+                                        ></path>
+                                        <path
+                                            d="M12.2045 22C14.8068 22 17.0114 21.1477 18.5909 19.6705L15.4205 17.3409C14.5455 17.9318 13.4659 18.2727 12.2045 18.2727C9.77273 18.2727 7.71591 16.6364 6.94318 14.4091H3.02273V17.2045C4.58182 20.0795 8.13636 22 12.2045 22Z"
+                                            fill="#34A853"
+                                        ></path>
+                                        <path
+                                            d="M6.94323 14.4091C6.67049 13.6364 6.5114 12.8182 6.5114 12C6.5114 11.1818 6.67049 10.3636 6.94323 9.59091V6.79545H3.02277C2.36368 8.15909 2 10.0227 2 12C2 13.9773 2.36368 15.8409 3.02277 17.2045L6.94323 14.4091Z"
+                                            fill="#FBBC05"
+                                        ></path>
+                                        <path
+                                            d="M12.2045 5.72727C13.5682 5.72727 14.8864 6.22727 15.875 7.15909L18.6591 4.49545C16.9999 2.95455 14.8068 2 12.2045 2C8.13636 2 4.58182 3.92045 3.02273 6.79545L6.94318 9.59091C7.71591 7.36364 9.77273 5.72727 12.2045 5.72727Z"
+                                            fill="#EA4335"
+                                        ></path>
+                                    </svg>
+                                    <span>Google</span>
+                                </button>
+                            </div>
+                            <p
+                                class="text-center text-sm text-gray-500 dark:text-gray-400"
+                            >
+                                Already have an account?
+                                <a
+                                    class="font-medium text-black dark:text-white hover:underline"
+                                    href="/login"
+                                    >Log In</a
+                                >
+                            </p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script>
+            (function () {
+                const form = document.getElementById("signupForm");
+
+                const nameInput = document.getElementById("full-name");
+                const emailInput = document.getElementById("email-address");
+                const passwordInput = document.getElementById("password");
+                const cpasswordInput = document.getElementById("confirm-password");
+                const referralInput = document.getElementById("referral-code");
+
+                const nameError = document.getElementById("nameError");
+                const emailError = document.getElementById("emailError");
+                const passwordError = document.getElementById("passwordError");
+                const confirmError = document.getElementById("confirmError");
+                const referralError = document.getElementById("referralError");
+
+                const togglePassword = document.getElementById("togglePassword");
+                const ctogglePassword = document.getElementById("ctogglePassword");
+                const toggleIcon = document.getElementById("toggleIcon");
+                const ctoggleIcon = document.getElementById("ctoggleIcon");
+
+                function showError(inputEl, errorEl, msg) {
+                    if (errorEl) {
+                        errorEl.textContent = msg;
+                        errorEl.classList.add("show");
+                    }
+                    if (inputEl) inputEl.classList.add("input-error");
+                }
+
+                function clearErrors() {
+                    [nameError, emailError, passwordError, confirmError, referralError].forEach((el) => {
+                        if (el) {
+                            el.textContent = "";
+                            el.classList.remove("show");
+                        }
+                    });
+                    [nameInput, emailInput, passwordInput, cpasswordInput, referralInput].forEach((el) => {
+                        if (el) el.classList.remove("input-error");
+                    });
+                }
+
+                function validateEmail(email) {
+                    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return re.test(email);
+                }
+
+                function validate() {
+                    clearErrors();
+                    let ok = true;
+
+                    const name = nameInput && nameInput.value.trim();
+                    const email = emailInput && emailInput.value.trim();
+                    const pw = passwordInput && passwordInput.value;
+                    const cpw = cpasswordInput && cpasswordInput.value;
+
+                    if (!name || name.length < 2) {
+                        showError(nameInput, nameError, "Please enter your full name (2+ characters)");
+                        ok = false;
+                    }
+
+                    if (!email) {
+                        showError(emailInput, emailError, "Email is required");
+                        ok = false;
+                    } else if (!validateEmail(email)) {
+                        showError(emailInput, emailError, "Please enter a valid email address");
+                        ok = false;
+                    }
+
+                    if (!pw || pw.length < 8) {
+                        showError(passwordInput, passwordError, "Password must be at least 8 characters");
+                        ok = false;
+                    }
+
+                    if (!cpw) {
+                        showError(cpasswordInput, confirmError, "Please confirm your password");
+                        ok = false;
+                    } else if (pw !== cpw) {
+                        showError(cpasswordInput, confirmError, "Passwords do not match");
+                        ok = false;
+                    }
+
+                    return ok;
+                }
+
+                // Toggle password visibility
+                if (togglePassword && toggleIcon && passwordInput) {
+                    togglePassword.addEventListener("click", function () {
+                        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+                        passwordInput.setAttribute("type", type);
+                        toggleIcon.textContent = type === "password" ? "visibility_off" : "visibility";
+                    });
+                }
+                if (ctogglePassword && ctoggleIcon && cpasswordInput) {
+                    ctogglePassword.addEventListener("click", function () {
+                        const type = cpasswordInput.getAttribute("type") === "password" ? "text" : "password";
+                        cpasswordInput.setAttribute("type", type);
+                        ctoggleIcon.textContent = type === "password" ? "visibility_off" : "visibility";
+                    });
+                }
+
+                // Real-time blur validation
+                if (nameInput) nameInput.addEventListener("blur", () => {
+                    if (nameInput.value.trim().length < 2) showError(nameInput, nameError, "Please enter your full name (2+ characters)");
+                    else { nameError.classList.remove("show"); nameInput.classList.remove("input-error"); }
+                });
+
+                if (emailInput) emailInput.addEventListener("blur", () => {
+                    if (!validateEmail(emailInput.value.trim())) showError(emailInput, emailError, "Please enter a valid email address");
+                    else { emailError.classList.remove("show"); emailInput.classList.remove("input-error"); }
+                });
+
+                if (passwordInput) passwordInput.addEventListener("blur", () => {
+                    if (passwordInput.value.length > 0 && passwordInput.value.length < 8) showError(passwordInput, passwordError, "Password must be at least 8 characters");
+                    else { passwordError.classList.remove("show"); passwordInput.classList.remove("input-error"); }
+                });
+
+                if (cpasswordInput) cpasswordInput.addEventListener("blur", () => {
+                    if (cpasswordInput.value && cpasswordInput.value !== (passwordInput && passwordInput.value)) showError(cpasswordInput, confirmError, "Passwords do not match");
+                    else { confirmError.classList.remove("show"); cpasswordInput.classList.remove("input-error"); }
+                });
+
+                // Form submit
+                if (form) {
+                    form.addEventListener("submit", function (e) {
+                        if (!validate()) {
+                            e.preventDefault();
+                            // focus first invalid
+                            const firstError = document.querySelector('.input-error');
+                            if (firstError) firstError.focus();
+                        }
+                        // If valid, allow native submit to server
+                    });
+                }
+            })();
+        </script>
+    </body>
+</html>

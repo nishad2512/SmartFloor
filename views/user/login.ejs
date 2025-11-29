@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Login - SmartFloor</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+            rel="stylesheet"
+        />
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: "#136dec",
+                            "background-light": "#f6f7f8",
+                            "background-dark": "#101822",
+                        },
+                        fontFamily: {
+                            display: ["Work Sans", "sans-serif"],
+                        },
+                        borderRadius: {
+                            DEFAULT: "0.25rem",
+                            lg: "0.5rem",
+                            xl: "0.75rem",
+                            full: "9999px",
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            .error-message {
+                color: #dc2626;
+                font-size: 0.875rem;
+                margin-top: 0.5rem;
+                display: none;
+            }
+            .error-message.show {
+                display: block;
+            }
+            .input-error {
+                border-color: #dc2626 !important;
+            }
+        </style>
+    </head>
+    <body
+        class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white"
+    >
+        <div
+            class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <header
+                class="absolute top-0 left-0 w-full z-10 px-4 sm:px-6 lg:px-8 py-5"
+            >
+                <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">
+                    SmartFloor
+                </h2>
+            </header>
+            <main class="flex h-full min-h-screen grow flex-col">
+                <div
+                    class="relative flex flex-1 items-center justify-center p-6 lg:p-8"
+                >
+                    <div class="absolute inset-0 z-0">
+                        <img
+                            class="h-full w-full object-cover"
+                            data-alt="A modern living room with light wood flooring, a grey sofa, and large windows."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5miYvyuBncjPCPpXBuLDZMjrTAXMyNc7ok8dA53DxZOsLEkhHMh6-1AKSjjkgkoVc93xU51qBP_MqbvYKdSbc10OdxLo9AEO95SUR6iqOw-vI-W14zcFG-3sqVRPh0YDVsEmFbnIJI_NyVcOLRr3ySkDt0BasmficPnCZZ1K8GkOxwdMeL9XE2APz6S11O5enpxEeb5PNR5TbVGnh7J10q3p938MJ03mJ-_-5HuR03a_MTYo5RUCoPQbJO22ktKqBlyryo-JDWNU"
+                        />
+                        <div class="absolute inset-0 bg-black/30"></div>
+                    </div>
+                    <div
+                        class="relative z-10 w-full max-w-md rounded-xl bg-white/80 p-8 shadow-2xl backdrop-blur-lg dark:bg-background-dark/80"
+                    >
+                        <div class="flex w-full flex-col gap-6">
+                            <div class="flex flex-col gap-2 text-center">
+                                <h1
+                                    class="text-[#111418] dark:text-white text-3xl font-bold leading-tight tracking-tight"
+                                >
+                                    Welcome Back
+                                </h1>
+                                <p
+                                    class="text-[#617289] dark:text-gray-300 text-base font-normal leading-normal"
+                                >
+                                    Log in to access your account and continue
+                                    shopping.
+                                </p>
+                            </div>
+                            <form
+                                id="loginForm"
+                                class="flex w-full flex-col gap-4"
+                                method="POST"
+                                action="/login"
+                            >
+                                <label class="flex flex-col flex-1">
+                                    <p
+                                        class="text-[#111418] dark:text-gray-200 text-base font-medium leading-normal pb-2"
+                                    >
+                                        Email Address
+                                    </p>
+                                    <input
+                                        id="email"
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-none focus:ring-2 focus:ring-primary dark:bg-background-dark/50 dark:border-gray-600 dark:text-white dark:focus:border-primary border border-[#dbe0e6] bg-white h-14 placeholder:text-[#617289] p-[15px] text-base font-normal leading-normal"
+                                        placeholder="Enter your email"
+                                        type="email"
+                                        name="email"
+                                        required
+                                    />
+                                    <div
+                                        id="emailError"
+                                        class="error-message"
+                                    ></div>
+                                </label>
+                                <label class="flex flex-col flex-1">
+                                    <div
+                                        class="flex items-center justify-between pb-2"
+                                    >
+                                        <p
+                                            class="text-[#111418] dark:text-gray-200 text-base font-medium leading-normal"
+                                        >
+                                            Password
+                                        </p>
+                                        <a
+                                            class="text-[#1A1A1A] text-sm font-medium hover:underline"
+                                            href="/forgot-password"
+                                            >Forgot Password?</a
+                                        >
+                                    </div>
+                                    <div class="relative w-full">
+                                        <input
+                                            id="password"
+                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-none focus:ring-2 focus:ring-primary dark:bg-background-dark/50 dark:border-gray-600 dark:text-white dark:focus:border-primary border border-[#dbe0e6] bg-white h-14 placeholder:text-[#617289] p-[15px] pr-12 text-base font-normal leading-normal"
+                                            placeholder="Enter your password"
+                                            type="password"
+                                            name="password"
+                                            required
+                                        />
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center justify-center pr-4 text-[#617289] dark:text-gray-400 cursor-pointer"
+                                            id="togglePassword"
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                                style="font-size: 24px"
+                                                id="toggleIcon"
+                                                >visibility_off</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="passwordError"
+                                        class="error-message"
+                                    ></div>
+                                </label>
+                                <input
+                                    type="submit"
+                                    value="Log In"
+                                    class="flex items-center justify-center whitespace-nowrap rounded-lg bg-[#1A1A1A] h-14 text-base font-medium text-white transition-colors hover:bg-[#161616] cursor-pointer"
+                                />
+                            </form>
+                            <div class="flex items-center gap-4">
+                                <hr
+                                    class="w-full border-t border-[#dbe0e6] dark:border-gray-700"
+                                />
+                                <p
+                                    class="text-sm font-medium text-[#617289] dark:text-gray-400"
+                                >
+                                    or
+                                </p>
+                                <hr
+                                    class="w-full border-t border-[#dbe0e6] dark:border-gray-700"
+                                />
+                            </div>
+                            <div class="flex flex-col gap-4 sm:flex-row">
+                                <button
+                                    class="flex h-14 w-full items-center justify-center gap-3 rounded-lg border border-[#dbe0e6] bg-white text-base font-medium text-[#111418] transition-colors hover:bg-gray-50 dark:bg-transparent dark:border-gray-600 dark:text-white dark:hover:bg-white/5"
+                                >
+                                    <svg
+                                        class="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M21.9999 12.2273C21.9999 11.3977 21.9205 10.5864 21.7727 9.80682H12.2045V14.3318H17.8068C17.5568 15.8977 16.7386 17.2614 15.4205 18.1364V20.8409H19.2159C20.9886 19.25 21.9999 16.9432 21.9999 14.2386V12.2273Z"
+                                            fill="#4285F4"
+                                        ></path>
+                                        <path
+                                            d="M12.2045 22C14.8068 22 17.0114 21.1477 18.5909 19.6705L15.4205 17.3409C14.5455 17.9318 13.4659 18.2727 12.2045 18.2727C9.77273 18.2727 7.71591 16.6364 6.94318 14.4091H3.02273V17.2045C4.58182 20.0795 8.13636 22 12.2045 22Z"
+                                            fill="#34A853"
+                                        ></path>
+                                        <path
+                                            d="M6.94323 14.4091C6.67049 13.6364 6.5114 12.8182 6.5114 12C6.5114 11.1818 6.67049 10.3636 6.94323 9.59091V6.79545H3.02277C2.36368 8.15909 2 10.0227 2 12C2 13.9773 2.36368 15.8409 3.02277 17.2045L6.94323 14.4091Z"
+                                            fill="#FBBC05"
+                                        ></path>
+                                        <path
+                                            d="M12.2045 5.72727C13.5682 5.72727 14.8864 6.22727 15.875 7.15909L18.6591 4.49545C16.9999 2.95455 14.8068 2 12.2045 2C8.13636 2 4.58182 3.92045 3.02273 6.79545L6.94318 9.59091C7.71591 7.36364 9.77273 5.72727 12.2045 5.72727Z"
+                                            fill="#EA4335"
+                                        ></path>
+                                    </svg>
+                                    <span>Google</span>
+                                </button>
+                            </div>
+                            <p
+                                class="text-center text-base text-[#617289] dark:text-gray-300"
+                            >
+                                New here?
+                                <a
+                                    class="font-medium text-[#1A1A1A] hover:underline"
+                                    href="/signup"
+                                    >Create an account</a
+                                >
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <script>
+            const loginForm = document.getElementById("loginForm");
+            const emailInput = document.getElementById("email");
+            const passwordInput = document.getElementById("password");
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
+            const togglePassword = document.getElementById("togglePassword");
+            const toggleIcon = document.getElementById("toggleIcon");
+
+            // Toggle password visibility
+            togglePassword.addEventListener("click", () => {
+                const type =
+                    passwordInput.getAttribute("type") === "password"
+                        ? "text"
+                        : "password";
+                passwordInput.setAttribute("type", type);
+                toggleIcon.textContent =
+                    type === "password" ? "visibility_off" : "visibility";
+            });
+
+            // Validation functions
+            function validateEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            function validatePassword(password) {
+                return password.length >= 6;
+            }
+
+            function clearErrors() {
+                emailError.classList.remove("show");
+                passwordError.classList.remove("show");
+                emailInput.classList.remove("input-error");
+                passwordInput.classList.remove("input-error");
+            }
+
+            function showError(inputElement, errorElement, message) {
+                errorElement.textContent = message;
+                errorElement.classList.add("show");
+                inputElement.classList.add("input-error");
+            }
+
+            // Form validation on submit
+            loginForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                clearErrors();
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                let isValid = true;
+
+                // Validate email
+                if (!email) {
+                    showError(emailInput, emailError, "Email is required");
+                    isValid = false;
+                } else if (!validateEmail(email)) {
+                    showError(
+                        emailInput,
+                        emailError,
+                        "Please enter a valid email address"
+                    );
+                    isValid = false;
+                }
+
+                // Validate password
+                if (!password) {
+                    showError(
+                        passwordInput,
+                        passwordError,
+                        "Password is required"
+                    );
+                    isValid = false;
+                } else if (!validatePassword(password)) {
+                    showError(
+                        passwordInput,
+                        passwordError,
+                        "Password must be at least 6 characters"
+                    );
+                    isValid = false;
+                }
+
+                // Submit form if valid
+                if (isValid) {
+                    loginForm.submit();
+                }
+            });
+
+            // Real-time validation on blur
+            emailInput.addEventListener("blur", () => {
+                const email = emailInput.value.trim();
+                if (email && !validateEmail(email)) {
+                    showError(
+                        emailInput,
+                        emailError,
+                        "Please enter a valid email address"
+                    );
+                } else {
+                    emailError.classList.remove("show");
+                    emailInput.classList.remove("input-error");
+                }
+            });
+
+            passwordInput.addEventListener("blur", () => {
+                const password = passwordInput.value;
+                if (password && !validatePassword(password)) {
+                    showError(
+                        passwordInput,
+                        passwordError,
+                        "Password must be at least 6 characters"
+                    );
+                } else {
+                    passwordError.classList.remove("show");
+                    passwordInput.classList.remove("input-error");
+                }
+            });
+        </script>
+    </body>
+</html>
