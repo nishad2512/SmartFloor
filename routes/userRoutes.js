@@ -27,7 +27,7 @@ router.get("/signup", redirectIfLoggedIn, (req, res) => {
 router.post("/signup", userController.signup);
 
 router.get("/otp", userController.otp);
-router.post("/verify", userController.verify);
+router.post("/otp", userController.verify);
 
 router.get("/resend", userController.resend);
 
@@ -35,7 +35,7 @@ router.get('/logout', userController.logout);
 
 router.get('/forgot-password', userController.forgot);
 
-router.post('/reset', userController.reset);
+router.post('/forgot-password', userController.reset);
 
 router.get('/resetPassword/:token', (req, res) => {
     res.render('user/reset', {token: req.params.token});

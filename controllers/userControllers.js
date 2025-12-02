@@ -1,6 +1,5 @@
 import User from "../models/userModel.js";
-import createToken from "../utils/generateToken.js";
-import { maxAge } from "../utils/generateToken.js";
+import { createToken, maxAge } from "../utils/generateToken.js";
 import crypto from "crypto";
 import { sendOTPEmail, sendResetEmail } from "../utils/email.js";
 import { createHash, compare } from "../services/authServices.js";
@@ -119,6 +118,7 @@ export const googleAuth = (req, res) => {
 };
 
 export const logout = (req, res) => {
+    res.locals.user = null;
     res.cookie("jwt", "loggedout", {
         httpOnly: false,
         maxAge: 1000,
