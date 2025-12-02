@@ -1,5 +1,5 @@
 import express from "express";
-import * as userController from "../controllers/userControllers.js"
+import * as userController from "../controllers/userControllers.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -14,21 +14,32 @@ router.get("/", (req, res) => {
     res.render("user/index");
 });
 
-router.get("/login", (req, res) => {
+router.get("/login", redirectIfLoggedIn, (req, res) => {
     res.render("user/login");
 });
 
 router.post("/login", userController.login);
 
-router.get("/signup", (req, res) => {
+router.get("/signup", redirectIfLoggedIn, (req, res) => {
     res.render("user/signup");
 });
 
 router.post("/signup", userController.signup);
 
-router.get('/otp', userController.otp);
-router.post('/verify', userController.verify);
+router.get("/otp", userController.otp);
+router.post("/verify", userController.verify);
 
-router.get('/resend', userController.resend);
+router.get("/resend", userController.resend);
+
+router.get('/logout', userController.logout);
+
+router.get('/forgot-password', userController.forgot);
+
+router.post('/reset', userController.reset);
+
+router.get('/resetPassword/:token', (req, res) => {
+    res.render('user/reset', {token: req.params.token});
+})
+router.post('/resetPassword/:token', userController.resetPassword);
 
 export default router;

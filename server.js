@@ -1,6 +1,8 @@
 import express from "express";
+import methodOverride from 'method-override';
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import session from "express-session";
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
@@ -22,8 +24,10 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
+app.use(methodOverride('_method'));
 
 app.use("/", userRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
