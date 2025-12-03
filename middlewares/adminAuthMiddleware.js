@@ -19,3 +19,19 @@ export const checkAdmin = (req, res, next) => {
         next();
     }
 };
+
+export const redirectIfLoggedIn = (req, res, next) => {
+    const token = req.cookies["admin-jwt"];
+
+    if (token) {
+        jwt.verify(token, "smartFloor-admin", (err, decodedToken) => {
+            if (err) {
+                next();
+            } else {
+                res.redirect("/admin");
+            }
+        });
+    } else {
+        next();
+    }
+};

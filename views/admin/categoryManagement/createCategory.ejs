@@ -1,4 +1,4 @@
-<%- include('../partials/admin-header.ejs') %>
+<%- include('../../partials/admin-header.ejs') %>
 <body
     class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white"
 >
@@ -6,7 +6,7 @@
         class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
     >
         <div class="flex min-h-screen">
-            <%- include("../partials/sidebar.ejs") %>
+            <%- include("../../partials/sidebar.ejs") %>
 
             <main class="flex-1 p-6 lg:p-10">
                 <div
@@ -16,7 +16,7 @@
                         <p
                             class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
                         >
-                            Edit Category
+                            Add New Category
                         </p>
                         <p
                             class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal"
@@ -28,7 +28,7 @@
                     <div
                         class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6 lg:p-8"
                     >
-                        <form class="flex flex-col gap-6" method="POST" action="/admin/categories/edit/<%= category._id %>">
+                        <form class="flex flex-col gap-6" method="POST" action="/admin/categories/create">
                             <div class="flex flex-col gap-2">
                                 <label
                                     class="text-[#141414] dark:text-white text-sm font-medium"
@@ -41,7 +41,6 @@
                                     name="name"
                                     placeholder="e.g., Hardwood Flooring"
                                     type="text"
-                                    value="<%= category.name %>"
                                 />
                             </div>
                             <div

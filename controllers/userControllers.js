@@ -8,8 +8,6 @@ function generateOtp() {
     return crypto.randomInt(100000, 999999).toString();
 }
 
-function createUrl() {}
-
 export const login = async (req, res) => {
     const { email, password } = req.body;
 

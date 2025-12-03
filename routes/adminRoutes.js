@@ -2,8 +2,9 @@ import express from "express";
 import Admin from "../models/adminModel.js";
 import { compare } from "../services/authServices.js";
 import { createAdminToken, maxAge } from "../utils/generateToken.js";
-import { checkAdmin } from "../middlewares/adminAuthMiddleware.js";
+import { checkAdmin, redirectIfLoggedIn } from "../middlewares/adminAuthMiddleware.js";
 import * as categories from "../controllers/adminControllers/categoryManagement.js";
+import * as users from "../controllers/adminControllers/userManagement.js"
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get("/", (req, res) => {
     res.render("admin/dashboard");
 });
 
-router.get("/login", (req, res) => {
+router.get("/login", redirectIfLoggedIn, (req, res) => {
     res.render("admin/login");
 });
 
@@ -34,10 +35,12 @@ router.post("/login", async (req, res) => {
     }
 });
 
+// categoryManagement
+
 router.get("/categories", categories.categories);
 
 router.get("/categories/create", (req, res) => {
-    res.render("admin/createCategory");
+    res.render("admin/categoryManagement/createCategory");
 });
 
 router.post("/categories/create", categories.createCategory);
@@ -47,6 +50,14 @@ router.get("/categories/edit/:id", categories.editPage);
 router.post("/categories/edit/:id", categories.editCategory);
 
 router.get("/categories/delete/:id", categories.deleteCategory);
+
+// userManagement
+
+router.get("/customers", users.users)
+
+router.get("/customers/block/:id", users.blockUser);
+
+router.get("/customers/unblock/:id", users.unblockUser);
 
 router.get('/logout', (req, res) => {
     res.locals.admin = null;

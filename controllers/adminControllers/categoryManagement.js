@@ -8,7 +8,7 @@ export const categories = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const categories = await Category.find(filter).sort({ updatedAt: -1 }).skip(skip).limit(limit);
-    res.render("admin/categories", { categories, page, search });
+    res.render("admin/categoryManagement/categories", { categories, page, search });
 }
 
 export const createCategory = async (req, res) => {
@@ -21,7 +21,7 @@ export const createCategory = async (req, res) => {
 
 export const editPage = async (req, res) => {
     const category = await Category.findById({_id: req.params.id});
-    res.render("admin/editCategory", {category})
+    res.render("admin/categoryManagement/editCategory", {category})
 }
 
 export const editCategory = async (req, res) => {

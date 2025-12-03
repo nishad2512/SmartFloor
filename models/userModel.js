@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     },
     referral: {
         type: String,
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 
