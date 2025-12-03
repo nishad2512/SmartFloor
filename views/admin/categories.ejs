@@ -1,0 +1,156 @@
+<%- include('../partials/admin-header.ejs') %>
+    <body
+        class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white"
+    >
+        <div
+            class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <div class="flex min-h-screen">
+
+                <%- include("../partials/sidebar.ejs") %>
+
+                <main class="flex-1 p-6 lg:p-10">
+                    <div
+                        class="layout-content-container flex flex-col w-full max-w-6xl mx-auto"
+                    >
+                        <div
+                            class="flex flex-wrap justify-between gap-4 items-center mb-6"
+                        >
+                            <div class="flex flex-col gap-1">
+                                <p
+                                    class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                                >
+                                    Category Management
+                                </p>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal"
+                                >
+                                    View, edit, and add product categories.
+                                </p>
+                            </div>
+                            <form action="/admin/categories" method="GET" class="flex">
+                                <input
+                                    type="text"
+                                    name="search"
+                                    value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                    placeholder="Search categories..."
+                                    class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-[#1f1f1f] dark:border-primary/20 dark:text-white"
+                                />
+                            <a href="/admin/categories">clear</a>
+                            </form>
+                            <a href="/admin/categories/create">
+                            <button
+                                class="flex items-center justify-center gap-2 rounded-lg bg-primary text-white px-5 py-2.5 font-medium hover:opacity-90"
+                            >
+                                <span class="material-symbols-outlined"
+                                    >add</span
+                                >
+                                <span>Add New Category</span>
+                            </button></a>
+                        </div>
+                        <div
+                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] overflow-hidden"
+                        >
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead
+                                        class="text-xs text-[#757575] dark:text-gray-400 uppercase bg-[#f9f9f9] dark:bg-primary/10"
+                                    >
+                                    <tr>
+                                            <th class="px-6 py-3" scope="col">
+                                                Category ID
+                                            </th>
+                                            <th class="px-6 py-3" scope="col">
+                                                Category Name
+                                            </th>
+                                            <th
+                                                class="px-6 py-3 text-center"
+                                                scope="col"
+                                            >
+                                                No. of Products
+                                            </th>
+                                            <th
+                                                class="px-6 py-3 text-right"
+                                                scope="col"
+                                            >
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% categories.forEach((ctg, index) => { %>
+
+                                        <tr
+                                            class="bg-white dark:bg-[#1f1f1f] border-b border-[#e0e0e0] dark:border-primary/20 hover:bg-[#f9f9f9] dark:hover:bg-primary/10"
+                                        >
+                                            <td
+                                                class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                                            >
+                                                CAT-0<%= (page - 1) * 5 + index + 1 %>
+                                            </td>
+                                            <td class="px-6 py-4"><%= ctg.name %></td>
+                                            <td class="px-6 py-4 text-center">
+                                                42
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <div
+                                                    class="flex justify-end gap-x-4"
+                                                >
+                                                    <a
+                                                    href="/admin/categories/edit/<%= ctg._id %>"
+                                                        class="font-medium text-primary dark:text-white hover:underline"
+                                                    >
+                                                        Edit
+                                                    </a>
+                                                    <a
+                                                    href="/admin/categories/delete/<%= ctg._id %>"
+                                                        class="font-medium text-red-600 dark:text-red-500 hover:underline"
+                                                    >
+                                                        Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                    <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <nav
+                                aria-label="Table navigation"
+                                class="flex items-center justify-between p-4"
+                            >
+                                <ul class="inline-flex -space-x-px text-sm h-8">
+                                    <li>
+                                        <a
+                                            class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-[#757575] bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#1f1f1f] dark:border-primary/20 dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-white"
+                                            href="/admin/categories?page=<%= page - 1 %>"
+                                            >Previous</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-white bg-primary border border-primary hover:bg-primary/90 dark:bg-white dark:text-primary dark:border-white"
+                                            href="#"
+                                            ><%= page %></a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-[#757575] bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#1f1f1f] dark:border-primary/20 dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-white"
+                                            href="/admin/categories?page=<%= page + 1 %>"
+                                            >Next</a
+                                        >
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script>
+
+        </script>
+    </body>
+</html>

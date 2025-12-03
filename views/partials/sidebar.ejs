@@ -1,0 +1,173 @@
+<aside
+    class="w-64 flex-shrink-0 bg-white dark:bg-[#1f1f1f] border-r border-[#e0e0e0] dark:border-primary/20"
+>
+    <div class="flex h-full flex-col justify-between p-4">
+        <div class="flex flex-col gap-4">
+            <div class="flex gap-3 items-center px-3 py-2">
+                <div
+                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                    data-alt="Admin user avatar"
+                    style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD7DCjpi4_9COoNXgK1RsmjaIr7Bn4K9bvURTtdza3b2a_pRsj8B5g4hKo0e3jDcPjj1q_sue_k1pOKr3h5yScn59ELo8nhJK7xEnjAyb5Fs6fMvLthyUoxn78cpWZhkuybMDdIjBWEFThu3WolBRO_2DaVq9QaJawfAUGFPdXDos_ZXaMZMCCwq7Mj_TsrmvRE1DDiu7dsIVPwcVTshHOmuS8ePCWTm1yF2G6JBcH9FFgbFFI_4dweSHjz3YhnN4r4NrEkXM8tjKw');
+                    "
+                ></div>
+                <div class="flex flex-col">
+                    <h1
+                        class="text-[#141414] dark:text-white text-base font-medium leading-normal"
+                    >
+                        Admin
+                    </h1>
+                    <p
+                        class="text-[#757575] dark:text-gray-400 text-sm font-normal leading-normal"
+                    >
+                        Flooring Inc.
+                    </p>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-2 mt-4">
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="/admin"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >grid_view</span
+                    >
+                    <p
+                        class="dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Dashboard
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="/admin/orders"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >shopping_cart</span
+                    >
+                    <p
+                        class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Orders
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="/admin/categories"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >category</span
+                    >
+                    <p
+                        class="dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Categories
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="#"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >package_2</span
+                    >
+                    <p
+                        class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Products
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="#"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >group</span
+                    >
+                    <p
+                        class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Customers
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="#"
+                >
+                    <span class="material-symbols-outlined text-2xl">toc</span>
+                    <p
+                        class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Reports
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="#"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >local_offer</span
+                    >
+                    <p
+                        class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Offers
+                    </p>
+                </a>
+                <a
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                    href="#"
+                >
+                    <span class="material-symbols-outlined text-2xl"
+                        >wallet</span
+                    >
+                    <p
+                        class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                    >
+                        Coupens
+                    </p>
+                </a>
+            </nav>
+        </div>
+        <div class="flex flex-col gap-1">
+            <a
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
+                href="/admin/logout"
+            >
+                <span class="material-symbols-outlined text-2xl">logout</span>
+                <p
+                    class="text-[#141414] dark:text-white text-sm font-medium leading-normal"
+                >
+                    Logout
+                </p>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<script>
+    // Highlight the active sidebar link
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll("aside nav a");
+    const removeActiveClasses = [
+        "bg-primary",
+        "text-white",
+        "dark:bg-white",
+        "dark:text-primary",
+    ];
+
+    sidebarLinks.forEach((link) => {
+        if (link.getAttribute("href") === currentPath) {
+            link.classList.add(
+                "bg-primary",
+                "text-white",
+                "dark:bg-white",
+                "dark:text-primary"
+            );
+            link.classList.remove(
+                "hover:bg-primary/10",
+                "dark:hover:bg-primary/30"
+            );
+        }
+    });
+</script>

@@ -3,15 +3,13 @@ import Admin from "../models/adminModel.js";
 import { compare } from "../services/authServices.js";
 import { createAdminToken, maxAge } from "../utils/generateToken.js";
 import { checkAdmin } from "../middlewares/adminAuthMiddleware.js";
+import * as categories from "../controllers/adminControllers/categoryManagement.js";
 
 const router = express.Router();
 
 router.use(checkAdmin);
 
 router.get("/", (req, res) => {
-    if (!res.locals.admin) {
-        return res.redirect("/admin/login");
-    }
     res.render("admin/dashboard");
 });
 
@@ -35,6 +33,20 @@ router.post("/login", async (req, res) => {
         res.redirect("/admin/login");
     }
 });
+
+router.get("/categories", categories.categories);
+
+router.get("/categories/create", (req, res) => {
+    res.render("admin/createCategory");
+});
+
+router.post("/categories/create", categories.createCategory);
+
+router.get("/categories/edit/:id", categories.editPage);
+
+router.post("/categories/edit/:id", categories.editCategory);
+
+router.get("/categories/delete/:id", categories.deleteCategory);
 
 router.get('/logout', (req, res) => {
     res.locals.admin = null;
