@@ -20,9 +20,10 @@ export const login = async (req, res) => {
                 httpOnly: false,
                 maxAge: maxAge * 1000,
             });
-
+            req.flash('success', 'Logged in successfully');
             return res.redirect("/");
         }
+        req.flash('error', 'Invalid email or password');
         res.redirect("/login");
     } catch (err) {
         console.error(err);
@@ -47,6 +48,7 @@ export const signup = async (req, res) => {
             password: await createHash(password),
             referral: referral,
         };
+        req.flash('success', 'OTP sent to your email');
         res.redirect("/otp");
     } catch (err) {
         console.error(err);
@@ -54,13 +56,10 @@ export const signup = async (req, res) => {
 };
 
 export const otp = (req, res) => {
-    let error = req.session.otpErr || null;
     res.render("user/otp", {
         expiry: req.session.expires,
         email: req.session.user.email,
-        err: error,
     });
-    if (error) req.session.otpErr = null;
 };
 
 export const verify = async (req, res) => {
@@ -69,7 +68,7 @@ export const verify = async (req, res) => {
     console.log(enteredOTP);
 
     if (Date.now() >= req.session.expires) {
-        req.session.otpErr = "Expired OTP";
+        req.flash('error', 'OTP has expired. Please request a new one.');
         return res.redirect("/otp");
     }
 
@@ -83,13 +82,13 @@ export const verify = async (req, res) => {
                 httpOnly: false,
                 maxAge: maxAge * 1000,
             });
-
+            req.flash('success', 'Account created successfully');
             return res.redirect("/");
         } catch (err) {
             console.error(err.message);
         }
     }
-    req.session.otpErr = "Invalid OTP";
+    req.flash('error', 'Invalid OTP. Please try again.');
     res.redirect("/otp");
 };
 
@@ -100,6 +99,7 @@ export const resend = (req, res) => {
     sendOTPEmail(email, otp);
     req.session.otp = otp;
     req.session.expires = Date.now() + 60 * 1000;
+    req.flash('success', 'OTP resent to your email');
     res.redirect("/otp");
 };
 
@@ -112,6 +112,7 @@ export const googleAuth = (req, res) => {
         httpOnly: false,
         maxAge: maxAge * 1000,
     });
+    req.flash('success', 'Logged in with Google successfully');
     res.redirect("/");
 };
 
@@ -121,6 +122,7 @@ export const logout = (req, res) => {
         httpOnly: false,
         maxAge: 1000,
     });
+    req.flash('success', 'Logged out successfully');
     res.redirect("/login");
 };
 
@@ -141,6 +143,7 @@ export const reset = async (req, res) => {
     )}/resetPassword/${token}`;
 
     sendResetEmail(email, url);
+    req.flash('success', 'Password reset link sent to your email');
     res.redirect("/login");
 };
 
@@ -150,12 +153,13 @@ export const resetPassword = async (req, res) => {
     const user = await User.findOne(req.session.tokenUser);
 
     if (!user || token != req.params.token) {
-        return res.status(400).send('Password reset token is invalid or has expired.');
+        req.flash('error', 'Invalid or expired password reset link');
+        return res.redirect('/forgot');
     }
     const { password } = req.body;
     user.password = await createHash(password);
     await user.save();
-
+    req.flash('success', 'Password reset successfully. Please log in.');
     res.redirect('/login');
 
 };

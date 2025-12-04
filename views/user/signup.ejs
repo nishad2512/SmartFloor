@@ -19,6 +19,7 @@
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
             rel="stylesheet"
         />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script id="tailwind-config">
             tailwind.config = {
                 darkMode: "class",
@@ -54,6 +55,7 @@
         </style>
     </head>
     <body class="font-display">
+        <%- include('../partials/flash') %>
         <div
             class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden"
         >

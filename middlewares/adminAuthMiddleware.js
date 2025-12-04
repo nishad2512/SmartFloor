@@ -28,7 +28,7 @@ export const redirectIfLoggedIn = (req, res, next) => {
             if (err) {
                 next();
             } else {
-                res.redirect("/admin");
+                res.redirect("/admin/dashboard");
             }
         });
     } else {

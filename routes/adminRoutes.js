@@ -4,13 +4,15 @@ import { compare } from "../services/authServices.js";
 import { createAdminToken, maxAge } from "../utils/generateToken.js";
 import { checkAdmin, redirectIfLoggedIn } from "../middlewares/adminAuthMiddleware.js";
 import * as categories from "../controllers/adminControllers/categoryManagement.js";
-import * as users from "../controllers/adminControllers/userManagement.js"
+import * as users from "../controllers/adminControllers/userManagement.js";
+import * as products from "../controllers/adminControllers/productManagement.js";
+import upload from "../utils/cloudinary.js";
 
 const router = express.Router();
 
 router.use(checkAdmin);
 
-router.get("/", (req, res) => {
+router.get("/dashboard", (req, res) => {
     res.render("admin/dashboard");
 });
 
@@ -29,7 +31,7 @@ router.post("/login", async (req, res) => {
             maxAge: maxAge * 1000,
         });
 
-        res.redirect("/admin");
+        res.redirect("/admin/dashboard");
     } else {
         res.redirect("/admin/login");
     }
@@ -58,6 +60,16 @@ router.get("/customers", users.users)
 router.get("/customers/block/:id", users.blockUser);
 
 router.get("/customers/unblock/:id", users.unblockUser);
+
+// productManagement
+
+router.get("/products", products.products)
+
+router.get("/products/create", products.createProductPage);
+
+router.post("/products/create", upload.array('images', 5), products.createProduct);
+
+// logout
 
 router.get('/logout', (req, res) => {
     res.locals.admin = null;

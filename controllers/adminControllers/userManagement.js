@@ -14,6 +14,7 @@ export const blockUser = async (req, res) => {
     const user = await User.findById(req.params.id);
     user.isBlocked = true;
     await user.save();
+    req.flash("success", "User has been blocked successfully.");
     res.redirect("/admin/customers")
 }
 
@@ -21,5 +22,6 @@ export const unblockUser = async (req, res) => {
     const user = await User.findById(req.params.id);
     user.isBlocked = false;
     await user.save();
+    req.flash("success", "User has been unblocked successfully.");
     res.redirect("/admin/customers")
 }

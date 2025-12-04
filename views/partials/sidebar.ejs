@@ -27,7 +27,7 @@
             <nav class="flex flex-col gap-2 mt-4">
                 <a
                     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
-                    href="/admin"
+                    href="/admin/dashboard"
                 >
                     <span class="material-symbols-outlined text-2xl"
                         >grid_view</span
@@ -66,7 +66,7 @@
                 </a>
                 <a
                     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
-                    href="#"
+                    href="/admin/products"
                 >
                     <span class="material-symbols-outlined text-2xl"
                         >package_2</span
@@ -157,7 +157,7 @@
     ];
 
     sidebarLinks.forEach((link) => {
-        if (link.getAttribute("href") === currentPath) {
+        if (currentPath.includes(link.getAttribute("href")) && currentPath !== "/admin") {
             link.classList.add(
                 "bg-primary",
                 "text-white",

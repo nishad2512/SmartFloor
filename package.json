@@ -13,6 +13,8 @@
   "description": "This is an e-commerce application for flooring products.",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^2.8.0",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
@@ -21,6 +23,8 @@
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongoose": "^9.0.0",
+    "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^7.0.11",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0"
