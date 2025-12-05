@@ -1,0 +1,559 @@
+<%- include('../partials/admin-header.ejs') %>
+    <body
+        class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white"
+    >
+    <%- include('../partials/flash.ejs') %>
+        <div
+            class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <div class="flex min-h-screen">
+                <!-- SideNavBar -->
+                <%- include('../partials/sidebar.ejs') %>
+                <!-- Main Content -->
+                <main class="flex-1 p-6 lg:p-10">
+                    <div class="layout-content-container flex flex-col w-full">
+                        <!-- PageHeading -->
+                        <div
+                            class="flex flex-wrap justify-between gap-4 items-center mb-6"
+                        >
+                            <div class="flex flex-col gap-1">
+                                <p
+                                    class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                                >
+                                    Dashboard
+                                </p>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal"
+                                >
+                                    Welcome back, Admin! Here's your performance
+                                    overview.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Stats -->
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                        >
+                            <div
+                                class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1f1f1f] border border-[#e0e0e0] dark:border-primary/20"
+                            >
+                                <p
+                                    class="text-[#141414] dark:text-white text-base font-medium leading-normal"
+                                >
+                                    Total Sales
+                                </p>
+                                <p
+                                    class="text-[#141414] dark:text-white tracking-light text-3xl font-bold leading-tight"
+                                >
+                                    $125,670
+                                </p>
+                                <p
+                                    class="text-[#078807] text-sm font-medium leading-normal"
+                                >
+                                    +5.8% vs last month
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1f1f1f] border border-[#e0e0e0] dark:border-primary/20"
+                            >
+                                <p
+                                    class="text-[#141414] dark:text-white text-base font-medium leading-normal"
+                                >
+                                    New Orders
+                                </p>
+                                <p
+                                    class="text-[#141414] dark:text-white tracking-light text-3xl font-bold leading-tight"
+                                >
+                                    34
+                                </p>
+                                <p
+                                    class="text-[#078807] text-sm font-medium leading-normal"
+                                >
+                                    +12% vs last month
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1f1f1f] border border-[#e0e0e0] dark:border-primary/20"
+                            >
+                                <p
+                                    class="text-[#141414] dark:text-white text-base font-medium leading-normal"
+                                >
+                                    Active Users
+                                </p>
+                                <p
+                                    class="text-[#141414] dark:text-white tracking-light text-3xl font-bold leading-tight"
+                                >
+                                    1,204
+                                </p>
+                                <p
+                                    class="text-[#e70808] text-sm font-medium leading-normal"
+                                >
+                                    -1.2% vs last month
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1f1f1f] border border-[#e0e0e0] dark:border-primary/20"
+                            >
+                                <p
+                                    class="text-[#141414] dark:text-white text-base font-medium leading-normal"
+                                >
+                                    Inventory Items
+                                </p>
+                                <p
+                                    class="text-[#141414] dark:text-white tracking-light text-3xl font-bold leading-tight"
+                                >
+                                    890
+                                </p>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-sm font-medium leading-normal"
+                                >
+                                    Total products in stock
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Charts -->
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+                            <div
+                                class="lg:col-span-3 flex flex-col gap-2 rounded-xl border border-[#e0e0e0] dark:border-primary/20 p-6 bg-white dark:bg-[#1f1f1f]"
+                            >
+                                <p
+                                    class="text-[#141414] dark:text-white text-lg font-medium leading-normal"
+                                >
+                                    Revenue Overview
+                                </p>
+                                <div class="flex gap-1 items-baseline">
+                                    <p
+                                        class="text-[#141414] dark:text-white tracking-light text-[32px] font-bold leading-tight truncate"
+                                    >
+                                        $45,231.89
+                                    </p>
+                                    <p
+                                        class="text-[#078807] text-base font-medium leading-normal ml-2"
+                                    >
+                                        +12.5%
+                                    </p>
+                                </div>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-sm font-normal leading-normal"
+                                >
+                                    Last 30 Days
+                                </p>
+                                <div
+                                    class="flex min-h-[240px] flex-1 flex-col gap-8 py-4 mt-4"
+                                >
+                                    <svg
+                                        fill="none"
+                                        height="100%"
+                                        preserveaspectratio="none"
+                                        viewbox="-3 0 478 150"
+                                        width="100%"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            class="dark:hidden"
+                                            d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z"
+                                            fill="url(#paint0_linear_1131_5935_light)"
+                                        ></path>
+                                        <path
+                                            class="hidden dark:block"
+                                            d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z"
+                                            fill="url(#paint0_linear_1131_5935_dark)"
+                                        ></path>
+                                        <path
+                                            class="dark:stroke-white"
+                                            d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25"
+                                            stroke="#141414"
+                                            stroke-linecap="round"
+                                            stroke-width="3"
+                                        ></path>
+                                        <defs>
+                                            <lineargradient
+                                                gradientunits="userSpaceOnUse"
+                                                id="paint0_linear_1131_5935_light"
+                                                x1="236"
+                                                x2="236"
+                                                y1="1"
+                                                y2="149"
+                                            >
+                                                <stop
+                                                    stop-color="#f2f2f2"
+                                                ></stop>
+                                                <stop
+                                                    offset="1"
+                                                    stop-color="#f2f2f2"
+                                                    stop-opacity="0"
+                                                ></stop>
+                                            </lineargradient>
+                                            <lineargradient
+                                                gradientunits="userSpaceOnUse"
+                                                id="paint0_linear_1131_5935_dark"
+                                                x1="236"
+                                                x2="236"
+                                                y1="1"
+                                                y2="149"
+                                            >
+                                                <stop stop-color="#444"></stop>
+                                                <stop
+                                                    offset="1"
+                                                    stop-color="#444"
+                                                    stop-opacity="0"
+                                                ></stop>
+                                            </lineargradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div
+                                class="lg:col-span-2 flex flex-col gap-2 rounded-xl border border-[#e0e0e0] dark:border-primary/20 p-6 bg-white dark:bg-[#1f1f1f]"
+                            >
+                                <p
+                                    class="text-[#141414] dark:text-white text-lg font-medium leading-normal"
+                                >
+                                    Top Selling Products
+                                </p>
+                                <div class="flex gap-1 items-baseline">
+                                    <p
+                                        class="text-[#141414] dark:text-white tracking-light text-[32px] font-bold leading-tight truncate"
+                                    >
+                                        150 Units
+                                    </p>
+                                    <p
+                                        class="text-[#078807] text-base font-medium leading-normal ml-2"
+                                    >
+                                        +8.2%
+                                    </p>
+                                </div>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-sm font-normal leading-normal"
+                                >
+                                    Vinyl Tile This Month
+                                </p>
+                                <div
+                                    class="grid min-h-[240px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3 mt-4"
+                                >
+                                    <div
+                                        class="bg-primary/20 dark:bg-primary/50 w-full rounded-t"
+                                        style="height: 40%"
+                                    ></div>
+                                    <p
+                                        class="text-[#757575] dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]"
+                                    >
+                                        Oak
+                                    </p>
+                                    <div
+                                        class="bg-primary/20 dark:bg-primary/50 w-full rounded-t"
+                                        style="height: 60%"
+                                    ></div>
+                                    <p
+                                        class="text-[#757575] dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]"
+                                    >
+                                        Maple
+                                    </p>
+                                    <div
+                                        class="bg-primary/80 dark:bg-white/80 w-full rounded-t"
+                                        style="height: 80%"
+                                    ></div>
+                                    <p
+                                        class="text-[#141414] dark:text-white text-[13px] font-bold leading-normal tracking-[0.015em]"
+                                    >
+                                        Vinyl
+                                    </p>
+                                    <div
+                                        class="bg-primary/20 dark:bg-primary/50 w-full rounded-t"
+                                        style="height: 20%"
+                                    ></div>
+                                    <p
+                                        class="text-[#757575] dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]"
+                                    >
+                                        Laminate
+                                    </p>
+                                    <div
+                                        class="bg-primary/20 dark:bg-primary/50 w-full rounded-t"
+                                        style="height: 50%"
+                                    ></div>
+                                    <p
+                                        class="text-[#757575] dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]"
+                                    >
+                                        Engineered
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Activity & Alerts -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                            <!-- Recent Activity -->
+                            <div
+                                class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]"
+                            >
+                                <div class="p-6">
+                                    <h2
+                                        class="text-[#141414] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+                                    >
+                                        Recent Activity
+                                    </h2>
+                                    <p
+                                        class="text-[#757575] dark:text-gray-400 text-sm mt-1"
+                                    >
+                                        Latest orders and sign-ups.
+                                    </p>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead
+                                            class="text-sm text-[#757575] dark:text-gray-400"
+                                        >
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <th
+                                                    class="px-6 py-3 font-medium"
+                                                >
+                                                    Order ID
+                                                </th>
+                                                <th
+                                                    class="px-6 py-3 font-medium"
+                                                >
+                                                    Customer
+                                                </th>
+                                                <th
+                                                    class="px-6 py-3 font-medium"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    class="px-6 py-3 font-medium text-right"
+                                                >
+                                                    Total
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    #3066
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    Liam Johnson
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span
+                                                        class="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-medium px-2.5 py-1 rounded-full"
+                                                        >Paid</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    $250.00
+                                                </td>
+                                            </tr>
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    #3065
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    Olivia Smith
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span
+                                                        class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-medium px-2.5 py-1 rounded-full"
+                                                        >Shipped</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    $150.00
+                                                </td>
+                                            </tr>
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    #3064
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    Noah Williams
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span
+                                                        class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300 text-xs font-medium px-2.5 py-1 rounded-full"
+                                                        >Pending</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    $350.00
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    #3063
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    Emma Brown
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span
+                                                        class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 text-xs font-medium px-2.5 py-1 rounded-full"
+                                                        >Canceled</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    $75.00
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Low Stock -->
+                            <div
+                                class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]"
+                            >
+                                <div class="p-6">
+                                    <h2
+                                        class="text-[#141414] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+                                    >
+                                        Low Stock Alerts
+                                    </h2>
+                                    <p
+                                        class="text-[#757575] dark:text-gray-400 text-sm mt-1"
+                                    >
+                                        Products that need restocking soon.
+                                    </p>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead
+                                            class="text-sm text-[#757575] dark:text-gray-400"
+                                        >
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <th
+                                                    class="px-6 py-3 font-medium"
+                                                >
+                                                    Product Name
+                                                </th>
+                                                <th
+                                                    class="px-6 py-3 font-medium"
+                                                >
+                                                    SKU
+                                                </th>
+                                                <th
+                                                    class="px-6 py-3 font-medium text-right"
+                                                >
+                                                    Remaining
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    Natural Oak Plank
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    FL-OAK-101
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-red-600 dark:text-red-400"
+                                                >
+                                                    5
+                                                </td>
+                                            </tr>
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    Ashwood Laminate
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    FL-LAM-203
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-red-600 dark:text-red-400"
+                                                >
+                                                    8
+                                                </td>
+                                            </tr>
+                                            <tr
+                                                class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                            >
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    Charcoal Vinyl Tile
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    FL-VIN-402
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-yellow-600 dark:text-yellow-400"
+                                                >
+                                                    12
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td
+                                                    class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    Walnut Engineered Wood
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                >
+                                                    FL-ENG-305
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 text-right font-medium text-yellow-600 dark:text-yellow-400"
+                                                >
+                                                    18
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>

@@ -44,8 +44,14 @@ export const checkUser = (req, res, next) => {
                 next();
             } else {
                 let user = await User.findById(decodedToken.id);
-                res.locals.user = user;
-                next();
+                if (user && user.isBlocked) {
+                    res.clearCookie("jwt");
+                    res.locals.user = null;
+                    next();
+                } else {
+                    res.locals.user = user;
+                    next();
+                }
             }
         });
     } else {

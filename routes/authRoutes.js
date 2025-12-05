@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth2";
-import * as userController from "../controllers/userControllers.js";
+import * as userController from "../controllers/userControllers/authController.js";
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
 

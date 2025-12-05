@@ -1,0 +1,102 @@
+<%- include('../partials/admin-header.ejs') %>
+    <body
+        class="bg-background-light dark:bg-background-dark font-display text-[#333333] dark:text-gray-200"
+    >
+        <div
+            class="relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden p-4 group/design-root"
+        >
+            <div
+                class="absolute inset-0 z-0 h-full w-full bg-cover bg-center"
+                data-alt="Faint image of a light-colored wood grain flooring"
+                style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAphxl5N0wHGHa_flWBbcN2-JzJz3QEw_YsArF6oMkxpc8jDY1RlWUxOyw9Nq1agX0bYCm-iUP52DhUvxTJHoQpzgr2Va9Hzm2VAMeNZxCKHIMi-_SjoI26VKnis3gXobEd9zyO-24FlqexI54bMfO0zBeIvtuXB-THKoNK1zZJ1-2oqUkf8Gxe0YgI1em9ThejOaJ7f019u4l3BWiSr_RLroxJzJbXjapF6npPnwE93H3q_T-ZSZkkP0_mEHtl44UO6glxd0ZmeOw');
+                    opacity: 0.05;
+                "
+            ></div>
+            <div
+                class="relative z-10 flex w-full max-w-md flex-col items-center"
+            >
+                <div class="mb-8 flex items-center gap-3">
+                    <span
+                        class="text-2xl font-bold tracking-tight text-primary dark:text-white"
+                        >SmartFloor</span
+                    >
+                </div>
+                <div
+                    class="w-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-background-dark sm:p-8"
+                >
+                    <div class="flex flex-col items-center">
+                        <h1
+                            class="text-primary dark:text-white tracking-light text-[32px] font-bold leading-tight text-center pb-3 pt-6 font-display"
+                        >
+                            Admin Portal
+                        </h1>
+                        <form class="w-full" action="/admin/login" method="POST">
+                            <div
+                                class="flex w-full flex-wrap items-end gap-4 px-4 py-3"
+                            >
+                                <label class="flex flex-col min-w-40 flex-1">
+                                    <p
+                                        class="text-primary dark:text-gray-300 text-base font-medium leading-normal pb-2"
+                                    >
+                                        Email
+                                    </p>
+                                    <input
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:focus:ring-white/50 border border-[#D1D5DB] dark:border-gray-600 bg-white dark:bg-gray-800 focus:border-primary dark:focus:border-white h-14 placeholder:text-[#6B7280] p-[15px] text-base font-normal leading-normal"
+                                        placeholder="Enter your email"
+                                        value=""
+                                        name="email"
+                                    />
+                                </label>
+                            </div>
+                            <div
+                                class="flex w-full flex-wrap items-end gap-4 px-4 py-3"
+                            >
+                                <label class="flex flex-col min-w-40 flex-1">
+                                    <p
+                                        class="text-primary dark:text-gray-300 text-base font-medium leading-normal pb-2"
+                                    >
+                                        Password
+                                    </p>
+                                    <div
+                                        class="flex w-full flex-1 items-stretch"
+                                    >
+                                        <input
+                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-l-lg text-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:focus:ring-white/50 border border-r-0 border-[#D1D5DB] dark:border-gray-600 bg-white dark:bg-gray-800 focus:border-primary dark:focus:border-white h-14 placeholder:text-[#6B7280] p-[15px] pr-2 text-base font-normal leading-normal"
+                                            placeholder="Enter your password"
+                                            type="password"
+                                            value=""
+                                            name="password"
+                                        />
+                                        <div
+                                            class="text-[#6B7280] dark:text-gray-400 flex border border-l-0 border-[#D1D5DB] dark:border-gray-600 bg-white dark:bg-gray-800 items-center justify-center pr-[15px] rounded-r-lg"
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                                data-icon="Eye"
+                                                data-size="24px"
+                                                data-weight="regular"
+                                                >visibility</span
+                                            >
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="px-4 pt-6 pb-3">
+                                <button
+                                    class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                                    type="submit"
+                                >
+                                    Sign In
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <p class="mt-8 text-sm text-[#6B7280] dark:text-gray-500">
+                    © SmartFloor 2024
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

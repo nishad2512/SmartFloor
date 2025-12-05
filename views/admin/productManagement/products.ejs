@@ -1,0 +1,191 @@
+<%- include("../../partials/admin-header.ejs") %>
+    <body
+        class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white"
+    >
+    <%- include("../../partials/flash.ejs") %>
+        <div
+            class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <div class="flex min-h-screen">
+                <%- include("../../partials/sidebar.ejs") %>
+                <main class="flex-1 p-6 lg:p-10">
+                    <div class="layout-content-container flex flex-col w-full">
+                        <div
+                            class="flex flex-wrap justify-between gap-4 items-center mb-6"
+                        >
+                            <div class="flex flex-col gap-1">
+                                <p
+                                    class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                                >
+                                    Products
+                                </p>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal"
+                                >
+                                    Manage all products and their variants from
+                                    this page.
+                                </p>
+                            </div>
+                            <form action="/admin/products" method="GET" class="flex">
+                                <input
+                                    type="text"
+                                    name="search"
+                                    value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                    placeholder="Search products..."
+                                    class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-[#1f1f1f] dark:border-primary/20 dark:text-white"
+                                />
+                                <a href="/admin/products" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-colors">
+                                    Clear
+                                </a>
+                            </form>
+                            <div class="flex items-center gap-4">
+                                <a
+                                    href="/admin/products/create"
+                                    class="flex items-center gap-2 bg-primary text-white font-medium px-5 py-2.5 rounded-lg hover:opacity-90"
+                                >
+                                    <span
+                                        class="material-symbols-outlined text-xl"
+                                        >add</span
+                                    >
+                                    Create Product
+                                </a>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]"
+                        >
+                            <div class="p-6">
+                                <h2
+                                    class="text-[#141414] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+                                >
+                                    All Products
+                                </h2>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-sm mt-1"
+                                >
+                                    A comprehensive list of all available
+                                    products.
+                                </p>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead
+                                        class="text-sm text-[#757575] dark:text-gray-400"
+                                    >
+                                        <tr
+                                            class="border-b border-t border-[#e0e0e0] dark:border-primary/20"
+                                        >
+                                            <th class="px-6 py-3 font-medium">
+                                                Product Name
+                                            </th>
+                                            <th class="px-6 py-3 font-medium">
+                                                Category
+                                            </th>
+                                            <th
+                                                class="px-6 py-3 font-medium text-center"
+                                            >
+                                                Variants
+                                            </th>
+                                            <th
+                                                class="px-6 py-3 font-medium text-right"
+                                            >
+                                                Price
+                                            </th>
+                                            <th
+                                                class="px-6 py-3 font-medium text-center"
+                                            >
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% products.forEach(product => { %>
+                                        <tr
+                                            class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                        >
+                                            <td
+                                                class="<%= product.isActive ? '' : 'line-through' %> px-6 py-4 text-[#757575] dark:text-gray-400"
+                                            >
+                                                <%= product.name %>
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                            >
+                                                <%= product.category.name %>
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 text-center text-[#757575] dark:text-gray-400"
+                                            >
+                                                <%= product.variants.length %>
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 text-right font-medium text-[#141414] dark:text-white"
+                                            >
+                                                <%= product.variants.length > 1 ? 'From  ₹'+ Math.min(...product.variants.map(v => v.price)) : '₹'+ product.variants[0].price %>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <div
+                                                    class="flex justify-center gap-2"
+                                                >
+                                                    <a
+                                                        href="/admin/products/edit/<%= product._id %>"
+                                                        class="p-2 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full"
+                                                    >
+                                                        <span
+                                                            class="material-symbols-outlined text-lg"
+                                                            >edit</span
+                                                        >
+                                                    </a>
+                                                    <% if (product.isActive) { %>
+                                                     <a
+                                                        href="/admin/products/delete/<%= product._id %>"
+                                                        class="p-2 text-red-600 hover:bg-gray-100 dark:hover:bg-red/30 rounded-full"
+                                                    >
+                                                        <span
+                                                            class="material-symbols-outlined text-lg"
+                                                            >block</span
+                                                        >
+                                                    </a>
+                                                    <% } else { %>
+                                                    <a
+                                                        href="/admin/products/unblock/<%= product._id %>"
+                                                        class="p-2 text-green-600 hover:bg-gray-100 dark:hover:bg-green/30 rounded-full"
+                                                    >
+                                                        <span
+                                                            class="material-symbols-outlined text-lg"
+                                                            >refresh</span
+                                                        >
+                                                    </a>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div
+                                class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20"
+                            >
+                                <div class="flex gap-2 items-center">
+                                    <a
+                                        class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50"
+                                        href="/admin/products?page=<%= page - 1 %>"
+                                    >
+                                        Previous
+                                    </a>
+                                    <a
+                                        href="/admin/products?page=<%= page + 1 %>"
+                                        class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30"
+                                    >
+                                        Next
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>

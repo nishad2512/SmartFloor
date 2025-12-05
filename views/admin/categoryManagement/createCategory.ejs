@@ -1,0 +1,73 @@
+<%- include('../../partials/admin-header.ejs') %>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white"
+>
+    <%- include("../../partials/flash.ejs") %>
+    <div
+        class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+        <div class="flex min-h-screen">
+            <%- include("../../partials/sidebar.ejs") %>
+
+            <main class="flex-1 p-6 lg:p-10">
+                <div
+                    class="layout-content-container flex flex-col w-full max-w-6xl mx-auto"
+                >
+                    <div class="flex flex-col gap-1 mb-6">
+                        <p
+                            class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                        >
+                            Add New Category
+                        </p>
+                        <p
+                            class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal"
+                        >
+                            Fill in the details to create a new product
+                            category.
+                        </p>
+                    </div>
+                    <div
+                        class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6 lg:p-8"
+                    >
+                        <form class="flex flex-col gap-6" method="POST" action="/admin/categories/create">
+                            <div class="flex flex-col gap-2">
+                                <label
+                                    class="text-[#141414] dark:text-white text-sm font-medium"
+                                    for="category-name"
+                                    >Category Name</label
+                                >
+                                <input
+                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 px-4 py-2.5 text-base font-normal text-[#141414] dark:text-white placeholder:text-[#757575]/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    id="category-name"
+                                    name="name"
+                                    placeholder="e.g., Hardwood Flooring"
+                                    type="text"
+                                />
+                            </div>
+                            <div
+                                class="flex items-center justify-end gap-4 pt-4 mt-2"
+                            >
+                                <a
+                                    class="flex items-center justify-center gap-2 rounded-lg bg-transparent text-primary dark:text-white px-5 py-2.5 font-medium hover:bg-primary/10 dark:hover:bg-primary/20"
+                                    href="/admin/categories"
+                                >
+                                    <span>Cancel</span>
+                                </a>
+                                <button
+                                    class="flex items-center justify-center gap-2 rounded-lg bg-primary text-white px-5 py-2.5 font-medium hover:opacity-90"
+                                    type="submit"
+                                >
+                                    <span class="material-symbols-outlined"
+                                        >save</span
+                                    >
+                                    <span>Save Category</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
