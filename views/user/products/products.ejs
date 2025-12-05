@@ -1,0 +1,149 @@
+<%- include('../../partials/header.ejs') %>
+
+    <header class="text-center m-16">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[#1A1A1A] tracking-tight">
+            Products That Will Amuse You
+        </h1>
+    </header>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 relative z-20">
+        
+        <div class="flex flex-wrap gap-3 category-links">
+            <a href="/products" 
+            class="px-8 py-2.5 rounded-full border border-gray-300 text-gray-400 text-sm font-bold hover:border-black hover:text-black transition">
+            All
+            </a>
+            
+            <% categories.forEach(ctg => { %>
+                <a href="/products/<%= ctg.name.toLowerCase() %>" 
+                class="px-8 py-2.5 rounded-full border border-gray-300 text-gray-400 text-sm font-bold hover:border-black hover:text-black transition">
+                <%= ctg.name %>
+                </a>
+            <% }) %>
+        </div>
+
+        <div class="flex items-center gap-3 relative">
+            
+            <div class="relative">
+                <button onclick="toggleFilter()" class="px-6 py-2.5 rounded-full border border-gray-300 text-[#1A1A1A] text-sm font-bold hover:border-black hover:bg-gray-50 transition flex items-center gap-2">
+                    <i class="ph-bold ph-sliders-horizontal text-lg"></i>
+                    Filter
+                </button>
+
+                <form action="" method="GET" id="filterDropdown" class="hidden absolute right-0 top-full mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-5 z-50">
+                    
+                    <% if(locals.query?.sort) { %>
+                        <input type="hidden" name="sort" value="<%= locals.query.sort %>">
+                    <% } %>
+
+                    <h3 class="font-bold text-[#1A1A1A] mb-4 text-sm">Price Range</h3>
+                    
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="relative w-full">
+                            <span class="absolute left-3 top-2.5 text-gray-400 text-xs">₹</span>
+                            <input type="number" name="minPrice" placeholder="Min" value="<%= locals.query?.minPrice %>" class="w-full bg-[#F5F5F5] rounded-lg py-2 pl-6 pr-3 text-sm font-medium outline-none focus:ring-1 focus:ring-black">
+                        </div>
+                        <span class="text-gray-400">-</span>
+                        <div class="relative w-full">
+                            <span class="absolute left-3 top-2.5 text-gray-400 text-xs">₹</span>
+                            <input type="number" name="maxPrice" placeholder="Max" value="<%= locals.query?.maxPrice %>" class="w-full bg-[#F5F5F5] rounded-lg py-2 pl-6 pr-3 text-sm font-medium outline-none focus:ring-1 focus:ring-black">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                        <a href="/products" class="text-xs font-bold text-gray-400 hover:text-red-500 transition">Reset</a>
+                        <button type="submit" class="bg-black text-white px-5 py-2 rounded-full text-xs font-bold hover:bg-gray-800 transition">Apply</button>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <select onchange="updateSort(this.value)" class="px-3 py-3 appearance-none rounded-full bg-black text-white text-sm font-bold flex text-center cursor-pointer hover:opacity-90 transition">
+                    <option value="default" disabled <%= !locals.query?.sort ? 'selected' : '' %>>Sort</option>
+                    <option value="price-low-high" <%= locals.query?.sort == 'price-low-high' ? 'selected' : '' %>>Price: Low to High</option>
+                    <option value="price-high-low" <%= locals.query?.sort === 'price-high-low' ? 'selected' : '' %>>Price: High to Low</option>
+                    <option value="a-z" <%= locals.query?.sort === 'a-z' ? 'selected' : '' %>>aA to zZ</option>
+                    <option value="z-a" <%= locals.query?.sort === 'z-a' ? 'selected' : '' %>>zZ to aA</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mb-20 z-10 relative">
+        <% products.forEach(product => { %>
+        <a href="/products/product/<%= product._id %>">
+        <div class="group cursor-pointer">
+            <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                <img src="<%= product.productImages[0] %>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                    <span class="font-bold text-base text-[#1A1A1A]"><%= product.name %></span>
+                    <span class="font-bold text-base text-[#1A1A1A]">₹<%= Math.min(...product.variants.map(variant => variant.price)) %></span>
+                </div>
+                <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                    <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                </button>
+            </div>
+        </div>
+        </a>
+        <% }) %>
+    </div>
+
+    <div class="flex justify-center items-center gap-2 mb-24">
+        <a href="/products?page=<%= page - 1 %>" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-black transition">
+            <i class="ph-bold ph-caret-left text-lg"></i>
+        </a>
+        <% for( let i = 0; i < totalPages; i++ ) { %>
+        <a href="/products?page=<%= i + 1 %>" class="pagination-button <%= page == i+1 ? 'w-10 h-10 rounded-full bg-black text-white font-bold text-sm flex items-center justify-center' : 'w-10 h-10 flex items-center border border-gray-300 rounded-full justify-center text-gray-400 hover:text-black transition' %>"><%= i + 1 %></a>
+        <% } %>
+        <a href="/products?page=<%= totalPages > page + 1 ? page + 1 : totalPages %>" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-black transition">
+            <i class="ph-bold ph-caret-right text-lg"></i>
+        </a>
+    </div>
+
+</div>
+
+<%- include('../../partials/footer.ejs') %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Highlight Active Category
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('.category-links a'); // Fixed selector (added dot)
+
+        links.forEach(link => {
+            // Check if the link's href matches the current URL path
+            if (link.getAttribute('href') === currentPath) {
+                // Apply Active Styles (Black background, White text)
+                link.classList.remove('border-gray-300', 'text-gray-400', 'hover:border-black', 'hover:text-black');
+                link.classList.add('bg-black', 'text-white', 'border-transparent', 'shadow-lg');
+            }
+        });
+
+        // 2. Filter Logic (Simple & Minimal)
+        window.toggleFilter = function() {
+            const dropdown = document.getElementById('filterDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close filter when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('filterDropdown');
+            const button = document.querySelector('button[onclick="toggleFilter()"]');
+            if (dropdown && !dropdown.contains(e.target) && !button.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // 3. Sort Logic
+        window.updateSort = function(value) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sort', value);
+            window.location.href = url.toString();
+        }
+    });
+</script>
+
+</body>
+</html>

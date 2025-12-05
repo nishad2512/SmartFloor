@@ -53,6 +53,8 @@ router.post("/categories/edit/:id", categories.editCategory);
 
 router.get("/categories/delete/:id", categories.deleteCategory);
 
+router.get("/categories/unblock/:id", categories.unblockCategory);
+
 // userManagement
 
 router.get("/customers", users.users)
@@ -68,6 +70,14 @@ router.get("/products", products.products)
 router.get("/products/create", products.createProductPage);
 
 router.post("/products/create", upload.array('images', 5), products.createProduct);
+
+router.get("/products/edit/:id", products.editProductPage);
+
+router.post("/products/edit/:id", upload.array('images', 5), products.editProduct);
+
+router.get("/products/delete/:id", products.deleteProduct);
+
+router.get("/products/unblock/:id", products.unblockProduct);
 
 // logout
 

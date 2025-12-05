@@ -1,139 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartFloor - Premium Flooring</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', "sans-serif"],
-                    },
-                    screens: {
-                        "3xl": "1800px", // Extra breakpoint for 1920 screens
-                    },
-                    fontSize: {
-                        huge: "5rem", // Custom size for hero headlines on large screens
-                    },
-                },
-            },
-        };
-    </script>
-
-    <style>
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            -webkit-font-smoothing: antialiased;
-        }
-    </style>
-</head>
-
-<body class="bg-white text-[#1A1A1A]">
-    <%- include('../partials/flash') %>
-        <div class="w-full max-w-[1680px] mx-auto px-6 2xl:px-0">
-            <nav class="flex justify-between items-center py-8">
-                <div class="flex items-center gap-3">
-                    <div class="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center">
-                        <i class="ph-bold ph-diamond text-lg"></i>
-                    </div>
-                    <span class="font-extrabold text-2xl tracking-tight">SmartFloor</span>
-                </div>
-
-                <ul class="hidden md:flex gap-20 text-base font-medium text-gray-500">
-                    <li class="text-black font-bold cursor-pointer">
-                        <a href="/">Home</a>
-                    </li>
-                    <li class="hover:text-black cursor-pointer transition">
-                        <a href="/products">Products</a>
-                    </li>
-                    <li class="hover:text-black cursor-pointer transition">
-                        <a href="/about">About Us</a>
-                    </li>
-                    <li class="hover:text-black cursor-pointer transition">
-                        <a href="/contact">Contact</a>
-                    </li>
-                </ul>
-                <% if (!locals.user) { %>
-                    <a href="/login"><button
-                            class="bg-[#F0F0F0] hover:bg-[#E0E0E0] text-black px-10 py-3 rounded-full font-bold text-sm transition">
-                            Login
-                        </button>
-                    </a>
-                    <% } else { %>
-                        <div class="flex items-center gap-8">
-                            <!-- Search wrapper (hidden until toggled) for md+ -->
-                            <div id="searchWrapper" class="relative hidden">
-                                <form id="searchForm" method="GET" action="/search"
-                                    class="flex items-center bg-white/90 dark:bg-black/80 rounded-full pl-3 pr-2 h-10 shadow-sm border border-gray-200 dark:border-gray-700">
-                                    <input id="searchInput" name="q" type="search" placeholder="Search products..."
-                                        class="bg-transparent outline-none text-sm w-56 placeholder:text-gray-400 text-[#111418] dark:text-white" />
-                                    <button type="button" id="clearSearchBtn"
-                                        class="ml-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200">
-                                        <i class="ph-bold ph-x text-lg"></i>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <!-- Mobile full-screen overlay (hidden by default) -->
-                            <div id="mobileSearchOverlay"
-                                class="fixed inset-0 z-50 bg-black/40 hidden items-center justify-center p-6">
-                                <div class="w-full max-w-md">
-                                    <form id="mobileSearchForm" method="GET" action="/search"
-                                        class="flex items-center bg-white rounded-full px-4 py-2 shadow-lg">
-                                        <input id="mobileSearchInput" name="q" type="search"
-                                            placeholder="Search products..."
-                                            class="flex-1 bg-transparent outline-none text-sm placeholder:text-gray-400 text-[#111418]" />
-                                        <button type="button" id="mobileClearBtn"
-                                            class="ml-2 text-gray-500 hover:text-gray-700">
-                                            <i class="ph-bold ph-x text-lg"></i>
-                                        </button>
-                                        <button type="button" id="mobileCloseBtn"
-                                            class="ml-2 text-gray-500 hover:text-gray-700">
-                                            <i class="ph-bold ph-x-circle text-2xl"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <!-- Search toggle -->
-                            <button id="searchToggleBtn" class="text-black hover:opacity-70 transition"
-                                aria-label="Search">
-                                <i class="ph-bold ph-magnifying-glass text-2xl"></i>
-                            </button>
-
-                            <!-- Heart Icon -->
-                            <button class="text-black hover:opacity-70 transition">
-                                <i class="ph-bold ph-heart text-2xl"></i>
-                            </button>
-
-                            <!-- Profile Icon -->
-                            <button class="text-black hover:opacity-70 transition">
-                                <i class="ph-bold ph-user text-2xl"></i>
-                            </button>
-
-                            <!-- Shopping Bag Icon -->
-                            <button class="text-black hover:opacity-70 transition">
-                                <i class="ph-bold ph-shopping-bag text-2xl"></i>
-                            </button>
-                        </div>
-                        <% } %>
-            </nav>
+<%- include('../partials/header.ejs') %>
 
             <header class="py-10 mb-20">
                 <h1 class="text-5xl lg:text-[4rem] 2xl:text-[5.5rem] font-extrabold text-center mb-20 leading-[1.1]">
@@ -211,121 +76,106 @@
                     Our Best Quality Products
                 </h2>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
-                    <div class="group cursor-pointer">
-                        <div class="h-[400px] rounded-[2.5rem] overflow-hidden mb-6 relative bg-gray-50">
-                            <img src="https://images.unsplash.com/photo-1618219944342-824e40a13285?auto=format&fit=crop&q=80&w=1000"
-                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-4">
-                                <h3 class="font-bold text-xl">African Gaz</h3>
-                                <p class="text-base font-bold text-gray-900">
-                                    $128.00
-                                </p>
-                            </div>
-                            <button
-                                class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition shadow-lg group-hover:rotate-45 duration-300">
-                                <i class="ph-bold ph-arrow-up-right text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="group cursor-pointer">
-                        <div class="h-[400px] rounded-[2.5rem] overflow-hidden mb-6 relative bg-gray-50">
-                            <img src="https://picsum.photos/id/1011/1000/600/"
-                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-4">
-                                <h3 class="font-bold text-xl">Beige Marble</h3>
-                                <p class="text-base font-bold text-gray-900">
-                                    $128.00
-                                </p>
-                            </div>
-                            <button
-                                class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition shadow-lg group-hover:rotate-45 duration-300">
-                                <i class="ph-bold ph-arrow-up-right text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="group cursor-pointer">
-                        <div class="h-[400px] rounded-[2.5rem] overflow-hidden mb-6 relative bg-gray-50">
-                            <img src="https://picsum.photos/1000/600/"
-                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-4">
-                                <h3 class="font-bold text-xl">Grey Granite</h3>
-                                <p class="text-base font-bold text-gray-900">
-                                    $120.00
-                                </p>
-                            </div>
-                            <button
-                                class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition shadow-lg group-hover:rotate-45 duration-300">
-                                <i class="ph-bold ph-arrow-up-right text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="group cursor-pointer">
-                        <div class="h-[400px] rounded-[2.5rem] overflow-hidden mb-6 relative bg-gray-50">
-                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000"
-                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-4">
-                                <h3 class="font-bold text-xl">Italian Floor</h3>
-                                <p class="text-base font-bold text-gray-900">
-                                    $128.00
-                                </p>
-                            </div>
-                            <button
-                                class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition shadow-lg group-hover:rotate-45 duration-300">
-                                <i class="ph-bold ph-arrow-up-right text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="group cursor-pointer">
-                        <div class="h-[400px] rounded-[2.5rem] overflow-hidden mb-6 relative bg-gray-50">
-                            <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=1000"
-                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-4">
-                                <h3 class="font-bold text-xl">Blue Marble</h3>
-                                <p class="text-base font-bold text-gray-900">
-                                    $138.00
-                                </p>
-                            </div>
-                            <button
-                                class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition shadow-lg group-hover:rotate-45 duration-300">
-                                <i class="ph-bold ph-arrow-up-right text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="group cursor-pointer">
-                        <div class="h-[400px] rounded-[2.5rem] overflow-hidden mb-6 relative bg-gray-50">
-                            <img src="https://picsum.photos/id/1012/1000/600/"
-                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-4">
-                                <h3 class="font-bold text-xl">Ocean Blue</h3>
-                                <p class="text-base font-bold text-gray-900">
-                                    $138.00
-                                </p>
-                            </div>
-                            <button
-                                class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition shadow-lg group-hover:rotate-45 duration-300">
-                                <i class="ph-bold ph-arrow-up-right text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mb-20">
+            
+            <div class="group cursor-pointer">
+                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                    <img src="https://images.unsplash.com/photo-1618219944342-824e40a13285?auto=format&fit=crop&q=80&w=1000" 
+                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
                 </div>
+                
+                <div class="flex items-center gap-3">
+                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
+                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                    </div>
+                    
+                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="group cursor-pointer">
+                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                    <img src="https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&q=80&w=1000" 
+                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
+                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                    </div>
+                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer">
+                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                    <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1000" 
+                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
+                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                    </div>
+                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer">
+                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000" 
+                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
+                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                    </div>
+                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer">
+                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                    <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=1000" 
+                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
+                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                    </div>
+                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer">
+                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                    <img src="https://images.unsplash.com/photo-1616137466211-f939a420be63?auto=format&fit=crop&q=80&w=1000" 
+                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
+                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                    </div>
+                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
             </section>
 
             <section class="py-16 mb-32">
@@ -426,196 +276,7 @@
                 </div>
             </section>
         </div>
-        <footer class="bg-[#111111] text-white pt-24 pb-10">
-            <div class="max-w-[1680px] mx-auto px-6 2xl:px-0 grid grid-cols-1 md:grid-cols-6 gap-16 mb-20">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-3 mb-8">
-                        <div class="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center">
-                            <i class="ph-bold ph-diamond text-sm"></i>
-                        </div>
-                        <span class="font-bold text-xl">SmartFloor</span>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-bold mb-8 text-base">Products</h4>
-                    <ul class="space-y-5 text-sm text-gray-400 font-medium">
-                        <li>
-                            <a href="#" class="hover:text-white transition">tiles</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Marble</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Stone</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Wood</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-bold mb-8 text-base">Pages</h4>
-                    <ul class="space-y-5 text-sm text-gray-400 font-medium">
-                        <li>
-                            <a href="#" class="hover:text-white transition">Home</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Products</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">About Us</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Contact</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-bold mb-8 text-base">Brands</h4>
-                    <ul class="space-y-5 text-sm text-gray-400 font-medium">
-                        <li>
-                            <a href="#" class="hover:text-white transition">Kajaria</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Somany</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Asian</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-bold mb-8 text-base">Social Media</h4>
-                    <ul class="space-y-5 text-sm text-gray-400 font-medium">
-                        <li>
-                            <a href="#" class="hover:text-white transition">Instagram</a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-white transition">Facebook</a>
-                        </li>
-                        <li>
-                            <a href="/logout" class="hover:text-white transition">Logout</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div
-                class="max-w-[1680px] mx-auto px-6 2xl:px-0 pt-10 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 font-medium">
-                <p>© 2024 SmartFloor. All rights reserved.</p>
-                <p class="mt-2 md:mt-0">Privacy Policy</p>
-            </div>
-        </footer>
+        <%- include('../partials/footer.ejs') %>
 </body>
 
 </html>
-<script>
-    // Search functionality
-    (function () {
-        const searchToggleBtn = document.getElementById("searchToggleBtn");
-        const searchWrapper = document.getElementById("searchWrapper");
-        const searchInput = document.getElementById("searchInput");
-        const clearSearchBtn = document.getElementById("clearSearchBtn");
-        const mobileOverlay = document.getElementById("mobileSearchOverlay");
-        const mobileInput = document.getElementById("mobileSearchInput");
-        const mobileClear = document.getElementById("mobileClearBtn");
-        const mobileClose = document.getElementById("mobileCloseBtn");
-
-        if (!searchToggleBtn) return;
-
-        function openInline() {
-            if (searchWrapper) {
-                searchWrapper.classList.remove("hidden");
-                setTimeout(() => searchInput && searchInput.focus(), 50);
-            }
-        }
-
-        function closeInline() {
-            if (searchWrapper) searchWrapper.classList.add("hidden");
-        }
-
-        function openMobile() {
-            if (mobileOverlay) {
-                mobileOverlay.classList.remove("hidden");
-                mobileOverlay.classList.add("flex");
-                setTimeout(() => mobileInput && mobileInput.focus(), 50);
-            }
-        }
-
-        function closeMobile() {
-            if (mobileOverlay) {
-                mobileOverlay.classList.add("hidden");
-                mobileOverlay.classList.remove("flex");
-            }
-        }
-
-        searchToggleBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const isMobile = window.innerWidth < 768; // md breakpoint
-            if (isMobile) {
-                openMobile();
-            } else {
-                if (searchWrapper && searchWrapper.classList.contains("hidden"))
-                    openInline();
-                else closeInline();
-            }
-        });
-
-        // Inline clear
-        if (clearSearchBtn) {
-            clearSearchBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                if (searchInput) searchInput.value = "";
-                closeInline();
-            });
-        }
-
-        // Mobile clear/close
-        if (mobileClear) {
-            mobileClear.addEventListener("click", (e) => {
-                e.preventDefault();
-                if (mobileInput) mobileInput.value = "";
-                closeMobile();
-            });
-        }
-        if (mobileClose) {
-            mobileClose.addEventListener("click", (e) => {
-                e.preventDefault();
-                closeMobile();
-            });
-        }
-
-        // Click outside closes both
-        document.addEventListener("click", (e) => {
-            if (window.innerWidth >= 768) {
-                if (
-                    searchWrapper &&
-                    !searchWrapper.contains(e.target) &&
-                    !searchToggleBtn.contains(e.target)
-                ) {
-                    closeInline();
-                }
-            } else {
-                if (
-                    mobileOverlay &&
-                    !mobileOverlay.contains(e.target) &&
-                    !searchToggleBtn.contains(e.target)
-                ) {
-                    closeMobile();
-                }
-            }
-        });
-
-        // Escape hides
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                closeInline();
-                closeMobile();
-            }
-        });
-    })();
-</script>

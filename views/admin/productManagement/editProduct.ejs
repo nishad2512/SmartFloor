@@ -11,15 +11,17 @@
                                     <div class="flex flex-col gap-1">
                                         <p
                                             class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
-                                            Add New Product
+                                            Edit Product
                                         </p>
                                         <p
                                             class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal">
-                                            Fill in the details to create a new product.
+                                            Fill in the details to edit the product.
                                         </p>
                                     </div>
                                 </div>
-                                <form action="/admin/products/create" method="post" enctype="multipart/form-data">
+                                <form action="/admin/products/edit/<%= product._id %>" method="post"
+                                    enctype="multipart/form-data">
+                                    <input type="hidden" name="deletedImages" id="deleted-images-input" value="[]">
                                     <div class="flex flex-col gap-8">
                                         <div
                                             class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
@@ -36,7 +38,7 @@
                                                     <input
                                                         class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
                                                         id="product-name" placeholder="e.g., Oak Hardwood Flooring"
-                                                        type="text" name="name" />
+                                                        type="text" name="name" value="<%= product.name %>" />
                                                 </div>
                                                 <div>
                                                     <label
@@ -45,10 +47,11 @@
                                                     <select
                                                         class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
                                                         id="category" name="category">
-                                                        <option disabled selected>Select a category</option>
+                                                        <option disabled>Select a category</option>
                                                         <% categories.forEach(category=> { %>
-                                                            <option>
-                                                                <%= category.name %>
+                                                            <option <%=category._id.equals(product.category._id)
+                                                                ? "selected" : "" %> value="<%= category._id %>">
+                                                                    <%= category.name %>
                                                             </option>
                                                             <% }) %>
                                                     </select>
@@ -60,7 +63,8 @@
                                                     <textarea
                                                         class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
                                                         id="description" placeholder="Describe the product details..."
-                                                        rows="4" name="description"></textarea>
+                                                        rows="4"
+                                                        name="description"><%= product.description %></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -76,11 +80,23 @@
                                                     Images (Min 3)</label>
                                                 <input type="file" name="images" multiple accept="image/*"
                                                     class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                    required onchange="previewImages(event)" id="image-input">
+                                                    onchange="previewImages(event)" id="image-input">
                                                 <small class="text-gray-500">You can select multiple files at
                                                     once.</small>
 
                                                 <div id="image-preview" class="flex gap-2 mt-4 overflow-x-auto p-2">
+                                                    <% product.productImages.forEach((image, index)=> { %>
+                                                        <div class="relative group shrink-0">
+                                                            <img src="<%= image %>"
+                                                                class="h-20 w-20 object-cover rounded border" />
+                                                            <button type="button"
+                                                                class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600 z-10"
+                                                                onclick="removeEditedImage(<%= index %>, this)">
+                                                                <span
+                                                                    class="material-symbols-outlined text-[10px] font-bold block">close</span>
+                                                            </button>
+                                                        </div>
+                                                        <% }) %>
                                                 </div>
                                             </div>
                                         </div>
@@ -115,30 +131,37 @@
                                                         class="text-xs font-medium text-[#757575] dark:text-gray-400 text-center">Price</label>
                                                     <div class="w-8"></div>
                                                 </div>
-                                                <div id="variant-container"
-                                                    class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
-                                                    <input
-                                                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                                                        placeholder='eg: 6" x 48"' type="text" name="size" />
-                                                    <input
-                                                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
-                                                        placeholder="eg: 50" type="number" name="stock" />
-                                                    <input
-                                                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
-                                                        placeholder="eg: $5.99" type="text" name="price" />
-                                                    <button type="button"
-                                                        class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full">
-                                                        <span class="material-symbols-outlined text-xl">delete</span>
-                                                    </button>
-                                                </div>
+                                                <% product.variants.forEach(variant=> { %>
+                                                    <div id="variant-container"
+                                                        class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
+                                                        <input
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                            placeholder='eg: 6" x 48"' type="text" name="size"
+                                                            value="<%= variant.size %>" />
+                                                        <input
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
+                                                            placeholder="eg: 50" type="number" name="stock"
+                                                            value="<%= variant.stock %>" />
+                                                        <input
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
+                                                            placeholder="eg: ₹5.99" type="text" name="price"
+                                                            value="<%= variant.price %>" />
+                                                        <button
+                                                            onclick="this.parentElement.remove()"
+                                                            class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full">
+                                                            <span
+                                                                class="material-symbols-outlined text-xl">delete</span>
+                                                        </button>
+                                                    </div>
+                                                    <% }) %>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="mt-8 flex justify-end gap-4">
-                                        <a href="/admin/products"
+                                        <button
                                             class="font-medium px-6 py-2.5 rounded-lg border border-[#e0e0e0] dark:border-primary/20 hover:bg-gray-100 dark:hover:bg-primary/20">
                                             Cancel
-                                        </a>
+                                        </button>
                                         <button type="submit"
                                             class="bg-primary text-white font-medium px-6 py-2.5 rounded-lg hover:opacity-90">
                                             Save Product
@@ -151,40 +174,35 @@
             </div>
             <script>
                 let currentFiles = new DataTransfer();
+                let deletedImages = [];
 
                 function previewImages(event) {
                     const files = event.target.files;
-                    const input = document.getElementById('image-input');
+                    // Reset currentFiles to match the new selection (standard input behavior)
+                    // If you wanted to accumulate, you'd skip this and just append.
+                    currentFiles = new DataTransfer();
 
                     Array.from(files).forEach(file => {
-                        // Check for duplicates
-                        const exists = Array.from(currentFiles.files).some(existingFile =>
-                            existingFile.name === file.name &&
-                            existingFile.size === file.size &&
-                            existingFile.lastModified === file.lastModified
-                        );
-
-                        if (!exists) {
-                            currentFiles.items.add(file);
-                        }
+                        currentFiles.items.add(file);
                     });
-
-                    // Update the input with all accumulated files
-                    input.files = currentFiles.files;
 
                     renderPreviews();
                 }
 
                 function renderPreviews() {
                     const previewContainer = document.getElementById('image-preview');
-                    previewContainer.innerHTML = ''; // Clear previous
-                    previewContainer.className = "flex gap-2 mt-4 overflow-x-auto p-2"; // Add padding to prevent clipping
+                    // Keep existing images, only clear new previews
+                    const newPreviews = previewContainer.querySelectorAll('.new-preview');
+                    newPreviews.forEach(el => el.remove());
+
+                    // We need to append new previews after existing ones
+                    // But since we are clearing only new previews, we can just append
 
                     Array.from(currentFiles.files).forEach((file, index) => {
                         const reader = new FileReader();
                         reader.onload = function (e) {
                             const div = document.createElement('div');
-                            div.className = "relative group shrink-0"; // shrink-0 to prevent squishing in flex container
+                            div.className = "relative group shrink-0 new-preview"; // Add class to identify new previews
 
                             const img = document.createElement('img');
                             img.src = e.target.result;
@@ -192,7 +210,6 @@
 
                             const btn = document.createElement('button');
                             btn.type = "button";
-                            // Changed position to top-1 right-1 to be inside the image area
                             btn.className = "absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600 z-10";
                             btn.innerHTML = '<span class="material-symbols-outlined text-[10px] font-bold block">close</span>';
                             btn.onclick = (e) => {
@@ -221,6 +238,15 @@
                     renderPreviews();
                 }
 
+                function removeEditedImage(index, btn) {
+                    deletedImages.push(index);
+                    document.getElementById('deleted-images-input').value = JSON.stringify(deletedImages);
+
+                    // Visually remove the element
+                    const container = btn.closest('.relative');
+                    container.remove();
+                }
+
                 function addVariant() {
                     const container = document.getElementById('variant-container');
                     const newRow = document.createElement('div');
@@ -245,7 +271,6 @@
                         name="price"
                     />
                     <button
-                        onclick="this.parentElement.remove()"
                         class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full"
                     >
                         <span
@@ -256,6 +281,32 @@
                 `;
                     container.parentNode.insertBefore(newRow, container.nextSibling);
                 }
+
+                // Form validation
+                document.querySelector('form').addEventListener('submit', function (e) {
+                    const existingImagesCount = <%= product.productImages.length %>;
+                    const deletedCount = deletedImages.length;
+                    const newImagesCount = currentFiles.files.length;
+                    const totalImages = existingImagesCount - deletedCount + newImagesCount;
+
+                    if (totalImages < 3) {
+                        e.preventDefault();
+                        // Use SweetAlert2 if available, otherwise standard alert
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Error',
+                                text: 'Product must have at least 3 images.',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            alert('Product must have at least 3 images.');
+                        }
+                    }
+                });
             </script>
     </body>
 

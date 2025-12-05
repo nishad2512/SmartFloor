@@ -1,8 +1,8 @@
-import User from "../models/userModel.js";
-import { createToken, maxAge } from "../utils/generateToken.js";
+import User from "../../models/userModel.js";
+import { createToken, maxAge } from "../../utils/generateToken.js";
 import crypto from "crypto";
-import { sendOTPEmail, sendResetEmail } from "../utils/email.js";
-import { createHash, compare } from "../services/authServices.js";
+import { sendOTPEmail, sendResetEmail } from "../../utils/email.js";
+import { createHash, compare } from "../../services/authServices.js";
 
 function generateOtp() {
     return crypto.randomInt(100000, 999999).toString();
@@ -40,6 +40,7 @@ export const signup = async (req, res) => {
         }
         const otp = generateOtp();
         sendOTPEmail(email, otp);
+        console.log("Generated OTP:", otp);
         req.session.otp = otp;
         req.session.expires = Date.now() + 60 * 1000;
         req.session.user = {
@@ -56,7 +57,7 @@ export const signup = async (req, res) => {
 };
 
 export const otp = (req, res) => {
-    res.render("user/otp", {
+    res.render("user/auth/otp", {
         expiry: req.session.expires,
         email: req.session.user.email,
     });
@@ -127,7 +128,7 @@ export const logout = (req, res) => {
 };
 
 export const forgot = (req, res) => {
-    res.render("user/forgot");
+    res.render("user/auth/forgot");
 };
 
 export const reset = async (req, res) => {
