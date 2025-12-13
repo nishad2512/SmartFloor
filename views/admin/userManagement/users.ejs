@@ -76,6 +76,9 @@
                                             class="border-b border-t border-[#e0e0e0] dark:border-primary/20"
                                         >
                                             <th class="px-6 py-3 font-medium">
+                                                Avatar
+                                            </th>
+                                            <th class="px-6 py-3 font-medium">
                                                 Name
                                             </th>
                                             <th class="px-6 py-3 font-medium">
@@ -96,6 +99,20 @@
                                             <td
                                                 class="px-6 py-4 font-medium text-[#141414] dark:text-white"
                                             >
+                                            <% if (user.avatar) { %>
+                                                <img src="<%= user.avatar %>" alt="Profile pic" class="rounded-full size-12">
+                                            <% } else { %>
+                                                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700">
+                                                    <span
+                                                        class="material-symbols-outlined text-lg text-gray-600 dark:text-gray-300"
+                                                        >person</span
+                                                    >
+                                                </div>
+                                            <% } %>
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 font-medium text-[#141414] dark:text-white"
+                                            >
                                                 <%= user.name %>
                                             </td>
                                             <td
@@ -108,29 +125,33 @@
                                                     class="flex justify-center gap-2"
                                                 >
                                                     <% if (user.isBlocked) { %>
-                                                    <a
-                                                        onclick="confirmUnblock()"
-                                                        href="/admin/customers/unblock/<%= user._id %>"
-                                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-green-600 dark:text-green-400 bg-green-500/10 hover:bg-green-500/20"
-                                                    >
-                                                        <span
-                                                            class="material-symbols-outlined text-base"
-                                                            >check_circle</span
-                                                        >
-                                                        Unblock
-                                                    </a>
+                                                        <form action="/admin/customers/block/<%= user._id %>?block=false&_method=PUT" method="post">
+                                                            <button
+                                                                type="submit"
+                                                                onclick="confirmUnblock(event, this.form.action)"
+                                                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-green-600 dark:text-green-400 bg-green-500/10 hover:bg-green-500/20"
+                                                            >
+                                                                <span
+                                                                    class="material-symbols-outlined text-base"
+                                                                    >check_circle</span
+                                                                >
+                                                                Unblock
+                                                            </button>
+                                                        </form>
                                                     <% } else { %>
-                                                    <a
-                                                        onclick="confirmBlock()"
-                                                        href="/admin/customers/block/<%= user._id %>"
-                                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20"
-                                                    >
-                                                        <span
-                                                            class="material-symbols-outlined text-base"
-                                                            >block</span
-                                                        >
-                                                        Block
-                                                    </a>
+                                                        <form action="/admin/customers/block/<%= user._id %>?block=true&_method=PUT" method="post">
+                                                            <button
+                                                                type="submit"
+                                                                onclick="confirmBlock(event, this.form.action)"
+                                                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20"
+                                                            >
+                                                                <span
+                                                                    class="material-symbols-outlined text-base"
+                                                                    >block</span
+                                                                >
+                                                                Block
+                                                            </button>
+                                                        </form>
                                                     <% } %>
                                                 </div>
                                             </td>
@@ -142,6 +163,7 @@
                             <div
                                 class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20"
                             >
+                                <span>Page <%= page %> of <%= totalPages %></span>
                                 <div class="flex gap-2 items-center">
                                     <a
                                         class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50"
@@ -163,15 +185,39 @@
             </div>
         </div>
         <script>
-            const confirmBlock = () => {
-                if (!confirm(`Are you sure you want to block this user?`)) {
-                    event.preventDefault();
-                }
+            function confirmBlock(e, url) {
+                e.preventDefault();
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You can revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, block it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = e.target.closest("form");
+                        form.submit();
+                    }
+                });
             };
-            const confirmUnblock = () => {
-                if (!confirm(`Are you sure you want to unblock this user?`)) {
-                    event.preventDefault();
-                }
+            function confirmUnblock(e, url) {
+                e.preventDefault();
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You can revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Unblock it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = e.target.closest("form");
+                        form.submit();
+                    }
+                });
             };
         </script>
     </body>

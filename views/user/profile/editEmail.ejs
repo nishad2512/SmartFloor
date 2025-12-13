@@ -65,21 +65,21 @@
                             <h1
                                 class="text-zinc-900 dark:text-zinc-100 tracking-light text-[28px] font-bold leading-tight text-center"
                             >
-                                Reset Your Password
+                                Change your Email
                             </h1>
                             <p
                                 class="text-zinc-600 dark:text-zinc-400 text-base font-normal leading-normal text-center"
                             >
-                                Enter your email address and we'll send you a
-                                link to reset your password.
+                                Enter your new email address and we'll send you a
+                                otp to verify that email.
                             </p>
                         </div>
                         <div class="flex w-full flex-col items-center gap-4">
-                            <form action="/forgot-password" method="post">
-                                <div class="flex w-full flex-col gap-4">
-                                    <label class="flex w-full flex-col">
+                            <form action="/profile/new-mail?_method=patch" method="post" class="flex w-full flex-col gap-6">
+                                <div class="flex w-full flex-col gap-6">
+                                    <label class="flex w-full flex-col gap-3">
                                         <p
-                                            class="text-zinc-900 dark:text-zinc-100 text-sm font-medium leading-normal pb-2"
+                                            class="text-zinc-900 dark:text-zinc-100 text-sm font-medium leading-normal"
                                         >
                                             Email Address
                                         </p>
@@ -101,15 +101,6 @@
                                     >
                                 </button>
                             </form>
-                        </div>
-                        <div
-                            class="flex w-full items-center justify-center pt-2"
-                        >
-                            <a
-                                class="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors duration-200"
-                                href="/login"
-                                >Remember your password? Login</a
-                            >
                         </div>
                     </div>
                 </div>

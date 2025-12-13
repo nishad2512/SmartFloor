@@ -10,6 +10,14 @@ const productSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        specifications: {
+            type: [String],
+            default: ["There are no specifications available."],
+        },
+        highlights: {
+            type: [String],
+            default: ["There are no highlights available."],
+        },
         category: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",

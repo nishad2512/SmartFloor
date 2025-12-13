@@ -1,0 +1,97 @@
+<%- include("../../partials/header.ejs") %>
+
+    <div class="flex flex-col md:flex-row gap-[200px] py-12 min-h-[90vh]">
+        <!-- Sidebar -->
+        <%- include("../../partials/user-sidebar.ejs") %>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-4xl">
+            <div class="mb-10">
+                <h2 class="text-4xl font-extrabold text-[#1A1A1A] mb-3">My Details</h2>
+                <p class="text-gray-500 text-base">Manage your personal information.</p>
+            </div>
+
+            <div class="space-y-12">
+                <!-- Contact Info -->
+                <section>
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                        <h3 class="text-xl font-bold text-[#1A1A1A]">Contact Information</h3>
+                    </div>
+                    <div
+                        class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-lg transition-shadow duration-300 mb-6">
+                        <div class="flex items-center gap-5 w-full">
+                            <div
+                                class="size-12 rounded-full bg-gray-50 flex items-center justify-center shrink-0 text-[#1A1A1A]">
+                                <img src="<%= user.avatar ? user.avatar : 'https://picsum.photos/100/100' %>" class="rounded-full" alt="profile photo">
+                            </div>
+                            <div>
+                                <p class="text-[#1A1A1A] font-bold text-base"><%= user.name %></p>
+                                <p class="text-gray-500 text-sm"><%= user.phone ? user.phone : 'Register a mobile number!' %></p>
+                            </div>
+                        </div>
+                        <a
+                            href="/profile/details/edit"
+                            class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-colors shrink-0">
+                            Edit
+                        </a>
+                    </div>
+                    <div
+                        class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-lg transition-shadow duration-300">
+                        <a
+                            href="/profile/change-mail"
+                            class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-colors shrink-0">
+                            Change Email
+                        </a>
+                        <% if (!isGoogle) { %>
+                            <a
+                                href="/forgot-password"
+                                class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-colors shrink-0">
+                                Forgot Password
+                            </a>
+                        <% } %>
+                    </div>
+                </section>
+
+                <!-- Addresses -->
+                <section>
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                        <h3 class="text-xl font-bold text-[#1A1A1A]">Addresses</h3>
+                        <button
+                            class="px-5 py-2.5 rounded-full bg-black text-white text-sm font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-black/20">
+                            Add New
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-5 w-full">
+                                <div
+                                    class="size-12 rounded-full bg-gray-50 flex items-center justify-center shrink-0 text-[#1A1A1A]">
+                                    <i class="ph-bold ph-truck text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[#1A1A1A] font-bold text-base mb-1">Primary Shipping Address</p>
+                                    <p class="text-gray-500 text-sm leading-relaxed">
+                                        123 Market St, San Francisco, CA 94103
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-colors shrink-0">
+                                Edit
+                            </button>
+                        </div>
+
+                        </div>
+                </section>
+
+                <!-- Billing Info -->
+            </div>
+        </main>
+    </div>
+
+    </div> <!-- Close the header container -->
+    <%- include("../../partials/footer.ejs") %>
+        </body>
+
+        </html>

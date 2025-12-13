@@ -1,255 +1,385 @@
 <%- include('../../partials/header.ejs') %>
 
-<main class="w-full max-w-[1680px] mx-auto px-6 2xl:px-0 mt-8 mb-20">
-    
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-24">
-        
-        <div class="space-y-4">
-            <div class="w-full h-[500px] lg:h-[700px] bg-[#F5F5F5] rounded-[2rem] overflow-hidden relative group">
-                <img id="mainImage" src="<%= product.productImages[0] %>" alt="<%= product.name %>" class="w-full h-full object-cover transition duration-500">
-                <button class="absolute top-6 right-6 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition shadow-sm">
-                    <i class="ph-bold ph-heart text-xl"></i>
-                </button>
+    <main class="w-full max-w-[1680px] mx-auto px-6 2xl:px-0 mt-8 mb-20">
+        <div class="container mx-auto px-4 mt-8 mb-4">
+            <nav class="text-sm font-medium" aria-label="Breadcrumb">
+                <ol class="list-none p-0 inline-flex space-x-2 text-gray-500">
+
+                    <li class="flex items-center">
+                        <a href="/" class="hover:text-black transition">
+                            <i class="ph-bold ph-house text-lg mr-1"></i>
+                            Home
+                        </a>
+                        <span class="mx-2 text-gray-300">/</span>
+                    </li>
+                    <li class="flex items-center">
+                        <a href="/products" class="hover:text-black transition">
+                            Products
+                        </a>
+                        <span class="mx-2 text-gray-300">/</span>
+                    </li>
+
+                    <%  if (product &&
+                        product.category) { %>
+                        <li class="flex items-center">
+                            <a href="/products/<%= product.category.name.toLowerCase() %>"
+                                class="hover:text-black transition capitalize">
+                                <%= product.category.name %>
+                            </a>
+                            <span class="mx-2 text-gray-300">/</span>
+                        </li>
+                        <% } %>
+
+                            <li class="text-gray-900 truncate max-w-xs">
+                                <%= product.name %>
+                            </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-24">
+
+            <div class="space-y-4">
+                <div id="mainImageContainer"
+                    class="w-full h-[500px] lg:h-[700px] bg-[#F5F5F5] rounded-[2rem] overflow-hidden relative group cursor-zoom-in">
+
+                    <img id="mainImage" src="<%= product.productImages[0] %>" alt="<%= product.name %>"
+                        class="w-full h-full object-cover transition-transform duration-200 ease-out origin-center"
+                        style="will-change: transform;">
+
+                    <button
+                        class="absolute top-6 right-6 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition shadow-sm z-10">
+                        <i class="ph-bold ph-heart text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-4 gap-4">
+                    <% product.productImages.forEach((img, index)=> { %>
+                        <div onclick="changeImage('<%= img %>')"
+                            class="h-24 md:h-32 bg-[#F5F5F5] rounded-2xl overflow-hidden cursor-pointer border-2 border-transparent hover:border-black transition <%= index === 0 ? 'border-black' : '' %> thumbnail-container">
+                            <img src="<%= img %>" class="w-full h-full object-cover">
+                        </div>
+                        <% }) %>
+                </div>
             </div>
 
-            <div class="grid grid-cols-4 gap-4">
-                <% product.productImages.forEach((img, index) => { %>
-                <div onclick="changeImage(this.src)" class="h-24 md:h-32 bg-[#F5F5F5] rounded-2xl overflow-hidden cursor-pointer border-2 border-transparent hover:border-black transition <%= index === 0 ? 'border-black' : '' %> thumbnail-container">
-                    <img src="<%= img %>" class="w-full h-full object-cover">
+            <div class="flex flex-col h-full pt-4">
+
+                <h1 class="text-3xl md:text-5xl font-extrabold text-[#1A1A1A] tracking-tight mb-4 leading-tight">
+                    <%= product.name %>
+                </h1>
+                <p class="text-[#757575] text-base leading-relaxed mb-8">
+                    <%= product.description %>
+                </p>
+
+                <div class="mb-8">
+                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price %>
+                    </span>
+                    <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
+                    <div id="stockInfo"
+                        class="mt-2 text-sm font-bold <%= product.variants[0].stock > 0 ? 'text-green-600' : 'text-red-600' %>">
+                        <%= product.variants[0].stock> 0 ? `In Stock: ${product.variants[0].stock}` : "Out of Stock" %>
+                    </div>
                 </div>
-                <% }) %>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-[#1A1A1A] mb-3">Size:</label>
+                    <div class="flex flex-wrap gap-3">
+                        <% product.variants.forEach((variant, index)=> { %>
+                            <button
+                                onclick="selectVariant(this, '<%= variant.price %>', '<%= variant._id %>', '<%= variant.stock %>')"
+                                class="variant-btn px-6 py-3 rounded-full border text-sm font-bold transition <%= index === 0 ? 'bg-black text-white border-black' : 'border-gray-300 text-[#1A1A1A] hover:border-black' %>"
+                                data-price="<%= variant.price %>">
+                                <%= variant.size %>
+                            </button>
+                            <% }) %>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-[#1A1A1A] mb-3">Quantity (sq ft):</label>
+                    <div class="flex flex-wrap items-center gap-6">
+                        <div class="flex items-center border border-gray-300 rounded-full px-4 py-2">
+                            <button onclick="updateQuantity(-1)"
+                                class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">-</button>
+                            <input type="number" id="quantityInput" value="100" name="quantity"
+                                class="w-16 text-center font-bold outline-none appearance-none"
+                                onchange="calculateTotal()">
+                            <button onclick="updateQuantity(1)"
+                                class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">+</button>
+                        </div>
+
+                        <div class="text-lg font-bold">
+                            Total: <span id="totalPrice">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mb-4">
+                    <button id="viewInYourPlaceBtn"
+                        class="flex-1 py-4 rounded-full border border-black font-bold text-[#1A1A1A] hover:bg-gray-50 transition">
+                        View in Your Place
+                    </button>
+                    <button id="addToCartBtn"
+                        class="flex-1 py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition flex items-center justify-center gap-2">
+                        Add to Cart
+                    </button>
+                </div>
+                <button id="buyNowBtn"
+                    class="w-full py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition mb-12">
+                    Buy Now
+                </button>
+
+                <div class="border-t border-gray-200">
+                    <div class="border-b border-gray-200">
+                        <button onclick="toggleAccordion('specs')"
+                            class="w-full py-5 flex justify-between items-center text-left font-bold text-[#1A1A1A]">
+                            Specifications
+                            <i id="icon-specs"
+                                class="ph-bold ph-caret-down text-lg transition-transform duration-300"></i>
+                        </button>
+                        <div id="content-specs" class="hidden pb-6 text-gray-500 text-sm leading-relaxed">
+                            <div class="grid grid-cols-2 gap-y-2">
+                                <% product.specifications.forEach(spec=> { %>
+                                    <div class="flex gap-4">
+                                        <div class="text-black font-medium">
+                                            <%= spec %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200">
+                    <div class="border-b border-gray-200">
+                        <button onclick="toggleAccordion('highlights')"
+                            class="w-full py-5 flex justify-between items-center text-left font-bold text-[#1A1A1A]">
+                            Highlights
+                            <i id="icon-highlights"
+                                class="ph-bold ph-caret-down text-lg transition-transform duration-300"></i>
+                        </button>
+                        <div id="content-highlights" class="hidden pb-6 text-gray-500 text-sm leading-relaxed">
+                            <div class="grid grid-cols-2 gap-y-2">
+                                <% product.highlights.forEach(highlight=> { %>
+                                    <div class="flex gap-4">
+                                        <div class="text-black font-medium">
+                                            <%= highlight %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="flex flex-col h-full pt-4">
-            
-            <h1 class="text-3xl md:text-5xl font-extrabold text-[#1A1A1A] tracking-tight mb-4 leading-tight">
-                <%= product.name %>
-            </h1>
-            <p class="text-[#757575] text-base leading-relaxed mb-8">
-                <%= product.description %>
-            </p>
-
-            <div class="mb-8">
-                <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price %></span>
-                <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
+        <div class="mb-24">
+            <h3 class="text-2xl font-bold mb-8">Customer Reviews</h3>
+            <div class="flex items-center gap-4 mb-8">
+                <div class="flex text-black">
+                    <i class="ph-fill ph-star text-lg"></i>
+                    <i class="ph-fill ph-star text-lg"></i>
+                    <i class="ph-fill ph-star text-lg"></i>
+                    <i class="ph-fill ph-star text-lg"></i>
+                    <i class="ph-bold ph-star text-lg"></i>
+                </div>
+                <span class="text-sm text-gray-500">Based on 42 reviews</span>
             </div>
 
-            <div class="mb-8">
-                <label class="block text-sm font-bold text-[#1A1A1A] mb-3">Size:</label>
-                <div class="flex flex-wrap gap-3">
-                    <% product.variants.forEach((variant, index) => { %>
-                    <button 
-                        onclick="selectVariant(this, '<%= variant.price %>', '<%= variant._id %>', '<%= variant.stock %>')"
-                        class="variant-btn px-6 py-3 rounded-full border text-sm font-bold transition <%= index === 0 ? 'bg-black text-white border-black' : 'border-gray-300 text-[#1A1A1A] hover:border-black' %>"
-                        data-price="<%= variant.price %>">
-                        <%= variant.size %>
-                    </button>
+            <div class="border-b border-gray-100 pb-8 mb-8">
+                <div class="flex text-xs text-black mb-2 gap-1">
+                    <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i
+                        class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-2">Absolutely beautiful flooring!</h4>
+                <p class="text-gray-500 text-sm mb-2">The quality is top-notch and it completely transformed our living
+                    room. The natural grain is stunning.</p>
+                <span class="text-xs text-gray-400">Jane D. on Oct 24, 2025</span>
+            </div>
+            <div class="border-b border-gray-100 pb-8 mb-8">
+                <div class="flex text-xs text-black mb-2 gap-1">
+                    <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i
+                        class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-2">Absolutely beautiful flooring!</h4>
+                <p class="text-gray-500 text-sm mb-2">The quality is top-notch and it completely transformed our living
+                    room. The natural grain is stunning.</p>
+                <span class="text-xs text-gray-400">Jane D. on Oct 24, 2025</span>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-bold mb-8">You Might Also Like</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% relatedProducts.forEach(relProduct=> { %>
+                    <div class="group cursor-pointer">
+                        <div class="h-[350px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
+                            <img src="<%= relProduct.productImages[0] %>"
+                                class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
+                                <span class="font-bold text-base text-[#1A1A1A]">
+                                    <%= relProduct.name %>
+                                </span>
+                                <span class="font-bold text-base text-[#1A1A1A]">₹<%= relProduct.variants[0].price %>
+                                </span>
+                            </div>
+                            <a href="/products/product/<%= relProduct._id %>"
+                                class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
+                                <i class="ph-bold ph-arrow-up-right text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
                     <% }) %>
-                </div>
-            </div>
-
-            <div class="mb-8">
-                <label class="block text-sm font-bold text-[#1A1A1A] mb-3">Quantity (sq ft):</label>
-                <div class="flex flex-wrap items-center gap-6">
-                    <div class="flex items-center border border-gray-300 rounded-full px-4 py-2">
-                        <button onclick="updateQuantity(-1)" class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">-</button>
-                        <input type="number" id="quantityInput" value="100" name="quantity" class="w-16 text-center font-bold outline-none appearance-none" onchange="calculateTotal()">
-                        <button onclick="updateQuantity(1)" class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">+</button>
-                    </div>
-                    
-                    <div class="text-lg font-bold">
-                        Total: <span id="totalPrice">$0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-4 mb-4">
-                <button class="flex-1 py-4 rounded-full border border-black font-bold text-[#1A1A1A] hover:bg-gray-50 transition">
-                    View in Your Place
-                </button>
-                <button onclick="addToCart()" class="flex-1 py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition flex items-center justify-center gap-2">
-                    Add to Cart
-                </button>
-            </div>
-            <button class="w-full py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition mb-12">
-                Buy Now
-            </button>
-
-            <div class="border-t border-gray-200">
-                <div class="border-b border-gray-200">
-                    <button onclick="toggleAccordion('specs')" class="w-full py-5 flex justify-between items-center text-left font-bold text-[#1A1A1A]">
-                        Specifications
-                        <i id="icon-specs" class="ph-bold ph-caret-down text-lg transition-transform duration-300"></i>
-                    </button>
-                    <div id="content-specs" class="hidden pb-6 text-gray-500 text-sm leading-relaxed">
-                        <div class="grid grid-cols-2 gap-y-2">
-                             <div>Material: <span class="text-black font-medium">Engineered Wood</span></div>
-                             <div>Finish: <span class="text-black font-medium">Matte</span></div>
-                             <div>Thickness: <span class="text-black font-medium">12mm</span></div>
-                             <div>Usage: <span class="text-black font-medium">Indoor</span></div>
-                         </div>
-                    </div>
-                </div>
-                
-                <div class="border-b border-gray-200">
-                    <button onclick="toggleAccordion('install')" class="w-full py-5 flex justify-between items-center text-left font-bold text-[#1A1A1A]">
-                        Installation Guides
-                        <i id="icon-install" class="ph-bold ph-caret-down text-lg transition-transform duration-300"></i>
-                    </button>
-                    <div id="content-install" class="hidden pb-6 text-gray-500 text-sm">
-                        Installation guide content goes here...
-                    </div>
-                </div>
-
-                <div class="border-b border-gray-200">
-                    <button onclick="toggleAccordion('shipping')" class="w-full py-5 flex justify-between items-center text-left font-bold text-[#1A1A1A]">
-                        Shipping & Returns
-                        <i id="icon-shipping" class="ph-bold ph-caret-down text-lg transition-transform duration-300"></i>
-                    </button>
-                    <div id="content-shipping" class="hidden pb-6 text-gray-500 text-sm">
-                        Shipping policy content goes here...
-                    </div>
-                </div>
             </div>
         </div>
+
+    </main>
+
     </div>
 
-    <div class="mb-24">
-        <h3 class="text-2xl font-bold mb-8">Customer Reviews</h3>
-        <div class="flex items-center gap-4 mb-8">
-            <div class="flex text-black">
-                <i class="ph-fill ph-star text-lg"></i>
-                <i class="ph-fill ph-star text-lg"></i>
-                <i class="ph-fill ph-star text-lg"></i>
-                <i class="ph-fill ph-star text-lg"></i>
-                <i class="ph-bold ph-star text-lg"></i> </div>
-            <span class="text-sm text-gray-500">Based on 42 reviews</span>
-        </div>
+    <%- include('../../partials/footer.ejs') %>
 
-        <div class="border-b border-gray-100 pb-8 mb-8">
-            <div class="flex text-xs text-black mb-2 gap-1">
-                <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
-            </div>
-            <h4 class="font-bold text-sm mb-2">Absolutely beautiful flooring!</h4>
-            <p class="text-gray-500 text-sm mb-2">The quality is top-notch and it completely transformed our living room. The natural grain is stunning.</p>
-            <span class="text-xs text-gray-400">Jane D. on Oct 24, 2025</span>
-        </div>
-    </div>
+        </body>
 
-    <div>
-        <h3 class="text-2xl font-bold mb-8">You Might Also Like</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <% relatedProducts.forEach(relProduct => { %>
-            <div class="group cursor-pointer">
-                <div class="h-[350px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="<%= relProduct.productImages[0] %>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]"><%= relProduct.name %></span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$<%= relProduct.variants[0].price %></span>
-                    </div>
-                    <a href="/products/<%= relProduct._id %>" class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
-                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
-                    </a>
-                </div>
-            </div>
-            <% }) %>
-        </div>
-    </div>
+        <script>
+            // --- STATE MANAGEMENT ---
+            let currentPrice = '<%= product.variants[0].price %>';
+            let currentVariantId = '<%= product.variants[0]._id %>';
+            let currentStock = '<%= product.variants[0].stock %>';
+            const productId = '<%= product._id %>';
 
-</main>
+            // Initialize
+            document.addEventListener('DOMContentLoaded', () => {
+                calculateTotal();
+                checkStock();
+            });
 
-</div>
+            // --- IMAGE GALLERY ---
+            function changeImage(src) {
+                // Update Main Image
+                const mainImg = document.getElementById('mainImage');
+                mainImg.style.opacity = '0'; // Fade out effect
+                setTimeout(() => {
+                    mainImg.src = src;
+                    mainImg.style.opacity = '1';
+                }, 200);
 
-<%- include('../../partials/footer.ejs') %>
-
-</body>
-
-<script>
-    // --- STATE MANAGEMENT ---
-    let currentPrice = <%= product.variants[0].price %>;
-    let currentVariantId = '<%= product.variants[0]._id %>';
-    const productId = '<%= product._id %>';
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-        calculateTotal();
-    });
-
-    // --- IMAGE GALLERY ---
-    function changeImage(src) {
-        // Update Main Image
-        const mainImg = document.getElementById('mainImage');
-        mainImg.style.opacity = '0'; // Fade out effect
-        setTimeout(() => {
-            mainImg.src = src;
-            mainImg.style.opacity = '1';
-        }, 200);
-
-        // Update Thumbnail Borders
-        const thumbs = document.querySelectorAll('.thumbnail-container');
-        thumbs.forEach(thumb => {
-            if(thumb.querySelector('img').src === src) {
-                thumb.classList.add('border-black');
-            } else {
-                thumb.classList.remove('border-black');
+                // Update Thumbnail Borders
+                const thumbs = document.querySelectorAll('.thumbnail-container');
+                thumbs.forEach(thumb => {
+                    if (thumb.querySelector('img').src === src) {
+                        thumb.classList.add('border-black');
+                    } else {
+                        thumb.classList.remove('border-black');
+                    }
+                });
             }
-        });
-    }
 
-    // --- VARIANT SELECTION ---
-    function selectVariant(btn, price, id, stock) {
-        // Update State
-        currentPrice = parseFloat(price);
-        currentVariantId = id;
+            // --- VARIANT SELECTION ---
+            function selectVariant(btn, price, id, stock) {
+                // Update State
+                currentPrice = parseFloat(price);
+                currentVariantId = id;
+                currentStock = parseInt(stock);
 
-        // Update UI Text
-        document.getElementById('displayPrice').innerText = '$' + currentPrice;
-        
-        // Update Buttons Styling
-        document.querySelectorAll('.variant-btn').forEach(b => {
-            b.classList.remove('bg-black', 'text-white', 'border-black');
-            b.classList.add('border-gray-300', 'text-[#1A1A1A]');
-        });
-        btn.classList.remove('border-gray-300', 'text-[#1A1A1A]');
-        btn.classList.add('bg-black', 'text-white', 'border-black');
+                checkStock();
 
-        // Recalculate Total
-        calculateTotal();
-    }
+                // Update UI Text
+                document.getElementById('displayPrice').innerText = '₹' + currentPrice;
 
-    // --- QUANTITY LOGIC ---
-    function updateQuantity(change) {
-        const input = document.getElementById('quantityInput');
-        let newVal = parseInt(input.value) + change;
-        if(newVal < 1) newVal = 1;
-        input.value = newVal;
-        calculateTotal();
-    }
+                // Update Buttons Styling
+                document.querySelectorAll('.variant-btn').forEach(b => {
+                    b.classList.remove('bg-black', 'text-white', 'border-black');
+                    b.classList.add('border-gray-300', 'text-[#1A1A1A]');
+                });
+                btn.classList.remove('border-gray-300', 'text-[#1A1A1A]');
+                btn.classList.add('bg-black', 'text-white', 'border-black');
 
-    function calculateTotal() {
-        const qty = parseInt(document.getElementById('quantityInput').value);
-        const total = (currentPrice * qty).toFixed(2);
-        
-        // Format with commas for thousands
-        const formatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(total);
-        document.getElementById('totalPrice').innerText = formatted;
-    }
+                // Recalculate Total
+                calculateTotal();
+            }
 
-    // --- ACCORDION ---
-    function toggleAccordion(id) {
-        const content = document.getElementById('content-' + id);
-        const icon = document.getElementById('icon-' + id);
-        
-        if (content.classList.contains('hidden')) {
-            content.classList.remove('hidden');
-            icon.style.transform = 'rotate(180deg)';
-        } else {
-            content.classList.add('hidden');
-            icon.style.transform = 'rotate(0deg)';
-        }
-    }
-</script>
-</html>
+            function checkStock() {
+                const stockInfo = document.getElementById('stockInfo');
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                const buyNowBtn = document.getElementById('buyNowBtn');
+                const viewInYourPlaceBtn = document.getElementById('viewInYourPlaceBtn');
+
+                if (currentStock > 0) {
+                    stockInfo.innerText = `In Stock: ${currentStock}`;
+                    stockInfo.className = 'mt-2 text-sm font-bold text-green-600';
+                    addToCartBtn.style.display = 'flex';
+                    buyNowBtn.style.display = 'block';
+                    viewInYourPlaceBtn.style.display = 'block';
+                } else {
+                    stockInfo.innerText = "Out of Stock";
+                    stockInfo.className = 'mt-2 text-sm font-bold text-red-600';
+                    addToCartBtn.style.display = 'none';
+                    buyNowBtn.style.display = 'none';
+                }
+            }
+
+            // --- QUANTITY LOGIC ---
+            function updateQuantity(change) {
+                const input = document.getElementById('quantityInput');
+                let newVal = parseInt(input.value) + change;
+                if (newVal < 1) newVal = 1;
+                input.value = newVal;
+                calculateTotal();
+            }
+
+            function calculateTotal() {
+                const qty = parseInt(document.getElementById('quantityInput').value);
+                const total = (currentPrice * qty).toFixed(2);
+
+                // Format with commas for thousands
+                const formatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(total);
+                document.getElementById('totalPrice').innerText = formatted;
+            }
+
+            // --- ACCORDION ---
+            function toggleAccordion(id) {
+                const content = document.getElementById('content-' + id);
+                const icon = document.getElementById('icon-' + id);
+
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    content.classList.add('hidden');
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+            const container = document.getElementById('mainImageContainer');
+            const img = document.getElementById('mainImage');
+
+            container.addEventListener('mousemove', (e) => {
+                // 1. Get container dimensions
+                const { left, top, width, height } = container.getBoundingClientRect();
+
+                // 2. Calculate mouse position as percentage (0-100)
+                const x = ((e.clientX - left) / width) * 100;
+                const y = ((e.clientY - top) / height) * 100;
+
+                // 3. Move the focus point (origin) to where the mouse is
+                img.style.transformOrigin = `${x}% ${y}%`;
+
+                // 4. Zoom in
+                img.style.transform = 'scale(2)'; // Change to 2.5 for stronger zoom
+            });
+
+            container.addEventListener('mouseleave', () => {
+                // Reset when mouse leaves
+                img.style.transformOrigin = 'center center';
+                img.style.transform = 'scale(1)';
+            });
+        </script>
+
+        </html>

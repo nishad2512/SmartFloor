@@ -5,12 +5,12 @@ export const requireAuth = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (token) {
-        jwt.verify(token, "smart-floor", (err, decode) => {
+        jwt.verify(token, process.env.JWT_SECRET_USER, (err, decode) => {
             if (err) {
                 console.log(err.message);
                 res.redirect("/login");
             } else {
-                console.log(decode);
+                req.userId = decode.id;
                 next();
             }
         });
@@ -23,7 +23,7 @@ export const redirectIfLoggedIn = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (token) {
-        jwt.verify(token, "smart-floor", (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET_USER, (err, decodedToken) => {
             if (err) {
                 next();
             } else {
@@ -47,6 +47,7 @@ export const checkUser = (req, res, next) => {
                 if (user && user.isBlocked) {
                     res.clearCookie("jwt");
                     res.locals.user = null;
+                    req.flash("error", "Your account has been blocked. Please contact support.");
                     next();
                 } else {
                     res.locals.user = user;

@@ -25,8 +25,11 @@
     "mongoose": "^9.0.0",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
+    "nocache": "^4.0.0",
     "nodemailer": "^7.0.11",
+    "or": "^0.2.0",
     "passport": "^0.7.0",
-    "passport-google-oauth2": "^0.2.0"
+    "passport-google-oauth2": "^0.2.0",
+    "twilio": "^5.10.7"
   }
 }

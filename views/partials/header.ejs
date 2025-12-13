@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SmartFloor - Premium Flooring</title>
+        <link rel="icon" type="image/png" href="/images/favicon.png" />
 
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -75,11 +76,7 @@
                 </ul>
 
                 <div class="flex items-center gap-8">
-                    <% if (locals.category) { %>
-                    <form action="/products/<%= category %>" method="GET" class="relative">
-                    <% } else { %>
-                    <form action="/products" method="GET" class="relative">
-                    <% } %>
+                    <form action="/products<%= locals.category ? '/' + locals.category : '' %>" method="GET" class="relative">
                     <div
                         class="flex items-center bg-[#F5F5F5] hover:bg-[#EAEAEA] focus-within:bg-white focus-within:ring-1 focus-within:ring-black rounded-full transition-colors"
                     >
@@ -97,14 +94,29 @@
                             autocomplete="off"
                         />
 
-                        <button
-                            type="button"
-                            id="clearBtn"
+                        <a 
+                            href="/products<%= locals.category ? '/' + locals.category : '' %>" 
+                            id="clearBtn" 
                             class="pr-3 text-gray-400 hover:text-black"
                         >
                             <i class="ph-bold ph-x text-lg"></i>
-                        </button>
+                        </a>
                     </div>
+
+                    <% if (locals.query?.sort) { %>
+                        <input type="hidden" name="sort" value="<%= locals.query.sort %>">
+                    <% } %>
+
+                    <% if (locals.query?.minPrice) { %>
+                        <input type="hidden" name="minPrice" value="<%= locals.query.minPrice %>">
+                    <% } %>
+
+                    <% if (locals.query?.maxPrice) { %>
+                        <input type="hidden" name="maxPrice" value="<%= locals.query.maxPrice %>">
+                    <% } %>
+
+                    <!-- Reset pagination -->
+                    <input type="hidden" name="page" value="1">
                 </form>
 
                 <% if (!locals.user) { %>
@@ -122,9 +134,9 @@
                         <i class="ph-bold ph-heart text-2xl"></i>
                     </button>
 
-                    <button class="text-black hover:opacity-70 transition">
+                    <a href="/profile/details" id="userButton" class="text-black hover:opacity-70 transition">
                         <i class="ph-bold ph-user text-2xl"></i>
-                    </button>
+                    </a>
 
                     <button class="text-black hover:opacity-70 transition">
                         <i class="ph-bold ph-shopping-bag text-2xl"></i>
@@ -145,12 +157,4 @@
                         link.classList.add("text-black", "font-bold");
                     }
                 });
-
-                if (searchInput && clearBtn) {
-                    clearBtn.addEventListener("click", function () {
-                        searchInput.value = "";
-                        searchInput.focus();
-                        clearBtn.classList.add("hidden");
-                    });
-                }
             </script>

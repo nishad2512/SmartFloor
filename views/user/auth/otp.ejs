@@ -164,7 +164,7 @@
             let resend = document.getElementById("resend");
 
             countdown.textContent = timeleft;
-            resend.classList.add("pointer-events-none");
+            resend.classList.add("pointer-events-none", "opacity-50");
 
             function startTimer() {
                 // clearInterval(timer);
@@ -176,7 +176,7 @@
                     if (timeleft <= 0) {
                         clearInterval(timer);
                         countdown.textContent = 0;
-                        resend.classList.remove("pointer-events-none");
+                        resend.classList.remove("pointer-events-none", "opacity-50");
                     }
                 }, 1000);
             }

@@ -2,6 +2,8 @@
     <body
         class="bg-background-light dark:bg-background-dark font-display text-[#333333] dark:text-gray-200"
     >
+    
+    <%- include('../partials/flash') %>
         <div
             class="relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden p-4 group/design-root"
         >
@@ -58,28 +60,13 @@
                                     >
                                         Password
                                     </p>
-                                    <div
-                                        class="flex w-full flex-1 items-stretch"
-                                    >
-                                        <input
-                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-l-lg text-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:focus:ring-white/50 border border-r-0 border-[#D1D5DB] dark:border-gray-600 bg-white dark:bg-gray-800 focus:border-primary dark:focus:border-white h-14 placeholder:text-[#6B7280] p-[15px] pr-2 text-base font-normal leading-normal"
-                                            placeholder="Enter your password"
-                                            type="password"
-                                            value=""
-                                            name="password"
-                                        />
-                                        <div
-                                            class="text-[#6B7280] dark:text-gray-400 flex border border-l-0 border-[#D1D5DB] dark:border-gray-600 bg-white dark:bg-gray-800 items-center justify-center pr-[15px] rounded-r-lg"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined"
-                                                data-icon="Eye"
-                                                data-size="24px"
-                                                data-weight="regular"
-                                                >visibility</span
-                                            >
-                                        </div>
-                                    </div>
+                                    <input
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:focus:ring-white/50 border border-[#D1D5DB] dark:border-gray-600 bg-white dark:bg-gray-800 focus:border-primary dark:focus:border-white h-14 placeholder:text-[#6B7280] p-[15px] pr-2 text-base font-normal leading-normal"
+                                        placeholder="Enter your password"
+                                        type="password"
+                                        value=""
+                                        name="password"
+                                    />
                                 </label>
                             </div>
                             <div class="px-4 pt-6 pb-3">

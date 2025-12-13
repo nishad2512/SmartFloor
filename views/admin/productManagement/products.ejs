@@ -76,6 +76,9 @@
                                             class="border-b border-t border-[#e0e0e0] dark:border-primary/20"
                                         >
                                             <th class="px-6 py-3 font-medium">
+                                                Product Image
+                                            </th>
+                                            <th class="px-2 py-3 font-medium">
                                                 Product Name
                                             </th>
                                             <th class="px-6 py-3 font-medium">
@@ -103,8 +106,13 @@
                                         <tr
                                             class="border-b border-[#e0e0e0] dark:border-primary/20"
                                         >
+                                        <td
+                                                class="px-6 py-4 text-[#757575] dark:text-gray-400"
+                                            >
+                                                <img src="<%= product.productImages[0] %>" alt="<%= product.name %>" class="w-16 h-16 object-cover rounded">
+                                            </td>
                                             <td
-                                                class="<%= product.isActive ? '' : 'line-through' %> px-6 py-4 text-[#757575] dark:text-gray-400"
+                                                class="<%= product.isActive ? '' : 'line-through' %> px-2 py-4 text-[#757575] dark:text-gray-400"
                                             >
                                                 <%= product.name %>
                                             </td>
@@ -167,6 +175,7 @@
                             <div
                                 class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20"
                             >
+                                <span>Page <%= page %> of <%= totalPages %></span>
                                 <div class="flex gap-2 items-center">
                                     <a
                                         class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50"
