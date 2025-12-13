@@ -2,21 +2,23 @@ import jwt from "jsonwebtoken";
 import Admin from "../models/adminModel.js";
 
 export const checkAdmin = (req, res, next) => {
+    if (req.path === "/login") {
+        return next();
+    }
     const token = req.cookies["admin-jwt"];
     if (token) {
-        jwt.verify(token, "smartFloor-admin", async (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET_ADMIN, async (err, decodedToken) => {
             if (err) {
                 res.locals.admin = null;
-                next();
+                return res.redirect("/admin/login");
             } else {
-                let admin = await Admin.findById(decodedToken.id);
-                res.locals.admin = admin;
+                res.locals.admin = true;
                 next();
             }
         });
     } else {
         res.locals.admin = null;
-        next();
+        return res.redirect("/admin/login");
     }
 };
 
@@ -24,7 +26,7 @@ export const redirectIfLoggedIn = (req, res, next) => {
     const token = req.cookies["admin-jwt"];
 
     if (token) {
-        jwt.verify(token, "smartFloor-admin", (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET_ADMIN, (err, decodedToken) => {
             if (err) {
                 next();
             } else {

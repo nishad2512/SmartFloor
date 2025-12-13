@@ -34,9 +34,9 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.use(methodOverride('_method'));
 
-app.use("/", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
+app.use("/", userRoutes);
 
 app.use((req, res) => {
   res.status(404).render("404");

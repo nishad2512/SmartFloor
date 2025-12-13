@@ -1,4 +1,6 @@
 <%- include("../../partials/admin-header.ejs") %>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <body class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white">
         <%- include("../../partials/flash.ejs") %>
@@ -6,7 +8,7 @@
                 <div class="flex min-h-screen">
                     <%- include("../../partials/sidebar.ejs") %>
                         <main class="flex-1 p-6 lg:p-10">
-                            <div class="max-w-4xl mx-auto">
+                            <div class="w-full mx-auto">
                                 <div class="flex flex-wrap justify-between gap-4 items-center mb-6">
                                     <div class="flex flex-col gap-1">
                                         <p
@@ -19,141 +21,166 @@
                                         </p>
                                     </div>
                                 </div>
-                                <form action="/admin/products/edit/<%= product._id %>" method="post"
+                                <form action="/admin/products/edit/<%= product._id %>?_method=PATCH" method="post"
                                     enctype="multipart/form-data">
                                     <input type="hidden" name="deletedImages" id="deleted-images-input" value="[]">
-                                    <div class="flex flex-col gap-8">
-                                        <div
-                                            class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
-                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
-                                                <h2 class="text-lg font-bold tracking-[-0.015em]">
-                                                    Product Information
-                                                </h2>
-                                            </div>
-                                            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div class="md:col-span-2">
-                                                    <label
-                                                        class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
-                                                        for="product-name">Product Name</label>
-                                                    <input
-                                                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                                                        id="product-name" placeholder="e.g., Oak Hardwood Flooring"
-                                                        type="text" name="name" value="<%= product.name %>" />
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <div class="col-span-1 flex flex-col">
+                                            <div
+                                                class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                                <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                    <h2 class="text-lg font-bold tracking-[-0.015em]">
+                                                        Product Information
+                                                    </h2>
                                                 </div>
-                                                <div>
-                                                    <label
-                                                        class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
-                                                        for="category">Category</label>
-                                                    <select
-                                                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                                                        id="category" name="category">
-                                                        <option disabled>Select a category</option>
-                                                        <% categories.forEach(category=> { %>
-                                                            <option <%=category._id.equals(product.category._id)
-                                                                ? "selected" : "" %> value="<%= category._id %>">
-                                                                    <%= category.name %>
-                                                            </option>
-                                                            <% }) %>
-                                                    </select>
-                                                </div>
-                                                <div class="md:col-span-2">
-                                                    <label
-                                                        class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
-                                                        for="description">Product Description</label>
-                                                    <textarea
-                                                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                                                        id="description" placeholder="Describe the product details..."
-                                                        rows="4"
-                                                        name="description"><%= product.description %></textarea>
+                                                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div class="md:col-span-2">
+                                                        <label
+                                                            class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
+                                                            for="product-name">Product Name</label>
+                                                        <input
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                            id="product-name" placeholder="e.g., Oak Hardwood Flooring"
+                                                            type="text" name="name" value="<%= product.name %>" />
+                                                    </div>
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
+                                                            for="category">Category</label>
+                                                        <select
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                            id="category" name="category">
+                                                            <option disabled>Select a category</option>
+                                                            <% categories.forEach(category=> { %>
+                                                                <option <%=category._id.equals(product.category._id)
+                                                                    ? "selected" : "" %> value="<%= category._id %>">
+                                                                        <%= category.name %>
+                                                                </option>
+                                                                <% }) %>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
+                                                            for="specifications">Specifications</label>
+                                                        <input
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                            id="specifications"
+                                                            placeholder="e.g., Material, Finish, Thickness, Usage"
+                                                            value="<%= product.specifications.includes('There are no specifications available.') ? '' : product.specifications.join(', ') %>"
+                                                            type="text" name="specifications" />
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <label
+                                                            class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
+                                                            for="highlights">Highlights</label>
+                                                        <input
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                            id="highlights" placeholder="e.g., Rich Oak Finish"
+                                                            value="<%= product.highlights.includes('There are no highlights available.') ? '' : product.highlights.join(', ') %>"
+                                                            type="text" name="highlights" />
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <label
+                                                            class="block text-sm font-medium text-[#141414] dark:text-white mb-2"
+                                                            for="description">Product Description</label>
+                                                        <textarea
+                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                            id="description" placeholder="Describe the product details..."
+                                                            rows="4"
+                                                            name="description"><%= product.description %></textarea>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div
-                                            class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
-                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
-                                                <h2 class="text-lg font-bold tracking-[-0.015em]">
-                                                    Product Images
-                                                </h2>
-                                            </div>
-                                            <div class="p-6">
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">Product
-                                                    Images (Min 3)</label>
-                                                <input type="file" name="images" multiple accept="image/*"
-                                                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                    onchange="previewImages(event)" id="image-input">
-                                                <small class="text-gray-500">You can select multiple files at
-                                                    once.</small>
 
-                                                <div id="image-preview" class="flex gap-2 mt-4 overflow-x-auto p-2">
-                                                    <% product.productImages.forEach((image, index)=> { %>
-                                                        <div class="relative group shrink-0">
-                                                            <img src="<%= image %>"
-                                                                class="h-20 w-20 object-cover rounded border" />
-                                                            <button type="button"
-                                                                class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600 z-10"
-                                                                onclick="removeEditedImage(<%= index %>, this)">
+                                        <div class="col-span-1 flex flex-col gap-8">
+                                            <div
+                                                class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                                <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                    <h2 class="text-lg font-bold tracking-[-0.015em]">
+                                                        Product Images
+                                                    </h2>
+                                                </div>
+                                                <div class="p-6">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Product
+                                                        Images (Min 3)</label>
+                                                    <input type="file" name="images" multiple accept="image/*"
+                                                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                                        onchange="previewImages(event)" id="image-input">
+                                                    <small class="text-gray-500">You can select multiple files at
+                                                        once.</small>
+
+                                                    <div id="image-preview" class="flex gap-2 mt-4 overflow-x-auto p-2">
+                                                        <% product.productImages.forEach((image, index)=> { %>
+                                                            <div class="relative group shrink-0">
+                                                                <img src="<%= image %>"
+                                                                    class="h-20 w-20 object-cover rounded border" />
+                                                                <button type="button"
+                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600 z-10"
+                                                                    onclick="removeEditedImage('<%= index %>', this)">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-[10px] font-bold block">close</span>
+                                                                </button>
+                                                            </div>
+                                                        <% }) %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                                <div
+                                                    class="p-6 border-b border-[#e0e0e0] dark:border-primary/20 flex justify-between items-center">
+                                                    <div>
+                                                        <h2 class="text-lg font-bold tracking-[-0.015em]">
+                                                            Product Variants
+                                                        </h2>
+                                                        <p class="text-sm text-[#757575] dark:text-gray-400 mt-1">
+                                                            Specify different sizes for this
+                                                            product.
+                                                        </p>
+                                                    </div>
+                                                    <button type="button" onclick="addVariant()"
+                                                        class="flex items-center gap-2 bg-primary/5 dark:bg-primary/20 text-primary dark:text-white font-medium px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30 text-sm">
+                                                        <span class="material-symbols-outlined text-lg">add</span>
+                                                        Add Size
+                                                    </button>
+                                                </div>
+                                                <div class="p-6 space-y-4">
+                                                    <div
+                                                        class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center pb-2 border-b border-transparent">
+                                                        <label
+                                                            class="text-xs font-medium text-[#757575] dark:text-gray-400">Size
+                                                            (e.g., 6" x 48")</label>
+                                                        <label
+                                                            class="text-xs font-medium text-[#757575] dark:text-gray-400 text-center">Stock</label>
+                                                        <label
+                                                            class="text-xs font-medium text-[#757575] dark:text-gray-400 text-center">Price</label>
+                                                        <div class="w-8"></div>
+                                                    </div>
+                                                    <% product.variants.forEach(variant=> { %>
+                                                        <div id="variant-container"
+                                                            class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
+                                                            <input
+                                                                class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                                                                placeholder=' eg: 6" x 48"' type="text" name="size"
+                                                                value="<%= variant.size %>" />
+                                                            <input
+                                                                class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
+                                                                placeholder="eg: 50" type="number" name="stock"
+                                                                value="<%= variant.stock %>" />
+                                                            <input
+                                                                class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
+                                                                placeholder="eg: ₹5.99" type="text" name="price"
+                                                                value="<%= variant.price %>" />
+                                                            <button onclick="this.parentElement.remove()"
+                                                                class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full">
                                                                 <span
-                                                                    class="material-symbols-outlined text-[10px] font-bold block">close</span>
+                                                                    class="material-symbols-outlined text-xl">delete</span>
                                                             </button>
                                                         </div>
                                                         <% }) %>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
-                                            <div
-                                                class="p-6 border-b border-[#e0e0e0] dark:border-primary/20 flex justify-between items-center">
-                                                <div>
-                                                    <h2 class="text-lg font-bold tracking-[-0.015em]">
-                                                        Product Variants
-                                                    </h2>
-                                                    <p class="text-sm text-[#757575] dark:text-gray-400 mt-1">
-                                                        Specify different sizes for this
-                                                        product.
-                                                    </p>
-                                                </div>
-                                                <button type="button" onclick="addVariant()"
-                                                    class="flex items-center gap-2 bg-primary/5 dark:bg-primary/20 text-primary dark:text-white font-medium px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30 text-sm">
-                                                    <span class="material-symbols-outlined text-lg">add</span>
-                                                    Add Size
-                                                </button>
-                                            </div>
-                                            <div class="p-6 space-y-4">
-                                                <div
-                                                    class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center pb-2 border-b border-transparent">
-                                                    <label
-                                                        class="text-xs font-medium text-[#757575] dark:text-gray-400">Size
-                                                        (e.g., 6" x 48")</label>
-                                                    <label
-                                                        class="text-xs font-medium text-[#757575] dark:text-gray-400 text-center">Stock</label>
-                                                    <label
-                                                        class="text-xs font-medium text-[#757575] dark:text-gray-400 text-center">Price</label>
-                                                    <div class="w-8"></div>
-                                                </div>
-                                                <% product.variants.forEach(variant=> { %>
-                                                    <div id="variant-container"
-                                                        class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
-                                                        <input
-                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                                                            placeholder='eg: 6" x 48"' type="text" name="size"
-                                                            value="<%= variant.size %>" />
-                                                        <input
-                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
-                                                            placeholder="eg: 50" type="number" name="stock"
-                                                            value="<%= variant.stock %>" />
-                                                        <input
-                                                            class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
-                                                            placeholder="eg: ₹5.99" type="text" name="price"
-                                                            value="<%= variant.price %>" />
-                                                        <button
-                                                            onclick="this.parentElement.remove()"
-                                                            class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full">
-                                                            <span
-                                                                class="material-symbols-outlined text-xl">delete</span>
-                                                        </button>
-                                                    </div>
-                                                    <% }) %>
                                             </div>
                                         </div>
                                     </div>
@@ -172,142 +199,399 @@
                         </main>
                 </div>
             </div>
-            <script>
-                let currentFiles = new DataTransfer();
-                let deletedImages = [];
+            <!-- Cropper Modal -->
+            <div id="cropper-modal"
+                class="fixed inset-0 z-[60] hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+                <div
+                    class="bg-white dark:bg-[#1f1f1f] rounded-2xl p-6 w-full max-w-2xl shadow-2xl transform transition-all scale-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-[#141414] dark:text-white">Crop Image</h3>
+                        <button onclick="skipCrop()"
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
 
-                function previewImages(event) {
-                    const files = event.target.files;
-                    // Reset currentFiles to match the new selection (standard input behavior)
-                    // If you wanted to accumulate, you'd skip this and just append.
-                    currentFiles = new DataTransfer();
+                    <div
+                        class="relative w-full h-[400px] bg-[#f0f0f0] dark:bg-[#2a2a2a] rounded-xl overflow-hidden mb-6 group">
+                        <img id="cropper-image" src="" alt="To Crop"
+                            class="max-w-full h-full object-contain mx-auto block">
+                    </div>
 
-                    Array.from(files).forEach(file => {
-                        currentFiles.items.add(file);
-                    });
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button type="button" onclick="skipCrop()"
+                            class="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            Skip Cropping
+                        </button>
+                        <button type="button" onclick="saveCrop()"
+                            class="px-5 py-2.5 rounded-xl bg-primary text-white font-medium hover:opacity-90 transition-opacity flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]">crop</span>
+                            Crop & Save
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                    renderPreviews();
-                }
+        <script>
+            // Global state variables
+            let currentFiles = new DataTransfer();
+            let deletedImages = [];
+            let filesToProcess = [];
+            let cropper = null;
 
-                function renderPreviews() {
-                    const previewContainer = document.getElementById('image-preview');
-                    // Keep existing images, only clear new previews
-                    const newPreviews = previewContainer.querySelectorAll('.new-preview');
-                    newPreviews.forEach(el => el.remove());
+            // Get EJS variables for image handling
+            const initialExistingImagesCount = parseInt('<%= product.productImages.length %>', 10);
+            const imageInput = document.getElementById("image-input");
 
-                    // We need to append new previews after existing ones
-                    // But since we are clearing only new previews, we can just append
-
-                    Array.from(currentFiles.files).forEach((file, index) => {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            const div = document.createElement('div');
-                            div.className = "relative group shrink-0 new-preview"; // Add class to identify new previews
-
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            img.className = "h-20 w-20 object-cover rounded border";
-
-                            const btn = document.createElement('button');
-                            btn.type = "button";
-                            btn.className = "absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600 z-10";
-                            btn.innerHTML = '<span class="material-symbols-outlined text-[10px] font-bold block">close</span>';
-                            btn.onclick = (e) => {
-                                e.preventDefault();
-                                removeImage(index);
-                            };
-
-                            div.appendChild(img);
-                            div.appendChild(btn);
-                            previewContainer.appendChild(div);
-                        }
-                        reader.readAsDataURL(file);
-                    });
-                }
-
-                function removeImage(index) {
-                    const newDt = new DataTransfer();
-                    Array.from(currentFiles.files).forEach((file, i) => {
-                        if (i !== index) newDt.items.add(file);
-                    });
-                    currentFiles = newDt;
-
-                    // Update the actual input
-                    document.getElementById('image-input').files = currentFiles.files;
-
-                    renderPreviews();
-                }
-
-                function removeEditedImage(index, btn) {
-                    deletedImages.push(index);
-                    document.getElementById('deleted-images-input').value = JSON.stringify(deletedImages);
-
-                    // Visually remove the element
-                    const container = btn.closest('.relative');
-                    container.remove();
-                }
-
-                function addVariant() {
-                    const container = document.getElementById('variant-container');
-                    const newRow = document.createElement('div');
-                    newRow.className = "grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center";
-                    newRow.innerHTML = `
-                    <input
-                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
-                        placeholder='eg: 6" x 48"'
-                        type="text"
-                        name="size"
-                    />
-                    <input
-                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
-                        placeholder="eg: 50"
-                        type="number"
-                        name="stock"
-                    />
-                    <input
-                        class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
-                        placeholder="eg: $5.99"
-                        type="text"
-                        name="price"
-                    />
-                    <button
-                        class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full"
-                    >
-                        <span
-                            class="material-symbols-outlined text-xl"
-                            >delete</span
-                        >
-                    </button>
-                `;
-                    container.parentNode.insertBefore(newRow, container.nextSibling);
-                }
-
-                // Form validation
-                document.querySelector('form').addEventListener('submit', function (e) {
-                    const existingImagesCount = <%= product.productImages.length %>;
-                    const deletedCount = deletedImages.length;
-                    const newImagesCount = currentFiles.files.length;
-                    const totalImages = existingImagesCount - deletedCount + newImagesCount;
-
-                    if (totalImages < 3) {
-                        e.preventDefault();
-                        // Use SweetAlert2 if available, otherwise standard alert
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Validation Error',
-                                text: 'Product must have at least 3 images.',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                        } else {
-                            alert('Product must have at least 3 images.');
-                        }
+            // --- INITIALIZATION ---
+            document.addEventListener("DOMContentLoaded", () => {
+                // 1. Initialize deletedImages array from the hidden input
+                const deletedInput = document.getElementById("deleted-images-input");
+                if (deletedInput.value) {
+                    try {
+                        deletedImages = JSON.parse(deletedInput.value);
+                    } catch (e) {
+                        console.error("Error parsing initial deletedImages value:", e);
                     }
+                }
+
+                // 2. Attach instant feedback listeners (optional, but good UX)
+                document
+                    .getElementById("product-name")
+                    .addEventListener("input", validateProductInfo);
+                document
+                    .getElementById("category")
+                    .addEventListener("change", validateProductInfo);
+                document
+                    .getElementById("description")
+                    .addEventListener("input", validateProductInfo);
+            });
+
+            // --- IMAGE CROP/UPLOAD LOGIC (Standard Functions) ---
+
+            function previewImages(event) {
+                const input = event.target;
+                const existingFiles = Array.from(currentFiles.files);
+                const newFiles = Array.from(input.files).filter((file) => {
+                    const exists = existingFiles.some(
+                        (existingFile) =>
+                            existingFile.name === file.name &&
+                            existingFile.size === file.size &&
+                            existingFile.lastModified === file.lastModified
+                    );
+                    return !exists;
                 });
-            </script>
+
+                if (newFiles.length > 0) {
+                    filesToProcess = newFiles;
+                    input.value = "";
+                    processNextFile();
+                } else {
+                    updateInputFiles();
+                }
+            }
+
+            function processNextFile() {
+                if (filesToProcess.length === 0) {
+                    updateInputFiles();
+                    renderPreviews();
+                    return;
+                }
+                // ... (rest of processNextFile, showCropperModal, hideCropperModal, saveCrop, skipCrop remain the same)
+                const file = filesToProcess[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const image = document.getElementById("cropper-image");
+                    image.src = e.target.result;
+                    showCropperModal();
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(image, {
+                        aspectRatio: NaN,
+                        viewMode: 1,
+                        dragMode: "move",
+                        autoCropArea: 0.9,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function showCropperModal() {
+                document.getElementById("cropper-modal").classList.remove("hidden");
+            }
+            function hideCropperModal() {
+                const modal = document.getElementById("cropper-modal");
+                modal.classList.add("hidden");
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+            }
+
+            function saveCrop() {
+                if (!cropper) return;
+                const fileToReplace = filesToProcess.shift();
+                cropper
+                    .getCroppedCanvas({
+                        maxWidth: 4096,
+                        maxHeight: 4096,
+                        fillColor: "#fff",
+                    })
+                    .toBlob((blob) => {
+                        if (blob) {
+                            const newFile = new File([blob], fileToReplace.name, {
+                                type: fileToReplace.type,
+                                lastModified: Date.now(),
+                            });
+                            currentFiles.items.add(newFile);
+                        } else {
+                            currentFiles.items.add(fileToReplace);
+                        }
+                        hideCropperModal();
+                        processNextFile();
+                    }, fileToReplace.type);
+            }
+
+            function skipCrop() {
+                const file = filesToProcess.shift();
+                currentFiles.items.add(file);
+                hideCropperModal();
+                processNextFile();
+            }
+
+            function updateInputFiles() {
+                imageInput.files = currentFiles.files;
+            }
+
+            function renderPreviews() {
+                const previewContainer = document.getElementById("image-preview");
+                const newPreviews = previewContainer.querySelectorAll(".new-preview");
+                newPreviews.forEach((el) => el.remove());
+
+                previewContainer.className =
+                    "flex gap-2 mt-4 overflow-x-auto p-2 pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600";
+
+                Array.from(currentFiles.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const div = document.createElement("div");
+                        div.className =
+                            "relative group shrink-0 w-20 h-20 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#2a2a2a] new-preview";
+
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.className =
+                            "w-full h-full object-cover transition-transform group-hover:scale-110 duration-300";
+
+                        const overlay = document.createElement("div");
+                        overlay.className =
+                            "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center";
+
+                        const btn = document.createElement("button");
+                        btn.type = "button";
+                        btn.className =
+                            "p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors transform hover:scale-110";
+                        btn.innerHTML =
+                            '<span class="material-symbols-outlined text-[10px] font-bold block">close</span>';
+                        btn.onclick = (e) => {
+                            e.preventDefault();
+                            removeImage(index);
+                        };
+
+                        overlay.appendChild(btn);
+                        div.appendChild(img);
+                        div.appendChild(overlay);
+                        previewContainer.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function removeImage(index) {
+                const newDt = new DataTransfer();
+                Array.from(currentFiles.files).forEach((file, i) => {
+                    if (i !== index) newDt.items.add(file);
+                });
+                currentFiles = newDt;
+                updateInputFiles();
+                renderPreviews();
+            }
+
+            function removeEditedImage(index, btn) {
+                // Add the index of the image being deleted (which is an index in the server's array)
+                if (!deletedImages.includes(index)) {
+                    deletedImages.push(index);
+                }
+
+                // Update the hidden input field for the backend
+                document.getElementById("deleted-images-input").value =
+                    JSON.stringify(deletedImages);
+
+                // Visually remove the element
+                const container = btn.closest(".relative");
+                container.remove();
+            }
+
+            function addVariant() {
+                // Add variant logic (using 'size', 'stock', 'price' as singular names for dynamically added fields)
+                const container = document.getElementById("variant-container"); // Assuming you have a container for new variants
+                const newRow = document.createElement("div");
+                newRow.className = "grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center";
+                newRow.innerHTML = `
+                        <input class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder='eg: 6" x 48"' type="text" name="size" required />
+                        <input class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center" placeholder="eg: 50" type="number" name="stock" min="0" required />
+                        <input class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center" placeholder="eg: $5.99" type="text" name="price" required pattern="^\\$?\\d+(\\.\\d{2})?$" />
+                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full transition-colors">
+                            <span class="material-symbols-outlined text-xl">delete</span>
+                        </button>
+                    `;
+                container.parentNode.insertBefore(newRow, container.nextSibling);
+            }
+
+            // --- REPLICATED VALIDATION FUNCTIONS (From createProduct page) ---
+
+            // General function to display/hide error messages
+            function toggleError(id, show, message = "") {
+                const errorElement = document.getElementById(id);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    // Note: Since this is the edit page, the elements 'name-error', 'category-error', etc.,
+                    // were not included in the provided edit HTML, but the check still prevents submit.
+                }
+            }
+
+            // 1. Validate Product Info Fields (Used for instant feedback and pre-submit check)
+            function validateProductInfo() {
+                let isValid = true;
+                const nameInput = document.getElementById("product-name");
+                const categorySelect = document.getElementById("category");
+                const descriptionTextarea = document.getElementById("description");
+
+                if (nameInput.value.trim() === "") {
+                    toggleError("name-error", true, "Product Name is required.");
+                    isValid = false;
+                } else {
+                    toggleError("name-error", false);
+                }
+
+                if (categorySelect.value === "") {
+                    toggleError("category-error", true, "Category is required.");
+                    isValid = false;
+                } else {
+                    toggleError("category-error", false);
+                }
+
+                if (descriptionTextarea.value.trim() === "") {
+                    toggleError(
+                        "description-error",
+                        true,
+                        "Product Description is required."
+                    );
+                    isValid = false;
+                } else {
+                    toggleError("description-error", false);
+                }
+
+                return isValid;
+            }
+
+            // 2. Validate Images (CRITICAL FOR EDIT PAGE)
+            function validateImages() {
+                const deletedCount = deletedImages.length;
+                const newImagesCount = currentFiles.files.length;
+
+                // Calculate the total number of images that will remain/be saved
+                const totalImages =
+                    initialExistingImagesCount - deletedCount + newImagesCount;
+
+                return totalImages >= 3;
+            }
+
+            // 3. Validate Variants
+            function validateVariants() {
+                // NOTE: The edit form variant naming uses singular 'size', 'stock', 'price' for the EJS loop,
+                // but uses the same HTML structure for new additions.
+                // For simplicity and matching the old script, we check for presence.
+
+                // We look for any input named 'size', 'stock', or 'price'
+                const sizeInputs = document.querySelectorAll('input[name="size"]');
+                const stockInputs = document.querySelectorAll('input[name="stock"]');
+                const priceInputs = document.querySelectorAll('input[name="price"]');
+
+                // Ensure at least one variant set is present and complete
+                if (sizeInputs.length === 0) return false;
+
+                let hasValidVariant = false;
+
+                for (let i = 0; i < sizeInputs.length; i++) {
+                    const size = sizeInputs[i].value.trim();
+                    const stock = stockInputs[i].value.trim();
+                    const price = priceInputs[i].value.trim();
+
+                    if (size !== "" && stock !== "" && price !== "") {
+                        hasValidVariant = true;
+                        break;
+                    }
+                }
+
+                return hasValidVariant;
+            }
+
+            // 4. Final Form Validation on Submit with SweetAlert2
+            document.querySelector("form").addEventListener("submit", function (e) {
+                const isInfoValid = validateProductInfo();
+                const isImagesValid = validateImages();
+                const isVariantsValid = validateVariants();
+
+                if (!isInfoValid || !isImagesValid || !isVariantsValid) {
+                    e.preventDefault();
+
+                    let errorMessage = "Please correct the following issues:";
+
+                    if (!isInfoValid) {
+                        errorMessage +=
+                            "\n- Product Name, Category, and Description are required.";
+                    }
+
+                    if (!isImagesValid) {
+                        const deletedCount = deletedImages.length;
+                        const newImagesCount = currentFiles.files.length;
+                        const totalImages =
+                            initialExistingImagesCount - deletedCount + newImagesCount;
+                        errorMessage += `\n- Product must have a minimum of 3 images. You currently have ${totalImages} remaining/uploaded.`;
+                    }
+
+                    if (!isVariantsValid) {
+                        errorMessage +=
+                            "\n- At least one complete product variant (Size, Stock, Price) is required.";
+                    }
+
+                    // Use SweetAlert2
+                    if (typeof Swal !== "undefined") {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Update Validation Failed!",
+                            html: errorMessage.replace(/\n/g, "<br>"),
+                            confirmButtonText: "I understand",
+                            customClass: {
+                                confirmButton: "bg-primary hover:bg-primary/90",
+                            },
+                        });
+                    } else {
+                        alert(errorMessage);
+                    }
+                }
+            });
+
+        </script>
     </body>
 
     </html>
