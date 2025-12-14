@@ -46,7 +46,7 @@ router.route('/forgot-password')
 
 router.route('/resetPassword/:token')
     .get((req, res) => {
-        res.render('user/auth/reset', {token: req.params.token});
+        res.render('user/auth/reset', { token: req.params.token });
     })
     .post(userController.resetPassword);
 
@@ -83,5 +83,9 @@ router.patch('/profile/new-mail', requireAuth, profileController.newMail);
 // profile address routes
 
 router.get('/profile/addresses', requireAuth, addressController.addresses);
+
+router.get('/profile/addresses/add', requireAuth, addressController.addAddressPage);
+
+router.post('/profile/addresses/add', requireAuth, addressController.addAddress);
 
 export default router;
