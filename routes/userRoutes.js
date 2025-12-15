@@ -88,4 +88,10 @@ router.get('/profile/addresses/add', requireAuth, addressController.addAddressPa
 
 router.post('/profile/addresses/add', requireAuth, addressController.addAddress);
 
+router.delete('/profile/addresses/delete/:id', requireAuth, addressController.deleteAddress);
+
+router.get('/profile/addresses/edit/:id', requireAuth, addressController.editAddressPage);
+
+router.patch('/profile/addresses/edit/:id', requireAuth, addressController.editAddress);
+
 export default router;
