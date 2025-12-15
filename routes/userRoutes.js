@@ -3,6 +3,7 @@ import * as userController from "../controllers/userControllers/authController.j
 import * as productController from "../controllers/userControllers/productController.js";
 import * as profileController from "../controllers/userControllers/profileController.js";
 import * as addressController from "../controllers/userControllers/addressController.js";
+import * as cartController from "../controllers/userControllers/cartController.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -93,5 +94,15 @@ router.delete('/profile/addresses/delete/:id', requireAuth, addressController.de
 router.get('/profile/addresses/edit/:id', requireAuth, addressController.editAddressPage);
 
 router.patch('/profile/addresses/edit/:id', requireAuth, addressController.editAddress);
+
+// cart routes
+
+router.get('/cart', requireAuth, cartController.cart);
+
+router.post('/cart/add', requireAuth, cartController.addToCart);
+
+router.patch('/cart/update/:cartItemId', requireAuth, cartController.updateCartQuantity);
+
+router.delete('/cart/delete/:cartItemId', requireAuth, cartController.removeFromCart);
 
 export default router;

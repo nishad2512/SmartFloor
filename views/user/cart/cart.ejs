@@ -1,0 +1,272 @@
+<%- include("../../partials/header.ejs") %>
+    <body
+        class="bg-background-light font-display text-[#141414]"
+    >
+        <div
+            class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <div class="layout-container flex h-full grow flex-col">
+                <div class="px-4 md:px-10 lg:px-20 xl:px-40 py-10 md:py-16">
+                    <div
+                        class="layout-content-container flex flex-col max-w-7xl mx-auto flex-1"
+                    >
+                        <div class="flex flex-wrap justify-between gap-3 mb-8">
+                            <p
+                                class="text-[#141414] text-4xl font-black leading-tight tracking-[-0.033em] min-w-72"
+                            >
+                                Your Cart
+                            </p>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-12">
+                            <!-- Cart Items -->
+                            <div class="w-full lg:w-2/3">
+                                <div
+                                    class="flex justify-between border-b border-gray-200 pb-2 mb-4 text-sm font-medium text-[#757575]"
+                                >
+                                    <span class="w-1/2">Product</span>
+                                    <span class="w-1/4 text-center"
+                                        >Quantity (sq. ft.)</span
+                                    >
+                                    <span class="w-1/4 text-right">Total</span>
+                                </div>
+                                <div class="space-y-4">
+                                    <!-- List Item 1 -->
+                                     <% formattedCart.forEach(item => { %>
+                                    <div
+                                        class="flex flex-col sm:flex-row gap-4 py-3 justify-between items-start border-b border-gray-200"
+                                    >
+                                        <div
+                                            class="flex items-start gap-4 w-full sm:w-1/2"
+                                        >
+                                            <div
+                                                class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg h-[90px] w-[90px]"
+                                                data-alt="Close-up of Classic Oak Hardwood flooring planks"
+                                                style="
+                                                    background-image: url('<%= item.image %>');
+                                                "
+                                            ></div>
+                                            <div
+                                                class="flex flex-1 flex-col justify-center"
+                                            >
+                                                <p
+                                                    class="text-[#141414] text-base font-medium leading-normal"
+                                                >
+                                                    <%= item.name %>
+                                                </p>
+                                                <p
+                                                    class="text-[#757575] text-sm font-normal leading-normal"
+                                                >
+                                                    ₹<%= item.price %> / sq. ft.
+                                                </p>
+                                                <p
+                                                    class="text-[#757575] text-sm font-normal leading-normal"
+                                                >
+                                                    Variant: <%= item.size %>
+                                                </p>
+                                                <button
+                                                    onclick="deleteItem('<%= item.cartItemId %>')"
+                                                    class="flex items-center gap-1 text-sm text-red-500 mt-2 mb-2"
+                                                >
+                                                    <i
+                                                        class="ph-bold ph-trash text-base"></i>
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-between w-full sm:w-1/2"
+                                        >
+                                            <div
+                                                class="w-1/2 flex justify-center"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2 text-[#141414]"
+                                                >
+                                                    <button
+                                                        onclick="updateQuantity(this, -1, '<%= item.cartItemId %>')"
+                                                        class="text-base font-medium leading-normal flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 cursor-pointer"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <input
+                                                        class="text-base font-medium leading-normal w-12 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-gray-400 border-x-0 border-t-0 border-b-2 border-gray-200 [appearance:textfield] [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none"
+                                                        type="number"
+                                                        value="<%= item.quantity %>"
+                                                        onchange="updateQuantity(this, 0, '<%= item.cartItemId %>')"
+                                                    />
+                                                    <button
+                                                        onclick="updateQuantity(this, 1, '<%= item.cartItemId %>')"
+                                                        class="text-base font-medium leading-normal flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 cursor-pointer"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="w-1/2 text-right">
+                                                <p
+                                                    data-cart-id="<%= item.cartItemId %>"
+                                                    class="text-[#141414] text-base font-medium leading-normal"
+                                                >
+                                                    ₹<%= item.total.toLocaleString('en-IN') %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                    <!-- List Item 2 -->
+                                </div>
+                            </div>
+                            <!-- Order Summary -->
+                            <div class="w-full lg:w-1/3">
+                                <div
+                                    class="bg-white p-6 rounded-lg border border-gray-200"
+                                >
+                                    <h2
+                                        class="text-2xl font-black mb-6 text-[#141414]"
+                                    >
+                                        Cart Summary
+                                    </h2>
+                                    <div class="space-y-3 mb-6">
+                                        <div
+                                            class="flex justify-between gap-x-6 py-2"
+                                        >
+                                            <p
+                                                class="text-[#757575] text-base font-normal leading-normal"
+                                            >
+                                                Subtotal (<span class="font-bold"><%= formattedCart.length %> items</span>)
+                                            </p>
+                                            <p
+                                                id="subtotalAmount"
+                                                class="text-[#141414] text-base font-medium leading-normal text-right"
+                                            >
+                                                ₹<%= totalAmount %>
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="flex justify-between gap-x-6 py-2"
+                                        >
+                                            <p
+                                                class="text-[#757575] text-base font-normal leading-normal"
+                                            >
+                                                Discount
+                                            </p>
+                                            <p
+                                                class="text-[#141414] text-base font-normal leading-normal text-right"
+                                            >
+                                                ₹0
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="flex justify-between gap-x-6 py-2"
+                                        >
+                                            <p
+                                                class="text-[#757575] text-base font-normal leading-normal"
+                                            >
+                                                Platform Fee
+                                            </p>
+                                            <p
+                                                class="text-[#141414] text-base font-normal leading-normal text-right"
+                                            >
+                                                ₹0
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="border-t border-gray-200 pt-6"
+                                    >
+                                        <div
+                                            class="flex justify-between items-center mb-6"
+                                        >
+                                            <p
+                                                class="text-lg font-bold text-[#141414]"
+                                            >
+                                                Total
+                                            </p>
+                                            <p
+                                                id="totalAmount"
+                                                class="text-xl font-bold text-[#141414]"
+                                            >
+                                                ₹<%= totalAmount %>
+                                            </p>
+                                        </div>
+                                        <button
+                                            class="w-full bg-black text-white font-bold py-3 px-4 rounded-lg text-base hover:opacity-90 transition-opacity"
+                                        >
+                                            Proceed to Checkout
+                                        </button>
+                                        <a
+                                            class="w-full inline-flex items-center justify-center gap-2 mt-4 text-[#141414] font-medium text-base"
+                                            href="/products"
+                                        >
+                                            <i class="ph ph-bold ph-arrow-left text-xl"></i>
+                                            Continue Shopping
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../../partials/footer.ejs") %>
+
+        <script>
+            // Quantity update functions can be added here
+            function updateQuantity(inputElement, change, cartItemId) {
+                let currentQty;
+                let input;
+
+                if (change === 0) {
+                    // Input change
+                    currentQty = parseInt(inputElement.value);
+                    input = inputElement;
+                } else {
+                    // + or -
+                    input = inputElement.parentElement.querySelector("input");
+                    currentQty = parseInt(input.value) + change;
+                }
+
+                if (currentQty < 1) return;
+
+                fetch('/cart/update/' + cartItemId, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quantity: currentQty
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          
+                        input.value = data.quantity;
+                        document.querySelector(`p[data-cart-id="${cartItemId}"]`).innerText = '₹' + data.itemTotal.toLocaleString('en-IN');
+                        document.getElementById('totalAmount').innerText = '₹' + data.cartTotal
+                        document.getElementById('subtotalAmount').innerText = '₹' + data.cartTotal
+
+                      } else {
+                          swal.fire('Error', data.message || 'Could not update quantity', 'error');
+                      }
+                  });
+                console.log("Quantity updated");
+            }
+
+            function deleteItem(cartItemId) {
+                fetch('/cart/delete/'+cartItemId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => response.json()).then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        swal.fire('Error', data.message || 'Could not update quantity', 'error');
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>

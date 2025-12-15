@@ -102,7 +102,7 @@
                         <div class="flex items-center border border-gray-300 rounded-full px-4 py-2">
                             <button onclick="updateQuantity(-1)"
                                 class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">-</button>
-                            <input type="number" id="quantityInput" value="100" name="quantity"
+                            <input type="number" id="quantityInput" value="50" name="quantity"
                                 class="w-16 text-center font-bold outline-none appearance-none"
                                 onchange="calculateTotal()">
                             <button onclick="updateQuantity(1)"
@@ -259,6 +259,43 @@
             document.addEventListener('DOMContentLoaded', () => {
                 calculateTotal();
                 checkStock();
+            });
+
+            document.getElementById('addToCartBtn').addEventListener('click', () => {
+                const quantity = parseInt(document.getElementById('quantityInput').value);
+
+                fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        variantId: currentVariantId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/cart';
+                    } else {
+                        swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'An error occurred while adding the product to cart.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while adding the product to cart.'
+                    });
+                });
+
             });
 
             // --- IMAGE GALLERY ---
