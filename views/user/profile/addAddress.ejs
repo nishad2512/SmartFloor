@@ -1,0 +1,213 @@
+<%- include("../../partials/header.ejs") %>
+
+    <div class="flex flex-col md:flex-row gap-[200px] py-12 min-h-[90vh]">
+        <!-- Sidebar -->
+        <%- include("../../partials/user-sidebar.ejs") %>
+
+            <!-- Main Content -->
+            <div class="flex-1 max-w-4xl">
+                <div class="mb-10">
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                        <div class="flex flex-col gap-2">
+                            <h2 class="text-4xl font-extrabold text-[#1A1A1A] leading-tight tracking-[-0.033em]">
+                                <%= locals.createAddr ? "Add New Address" : "Edit Address" %>
+                            </h2>
+                            <p class="text-gray-500 text-base font-medium">
+                                Enter your address details below to save it to your account.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl border border-[#e0e0e0] bg-white">
+                        <div class="p-6">
+                            <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST"
+                                action="<%= locals.createAddr ? '/profile/addresses/add' : '/profile/addresses/edit/' + formData._id + '?_method=PATCH' %>" novalidate onsubmit="return validateAddressForm()">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="name">Full Name
+                                        <span class="text-red-500">*</span></label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="name" name="name" placeholder="e.g. Jane Doe" type="text"
+                                        value="<%= formData.name || '' %>" />
+                                    <p id="name-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[#141414] mb-2"
+                                        for="email">Email</label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="email" name="email" placeholder="e.g. jane@example.com" type="email"
+                                        value="<%= formData.email || '' %>" />
+                                    <p id="email-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="phone">Phone <span
+                                            class="text-red-500">*</span></label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="phone" name="phone" placeholder="e.g. +1 234 567 8900" type="tel"
+                                        value="<%= formData.phone || '' %>" />
+                                    <p id="phone-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="address1">Street
+                                        Address <span class="text-red-500">*</span></label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3 mb-2"
+                                        id="address1" name="address1" placeholder="e.g. 123 Flooring Avenue" type="text"
+                                        value="<%= formData.address1 || '' %>" />
+                                    <p id="address1-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="address2" name="address2"
+                                        placeholder="Apartment, suite, unit, etc. (optional)" type="text"
+                                        value="<%= formData.address2 || '' %>" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="city">City <span
+                                            class="text-red-500">*</span></label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="city" name="city" placeholder="e.g. Denver" type="text"
+                                        value="<%= formData.city || '' %>" />
+                                    <p id="city-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="state">State /
+                                        Province <span class="text-red-500">*</span></label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="state" name="state" placeholder="e.g. Colorado" type="text"
+                                        value="<%= formData.state || '' %>" />
+                                    <p id="state-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="zip">Postal Code
+                                        <span class="text-red-500">*</span></label>
+                                    <input
+                                        class="w-full bg-transparent border border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="zip" name="zip" placeholder="e.g. 80202" type="text"
+                                        value="<%= formData.zip || '' %>" />
+                                    <p id="zip-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[#141414] mb-2" for="type">Address
+                                        Type</label>
+                                    <select
+                                        class="w-full bg-transparent border-[#e0e0e0] rounded-lg focus:ring-gray-500 focus:border-gray-500 text-sm p-3"
+                                        id="type" name="type">
+                                        <option value="Home" <%=formData.type==='Home' ? 'selected' : '' %>>Home
+                                        </option>
+                                        <option value="Work" <%=formData.type==='Work' ? 'selected' : '' %>>Work
+                                        </option>
+                                        <option value="Other" <%=formData.type==='Other' ? 'selected' : '' %>>Other
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="md:col-span-2 mt-4 flex items-center justify-end gap-4">
+                                    <a href="/profile/addresses"
+                                        class="font-medium px-6 py-2.5 rounded-lg border border-[#e0e0e0] hover:bg-gray-100 text-[#141414]">
+                                        Cancel
+                                    </a>
+                                    <button type="submit"
+                                        class="bg-black text-white font-medium px-6 py-2.5 rounded-lg hover:opacity-90">
+                                        Save Address
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <%- include("../../partials/footer.ejs") %>
+        <script>
+            function validateAddressForm() {
+                let isValid = true;
+
+                // Helper function to show error
+                const showError = (id, message) => {
+                    const element = document.getElementById(id + '-error');
+                    const input = document.getElementById(id);
+                    if (element) {
+                        element.innerText = message;
+                        element.classList.remove('hidden');
+                    }
+                    if (input) {
+                        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        input.classList.remove('border-[#e0e0e0]', 'focus:border-gray-500', 'focus:ring-gray-500');
+                    }
+                    isValid = false;
+                };
+
+                // Helper function to clear error
+                const clearError = (id) => {
+                    const element = document.getElementById(id + '-error');
+                    const input = document.getElementById(id);
+                    if (element) {
+                        element.innerText = '';
+                        element.classList.add('hidden');
+                    }
+                    if (input) {
+                        input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        input.classList.add('border-[#e0e0e0]', 'focus:border-gray-500', 'focus:ring-gray-500');
+                    }
+                };
+
+                // Clear all errors first
+                ['name', 'email', 'phone', 'address1', 'city', 'state', 'zip'].forEach(clearError);
+
+                // Name Validation
+                const name = document.getElementById('name').value.trim();
+                if (!name) {
+                    showError('name', 'Full name is required');
+                } else if (name.length < 3) {
+                    showError('name', 'Name must be at least 3 characters');
+                }
+
+                // Email Validation (Optional but checked if present)
+                const email = document.getElementById('email').value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (email && !emailRegex.test(email)) {
+                    showError('email', 'Please enter a valid email address');
+                }
+
+                // Phone Validation
+                const phone = document.getElementById('phone').value.trim();
+                if (!phone) {
+                    showError('phone', 'Phone number is required');
+                } else if (!/^\+?[\d\s-]{10,20}$/.test(phone)) {
+                    showError('phone', 'Please enter a valid phone number');
+                }
+
+                // Address Validation
+                const address1 = document.getElementById('address1').value.trim();
+                if (!address1) {
+                    showError('address1', 'Street address is required');
+                }
+
+                // City Validation
+                const city = document.getElementById('city').value.trim();
+                if (!city) {
+                    showError('city', 'City is required');
+                }
+
+                // State Validation
+                const state = document.getElementById('state').value.trim();
+                if (!state) {
+                    showError('state', 'State is required');
+                }
+
+                // Zip Validation
+                const zip = document.getElementById('zip').value.trim();
+                if (!zip) {
+                    showError('zip', 'Postal code is required');
+                }
+
+                return isValid;
+            }
+        </script>
+        </body>
+
+        </html>
