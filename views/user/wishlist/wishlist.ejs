@@ -1,0 +1,218 @@
+<%- include('../../partials/header') %>
+    <body class="font-display">
+        <div
+            class="relative flex h-auto min-h-[90vh] w-full flex-col bg-background-light group/design-root overflow-x-hidden"
+        >
+            <div class="layout-container flex h-full grow flex-col">
+                <div
+                    class="px-4 sm:px-10 md:px-20 lg:px-40 flex flex-1 justify-center py-5"
+                >
+                    <div
+                        class="layout-content-container flex flex-col max-w-[960px] flex-1"
+                    >
+                        <!-- PageHeading and Share Button -->
+                        <div
+                            class="flex flex-wrap justify-between gap-3 p-4 items-center"
+                        >
+                            <p
+                                class="text-[#141414] text-4xl font-black leading-tight tracking-[-0.033em] min-w-72"
+                            >
+                                My Wishlist
+                            </p>
+                            <button
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-bold leading-normal tracking-[0.015em]"
+                            >
+                                <span class="truncate">Share Wishlist</span>
+                            </button>
+                        </div>
+                        <!-- Breadcrumbs -->
+                        <div class="flex flex-wrap gap-2 px-4 pb-4">
+                            <a
+                                class="text-[#757575] text-base font-medium leading-normal"
+                                href="#"
+                                >Home</a
+                            >
+                            <span
+                                class="text-[#757575] text-base font-medium leading-normal"
+                                >/</span
+                            >
+                            <span
+                                class="text-[#141414] text-base font-medium leading-normal"
+                                >My Wishlist</span
+                            >
+                        </div>
+                        <!-- Wishlist with items -->
+                        <div
+                            class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-4"
+                        >
+                            <!-- Product Card 1 -->
+                            <div
+                                class="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-white"
+                            >
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                    data-alt="Close-up of light brown Nordic Oak laminate flooring texture"
+                                    style="
+                                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCudA5zETteRuoftKQ8rifpbS2hRCx_xwU18Xcfw7UqlnTtPb9w-3zYz_JEXNsqjZxxVrjEEvqIviKvS4X1sWqmxpYM0PC579TYZGZsEePrQ1-dm2szOOluxSUZhhiBioisesRbVMnrsIeQKMyMfsy47VNbY8LeJXY6e152E9ZPUWNjA1TqRdLxwLtm7n_dcti3Ns-dIbOgZ04IlJePX6zrcSK439rNe7-0-lxnbr_aHoQl7qMlnQcOFblekzmcL2BxuBRVPADt-6c');
+                                    "
+                                ></div>
+                                <div class="flex flex-col flex-1">
+                                    <div class="flex-grow">
+                                        <p
+                                            class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]"
+                                        >
+                                            Nordic Oak Laminate Flooring
+                                        </p>
+                                        <p
+                                            class="text-[#757575] text-sm font-normal leading-normal mt-1"
+                                        >
+                                            Color: Natural Light
+                                        </p>
+                                        <p
+                                            class="text-[#141414] text-base font-medium leading-normal mt-2"
+                                        >
+                                            $4.99 / sq. ft.
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="flex flex-col items-stretch gap-3 mt-4"
+                                    >
+                                        <button
+                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] w-full"
+                                        >
+                                            <span class="truncate"
+                                                >Add to Cart</span
+                                            >
+                                        </button>
+                                        <button
+                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent text-[#141414] hover:bg-gray-100 text-sm font-bold leading-normal tracking-[0.015em] w-full"
+                                        >
+                                            <span class="truncate">Remove</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Product Card 2 -->
+                            <div
+                                class="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-white"
+                            >
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                    data-alt="Sample of rich, dark Hickory engineered hardwood flooring with a matte finish"
+                                    style="
+                                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_DQNS_rVKQ0e_N3SADV1CUhHXETkpN7niCf1Z5KSJgEGriS7P462v6MeArktxHuSJ8HKuEZb-eJ6Dn5SuV0Tk2JC9D8WbG3dCQ29vcaUq6aiogcZNUNgHjoEK32g59G33aYN2QUF6khhxqcVy_Q_ORc_zEEC9EIZAXHey91Nc2lDMf9AH-0bx2HAVAmU-6OxbBI9E97E_Coc3jiUFQWKZN4o2-u4TohSTgAwFXbyf2D9qMh4IGx8yflCPbgHK1rP4ugUShQ_wTBQ');
+                                    "
+                                ></div>
+                                <div class="flex flex-col flex-1">
+                                    <div class="flex-grow">
+                                        <p
+                                            class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]"
+                                        >
+                                            Hickory Engineered Hardwood
+                                        </p>
+                                        <p
+                                            class="text-[#757575] text-sm font-normal leading-normal mt-1"
+                                        >
+                                            Finish: Matte
+                                        </p>
+                                        <p
+                                            class="text-[#141414] text-base font-medium leading-normal mt-2"
+                                        >
+                                            $7.25 / sq. ft.
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="flex flex-col items-stretch gap-3 mt-4"
+                                    >
+                                        <button
+                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] w-full"
+                                        >
+                                            <span class="truncate"
+                                                >Add to Cart</span
+                                            >
+                                        </button>
+                                        <button
+                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent text-[#141414] hover:bg-gray-100 text-sm font-bold leading-normal tracking-[0.015em] w-full"
+                                        >
+                                            <span class="truncate">Remove</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Product Card 3 -->
+                            <div
+                                class="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-white"
+                            >
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                    data-alt="Luxury vinyl tile with a light grey Silverstone pattern"
+                                    style="
+                                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA-CxLEu91PP350IvcM2YuvR3V72bydLnD1BGkxKIz8LUaxQNv-FRMsdwkXCrEeYxcSrWM8y_t1RMSePr-vFX41j1lS-uNH8l9CSl6mJx9DvOMSamA3FzQ9eOTxPdugfa46DallQ7ht9FoubBHB7hSD34rQsFvkY1EpiUoHCUJR5PfAb9d2nZG-JQm_M5sjt8Kj31jZLrN1ioil9I-aW0iQEuX1SsPe3lNHrttiaMaPykljykFySnhQn9ydv__ZtEPekUWun23ESDE');
+                                    "
+                                ></div>
+                                <div class="flex flex-col flex-1">
+                                    <div class="flex-grow">
+                                        <p
+                                            class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]"
+                                        >
+                                            Silverstone Luxury Vinyl Tile
+                                        </p>
+                                        <p
+                                            class="text-[#757575] text-sm font-normal leading-normal mt-1"
+                                        >
+                                            Style: Stone Look
+                                        </p>
+                                        <p
+                                            class="text-[#141414] text-base font-medium leading-normal mt-2"
+                                        >
+                                            $5.50 / sq. ft.
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="flex flex-col items-stretch gap-3 mt-4"
+                                    >
+                                        <button
+                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] w-full"
+                                        >
+                                            <span class="truncate"
+                                                >Add to Cart</span
+                                            >
+                                        </button>
+                                        <button
+                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent text-[#141414] hover:bg-gray-100 text-sm font-bold leading-normal tracking-[0.015em] w-full"
+                                        >
+                                            <span class="truncate">Remove</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    <%- include('../../partials/footer') %>
+    </body>
+</html>
+
+
+                        <!-- Empty State (Example - uncomment to view) -->
+                        <!-- 
+                <div class="flex flex-col px-4 py-20">
+                    <div class="flex flex-col items-center gap-6 text-center">
+                        <div class="flex items-center justify-center text-gray-400">
+                             <span class="material-symbols-outlined !text-8xl">favorite</span>
+                        </div>
+                        <div class="flex max-w-[480px] flex-col items-center gap-2">
+                            <p class="text-[#141414] text-xl font-bold leading-tight tracking-[-0.015em]">Your Wishlist is Empty</p>
+                            <p class="text-gray-600 text-base font-normal leading-normal">
+                                You haven't saved any items yet. Start exploring our flooring options to find your perfect match.
+                            </p>
+                        </div>
+                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                            <span class="truncate">Explore Flooring</span>
+                        </button>
+                    </div>
+                </div>
+                -->

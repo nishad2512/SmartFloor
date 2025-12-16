@@ -21,7 +21,7 @@ export const cart = async (req, res) => {
                     size: variant.size,
                     price: variant.price,
                     quantity: item.quantity,
-                    total: variant.price * item.quantity,
+                    total: item.total,
                 };
             })
             .filter(Boolean);
@@ -60,6 +60,7 @@ export const addToCart = async (req, res) => {
 
         if (cartItem && (cartItem.quantity + quantity) > variant.stock && cartItem.quantity + quantity <= 500) {
             cartItem.quantity = variant.stock;
+            cartItem.total = variant.stock * variant.price;
             await cartItem.save();
             req.flash("success", `Only ${variant.stock} items available in stock`);
             return res.json({ success: true });
@@ -71,6 +72,7 @@ export const addToCart = async (req, res) => {
                 product: productId,
                 variant: variantId,
                 quantity: variant.stock,
+                total: variant.stock * variant.price
             });
             await cartItem.save();
             req.flash("success", `Only ${variant.stock} items available in stock`);
@@ -80,6 +82,7 @@ export const addToCart = async (req, res) => {
         if (cartItem && cartItem.quantity + quantity <= 500) {
 
             cartItem.quantity += quantity;
+            cartItem.total = cartItem.quantity * variant.price;
             await cartItem.save();
 
             req.flash("success", "Product added to cart");
@@ -91,6 +94,7 @@ export const addToCart = async (req, res) => {
                 product: productId,
                 variant: variantId,
                 quantity: quantity,
+                total: quantity * variant.price
             });
             await cartItem.save();
 
@@ -139,12 +143,12 @@ export const updateCartQuantity = async (req, res) => {
         }
 
         cartItem.quantity = quantity;
+        cartItem.total = variant.price * quantity;
         await cartItem.save();
 
         const cartItems = await Cart.find({ user: req.userId }).populate("product");
         const totalAmount = cartItems.reduce((sum, item) => {
-            const itemVariant = item.product.variants.id(item.variant);
-            return sum + (itemVariant.price * item.quantity);
+            return sum + item.total;
         }, 0);
 
         res.json({

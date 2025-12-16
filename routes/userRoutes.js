@@ -4,6 +4,8 @@ import * as productController from "../controllers/userControllers/productContro
 import * as profileController from "../controllers/userControllers/profileController.js";
 import * as addressController from "../controllers/userControllers/addressController.js";
 import * as cartController from "../controllers/userControllers/cartController.js";
+import * as wishlistController from "../controllers/userControllers/wishlistController.js";
+import * as checkoutController from "../controllers/userControllers/checkoutController.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -112,5 +114,13 @@ router.post('/cart/add', requireAuth, cartController.addToCart);
 router.patch('/cart/update/:cartItemId', requireAuth, cartController.updateCartQuantity);
 
 router.delete('/cart/delete/:cartItemId', requireAuth, cartController.removeFromCart);
+
+// wishlist routes
+
+router.get('/wishlist', requireAuth, wishlistController.wishlist);
+
+// checkout routes
+
+router.get('/checkout', requireAuth, checkoutController.checkout);
 
 export default router;
