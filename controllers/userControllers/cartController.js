@@ -58,14 +58,14 @@ export const addToCart = async (req, res) => {
             return res.json({ success: false, message: "Invalid product variant" });
         }
 
-        if (cartItem && (cartItem.quantity + parseInt(quantity)) > variant.stock) {
+        if (cartItem && (cartItem.quantity + quantity) > variant.stock && cartItem.quantity + quantity <= 500) {
             cartItem.quantity = variant.stock;
             await cartItem.save();
             req.flash("success", `Only ${variant.stock} items available in stock`);
             return res.json({ success: true });
         }
 
-        if (!cartItem && parseInt(quantity) > variant.stock) {
+        if (!cartItem && parseInt(quantity) > variant.stock && quantity <= 500) {
             cartItem = new Cart({
                 user: userId,
                 product: productId,
@@ -77,20 +77,29 @@ export const addToCart = async (req, res) => {
             return res.json({ success: true });
         }
 
-        if (cartItem) {
-            cartItem.quantity += parseInt(quantity);
+        if (cartItem && cartItem.quantity + quantity <= 500) {
+
+            cartItem.quantity += quantity;
             await cartItem.save();
-        } else {
+
+            req.flash("success", "Product added to cart");
+            res.json({ success: true });
+
+        } else if (!cartItem && quantity <= 500) {
             cartItem = new Cart({
                 user: userId,
                 product: productId,
                 variant: variantId,
-                quantity: parseInt(quantity),
+                quantity: quantity,
             });
             await cartItem.save();
+
+            req.flash("success", "Product added to cart");
+            res.json({ success: true });
         }
-        req.flash("success", "Product added to cart");
-        res.json({ success: true });
+
+        req.flash("error", "You can add a maximum of 500 items at once");
+        res.json({ success: false, message: "Maximum limit exceeded" });
     } catch (error) {
         console.error(error);
         req.flash("error", "Error adding to cart");
@@ -103,27 +112,29 @@ export const updateCartQuantity = async (req, res) => {
         const { cartItemId } = req.params;
         const { quantity } = req.body;
 
-        if (quantity < 1) {
-            return res.status(400).json({ message: "Quantity must be at least 1" });
-        }
-
         const cartItem = await Cart.findById(cartItemId).populate("product");
 
+        if (quantity < 1) {
+            return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
+        }
+        
         if (!cartItem) {
-            return res.status(404).json({ message: "Cart item not found" });
+            return res.status(404).json({ success: false, message: "Cart item not found" });
         }
 
         // Find variant
         const variant = cartItem.product.variants.id(cartItem.variant);
 
         if (!variant) {
-            return res.status(400).json({ message: "Variant not found" });
+            return res.status(400).json({ success: false, message: "Variant not found" });
         }
 
         // Stock check
-        if (quantity > variant.stock) {
+        if (quantity > variant.stock || quantity > 500) {
             return res.status(400).json({
-                message: `Only ${variant.stock} items available in stock`
+                message: "Requested quantity exceeds available stock or maximum limit of 500",
+                success: false,
+                quantity: cartItem.quantity
             });
         }
 

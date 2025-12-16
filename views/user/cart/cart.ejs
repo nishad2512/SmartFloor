@@ -3,7 +3,7 @@
         class="bg-background-light font-display text-[#141414]"
     >
         <div
-            class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+            class="relative flex h-auto min-h-[90vh] w-full flex-col group/design-root overflow-x-hidden"
         >
             <div class="layout-container flex h-full grow flex-col">
                 <div class="px-4 md:px-10 lg:px-20 xl:px-40 py-10 md:py-16">
@@ -133,7 +133,7 @@
                                             <p
                                                 class="text-[#757575] text-base font-normal leading-normal"
                                             >
-                                                Subtotal (<span class="font-bold"><%= formattedCart.length %> items</span>)
+                                                Subtotal (<span class="font-bold"><%= formattedCart.length == 1 ? formattedCart.length + ' item' : formattedCart.length + ' items' %></span>)
                                             </p>
                                             <p
                                                 id="subtotalAmount"
@@ -209,6 +209,7 @@
                 </div>
             </div>
         </div>
+    </div>
         <%- include("../../partials/footer.ejs") %>
 
         <script>
@@ -247,7 +248,8 @@
                         document.getElementById('subtotalAmount').innerText = '₹' + data.cartTotal
 
                       } else {
-                          swal.fire('Error', data.message || 'Could not update quantity', 'error');
+                        swal.fire('Mistake', data.message || 'Could not update quantity', 'info');
+                        input.value = data.quantity;
                       }
                   });
                 console.log("Quantity updated");

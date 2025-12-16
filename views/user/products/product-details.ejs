@@ -73,7 +73,7 @@
                 </p>
 
                 <div class="mb-8">
-                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price %>
+                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
                     </span>
                     <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
                     <div id="stockInfo"
@@ -227,7 +227,7 @@
                                 <span class="font-bold text-base text-[#1A1A1A]">
                                     <%= relProduct.name %>
                                 </span>
-                                <span class="font-bold text-base text-[#1A1A1A]">₹<%= relProduct.variants[0].price %>
+                                <span class="font-bold text-base text-[#1A1A1A]">₹<%= relProduct.variants[0].price.toLocaleString('en-IN') %>
                                 </span>
                             </div>
                             <a href="/products/product/<%= relProduct._id %>"
@@ -329,7 +329,7 @@
                 checkStock();
 
                 // Update UI Text
-                document.getElementById('displayPrice').innerText = '₹' + currentPrice;
+                document.getElementById('displayPrice').innerText = '₹' + currentPrice.toLocaleString('en-IN');
 
                 // Update Buttons Styling
                 document.querySelectorAll('.variant-btn').forEach(b => {

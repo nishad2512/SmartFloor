@@ -1,0 +1,195 @@
+<%- include('../partials/header.ejs') %>
+    <body
+        class="bg-background-light font-display text-[#141414]"
+    >
+        <div
+            class="relative flex h-auto min-h-[90vh] w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <div class="layout-container flex h-full grow flex-col">
+                <main class="flex-1 px-4 sm:px-6 lg:px-8 py-10 md:py-20">
+                    <div class="mx-auto max-w-6xl">
+                        <div
+                            class="flex flex-wrap justify-between gap-3 text-center mb-12"
+                        >
+                            <div class="flex min-w-72 flex-col gap-8 mx-auto">
+                                <h1
+                                    class="text-black text-4xl sm:text-5xl font-black leading-tight tracking-[-0.033em]"
+                                >
+                                    Get In Touch
+                                </h1>
+                                <p
+                                    class="text-[#757575] text-base font-normal leading-normal"
+                                >
+                                    We'd love to hear from you. Please fill out
+                                    the form below or use our contact details to
+                                    reach us.
+                                </p>
+                            </div>
+                        </div>
+                        <div
+                            class="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16"
+                        >
+                            <div
+                                class="lg:col-span-3 bg-white p-8 md:p-10 rounded-xl shadow-sm border border-gray-200"
+                            >
+                                <form class="flex flex-col gap-6">
+                                    <div
+                                        class="flex flex-col sm:flex-row gap-6"
+                                    >
+                                        <label
+                                            class="flex flex-col min-w-40 flex-1"
+                                        >
+                                            <p
+                                                class="text-black text-base font-medium leading-normal pb-2"
+                                            >
+                                                Full Name
+                                            </p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-black focus:outline-0 focus:ring-2 focus:ring-black/50 border border-[#e0e0e0] bg-background-light focus:border-black/50 h-14 placeholder:text-[#757575] p-[15px] text-base font-normal leading-normal"
+                                                placeholder="Enter your full name"
+                                                value=""
+                                            />
+                                        </label>
+                                        <label
+                                            class="flex flex-col min-w-40 flex-1"
+                                        >
+                                            <p
+                                                class="text-black text-base font-medium leading-normal pb-2"
+                                            >
+                                                Email Address
+                                            </p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-black border focus:outline-0 focus:ring-2 focus:ring-black/50 border border-[#e0e0e0] bg-background-light focus:border-black/50 h-14 placeholder:text-[#757575] p-[15px] text-base font-normal leading-normal"
+                                                placeholder="you@example.com"
+                                                value=""
+                                            />
+                                        </label>
+                                    </div>
+                                    <label
+                                        class="flex flex-col min-w-40 flex-1"
+                                    >
+                                        <p
+                                            class="text-black text-base font-medium leading-normal pb-2"
+                                        >
+                                            Subject
+                                        </p>
+                                        <input
+                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-black border focus:outline-0 focus:ring-2 focus:ring-black/50 border border-[#e0e0e0] bg-background-light focus:border-black/50 h-14 placeholder:text-[#757575] p-[15px] text-base font-normal leading-normal"
+                                            placeholder="How can we help?"
+                                            value=""
+                                        />
+                                    </label>
+                                    <label
+                                        class="flex flex-col min-w-40 flex-1"
+                                    >
+                                        <p
+                                            class="text-black text-base font-medium leading-normal pb-2"
+                                        >
+                                            Message
+                                        </p>
+                                        <textarea
+                                            class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-black focus:outline-0 focus:ring-2 focus:ring-black/50 border border-[#e0e0e0] bg-background-light focus:border-black/50 min-h-36 placeholder:text-[#757575] p-[15px] text-base font-normal leading-normal"
+                                            placeholder="Write your message here..."
+                                        ></textarea>
+                                    </label>
+                                    <button
+                                        class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-4 bg-black text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-black/90"
+                                    >
+                                        <span class="truncate"
+                                            >Send Message</span
+                                        >
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="lg:col-span-2 pt-4">
+                                <div class="flex flex-col gap-8">
+                                    <h3
+                                        class="text-2xl font-bold text-black"
+                                    >
+                                        Our Information
+                                    </h3>
+                                    <div class="flex items-start gap-4">
+                                        <div
+                                            class="flex h-12 w-12 items-center justify-center rounded-full bg-black/10 text-black flex-shrink-0"
+                                        >
+                                            <i class="ph-bold ph-envelope"></i>
+                                        </div>
+                                        <div>
+                                            <h4
+                                                class="text-lg font-bold text-black"
+                                            >
+                                                Email
+                                            </h4>
+                                            <p
+                                                class="text-[#757575]"
+                                            >
+                                                Our friendly team is here to
+                                                help.
+                                            </p>
+                                            <a
+                                                class="text-black font-medium hover:underline"
+                                                href="mailto:smartfloor@gmail.com"
+                                                >smartfloor@gmail.com</a
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-4">
+                                        <div
+                                            class="flex h-12 w-12 items-center justify-center rounded-full bg-black/10 text-black flex-shrink-0"
+                                        >
+                                            <i class="ph-bold ph-phone"></i>
+                                        </div>
+                                        <div>
+                                            <h4
+                                                class="text-lg font-bold text-black"
+                                            >
+                                                Phone
+                                            </h4>
+                                            <p
+                                                class="text-[#757575]"
+                                            >
+                                                Mon-Fri from 9am to 5pm.
+                                            </p>
+                                            <a
+                                                class="text-black font-medium hover:underline"
+                                                href="tel:+918593000705"
+                                                >+91 8593000705</a
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-4">
+                                        <div
+                                            class="flex h-12 w-12 items-center justify-center rounded-full bg-black/10 text-black flex-shrink-0"
+                                        >
+                                            <i class="ph-bold ph-map-pin"></i>
+                                        </div>
+                                        <div>
+                                            <h4
+                                                class="text-lg font-bold text-black"
+                                            >
+                                                Office
+                                            </h4>
+                                            <p
+                                                class="text-[#757575]"
+                                            >
+                                                Come say hello at our showroom.
+                                            </p>
+                                            <p
+                                                class="text-black font-medium"
+                                            >
+                                                123 Flooring Ave, Suite 100<br />Design
+                                                City, DC 12345
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        </div>
+        <%- include('../partials/footer.ejs') %>
+    </body>
+</html>

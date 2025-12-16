@@ -21,6 +21,14 @@ router.get("/", (req, res) => {
     res.render("user/index");
 });
 
+router.get("/about", (req, res) => {
+    res.render("user/about");
+});
+
+router.get("/contact", (req, res) => {
+    res.render("user/contact");
+});
+
 router.route("/login")
     .get(redirectIfLoggedIn, (req, res) => {
         res.render("user/auth/login");
