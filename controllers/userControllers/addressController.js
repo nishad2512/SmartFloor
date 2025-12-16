@@ -19,6 +19,7 @@ export const addresses = async (req, res) => {
 export const addAddressPage = async (req, res) => {
     try {
         const formData = req.flash("formData")[0] || {};
+        req.session.next_page = req.query.next;
         res.render("user/profile/addAddress", { formData, createAddr: true });
     } catch (error) {
         console.error(error);
@@ -68,6 +69,9 @@ export const addAddress = async (req, res) => {
         await newAddress.save();
 
         req.flash("success", "Address added successfully");
+
+        if (req.session.next_page == "checkout") return res.redirect('/checkout');
+
         res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);

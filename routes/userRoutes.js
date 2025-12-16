@@ -3,6 +3,9 @@ import * as userController from "../controllers/userControllers/authController.j
 import * as productController from "../controllers/userControllers/productController.js";
 import * as profileController from "../controllers/userControllers/profileController.js";
 import * as addressController from "../controllers/userControllers/addressController.js";
+import * as cartController from "../controllers/userControllers/cartController.js";
+import * as wishlistController from "../controllers/userControllers/wishlistController.js";
+import * as checkoutController from "../controllers/userControllers/checkoutController.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -18,6 +21,14 @@ router.use(nocache());
 
 router.get("/", (req, res) => {
     res.render("user/index");
+});
+
+router.get("/about", (req, res) => {
+    res.render("user/about");
+});
+
+router.get("/contact", (req, res) => {
+    res.render("user/contact");
 });
 
 router.route("/login")
@@ -93,5 +104,23 @@ router.delete('/profile/addresses/delete/:id', requireAuth, addressController.de
 router.get('/profile/addresses/edit/:id', requireAuth, addressController.editAddressPage);
 
 router.patch('/profile/addresses/edit/:id', requireAuth, addressController.editAddress);
+
+// cart routes
+
+router.get('/cart', requireAuth, cartController.cart);
+
+router.post('/cart/add', requireAuth, cartController.addToCart);
+
+router.patch('/cart/update/:cartItemId', requireAuth, cartController.updateCartQuantity);
+
+router.delete('/cart/delete/:cartItemId', requireAuth, cartController.removeFromCart);
+
+// wishlist routes
+
+router.get('/wishlist', requireAuth, wishlistController.wishlist);
+
+// checkout routes
+
+router.get('/checkout', requireAuth, checkoutController.checkout);
 
 export default router;

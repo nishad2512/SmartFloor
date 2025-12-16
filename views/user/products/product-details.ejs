@@ -73,7 +73,7 @@
                 </p>
 
                 <div class="mb-8">
-                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price %>
+                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
                     </span>
                     <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
                     <div id="stockInfo"
@@ -102,7 +102,7 @@
                         <div class="flex items-center border border-gray-300 rounded-full px-4 py-2">
                             <button onclick="updateQuantity(-1)"
                                 class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">-</button>
-                            <input type="number" id="quantityInput" value="100" name="quantity"
+                            <input type="number" id="quantityInput" value="50" name="quantity"
                                 class="w-16 text-center font-bold outline-none appearance-none"
                                 onchange="calculateTotal()">
                             <button onclick="updateQuantity(1)"
@@ -227,7 +227,7 @@
                                 <span class="font-bold text-base text-[#1A1A1A]">
                                     <%= relProduct.name %>
                                 </span>
-                                <span class="font-bold text-base text-[#1A1A1A]">₹<%= relProduct.variants[0].price %>
+                                <span class="font-bold text-base text-[#1A1A1A]">₹<%= relProduct.variants[0].price.toLocaleString('en-IN') %>
                                 </span>
                             </div>
                             <a href="/products/product/<%= relProduct._id %>"
@@ -261,6 +261,43 @@
                 checkStock();
             });
 
+            document.getElementById('addToCartBtn').addEventListener('click', () => {
+                const quantity = parseInt(document.getElementById('quantityInput').value);
+
+                fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        variantId: currentVariantId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/cart';
+                    } else {
+                        swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'An error occurred while adding the product to cart.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while adding the product to cart.'
+                    });
+                });
+
+            });
+
             // --- IMAGE GALLERY ---
             function changeImage(src) {
                 // Update Main Image
@@ -292,7 +329,7 @@
                 checkStock();
 
                 // Update UI Text
-                document.getElementById('displayPrice').innerText = '₹' + currentPrice;
+                document.getElementById('displayPrice').innerText = '₹' + currentPrice.toLocaleString('en-IN');
 
                 // Update Buttons Styling
                 document.querySelectorAll('.variant-btn').forEach(b => {
