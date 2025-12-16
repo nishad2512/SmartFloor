@@ -194,28 +194,6 @@
                                     <div
                                         class="my-6 border-t border-[#e0e0e0]"
                                     ></div>
-                                    <div class="space-y-4">
-                                        <p
-                                            class="text-base font-medium text-[#141414]"
-                                        >
-                                            Coupons &amp; Discounts
-                                        </p>
-                                        <div class="flex items-center gap-2">
-                                            <input
-                                                class="form-input flex-1 min-w-0 rounded-lg text-[#141414] focus:outline-0 focus:ring-2 focus:ring-black/50 border border-[#e0e0e0] bg-white focus:border-black h-12 placeholder:text-[#757575] px-4 text-base font-normal"
-                                                placeholder="Enter coupon code"
-                                                value=""
-                                            />
-                                            <button
-                                                class="flex items-center justify-center rounded-lg bg-black text-white font-medium h-12 px-6 text-base transition-colors hover:bg-opacity-90"
-                                            >
-                                                Apply
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="my-6 border-t border-[#e0e0e0]"
-                                    ></div>
                                     <div class="space-y-2">
                                         <div
                                             class="flex justify-between text-base text-[#757575]"
@@ -258,6 +236,7 @@
             function placeOrder() {
                 const selectedAddress = document.querySelector('input[name="shipping-address"]:checked');
                 const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked');
+                const totalAmount = '<%= totalAmount %>';
 
                 if (!selectedAddress) {
                     swal.fire({
@@ -279,7 +258,8 @@
 
                 const orderData = {
                     addressId: selectedAddress.value,
-                    paymentMethod: selectedPaymentMethod.value
+                    paymentMethod: selectedPaymentMethod.value,
+                    totalAmount: parseInt(totalAmount)
                 };
 
                 fetch('/checkout/place-order', {

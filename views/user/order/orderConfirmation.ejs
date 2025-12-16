@@ -1,0 +1,156 @@
+<%- include('../../partials/header') %>
+    <body
+        class="bg-background-light font-display text-black antialiased selection:bg-black selection:text-white"
+    >
+        <div
+            class="min-h-[80vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+        >
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <div
+                    class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 text-green-600 mb-6"
+                >
+                    <i class="ph ph-bold ph-check-circle text-5xl"></i>
+                </div>
+                <h1
+                    class="text-4xl font-extrabold tracking-tight mb-4 text-black"
+                >
+                    Order Confirmed!
+                </h1>
+                <p
+                    class="text-lg text-gray-600 max-w-lg mx-auto leading-relaxed"
+                >
+                    Thank you for your purchase, <%= order.user.name %>. Your order
+                    <span class="font-bold text-black"
+                        >#<%= order.orderId %></span
+                    >
+                    has been placed successfully.
+                </p>
+            </div>
+            <div
+                class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"
+            >
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col justify-between h-full"
+                >
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="p-2 bg-gray-50 rounded-lg"
+                            >
+                                <i class="ph ph-bold ph-wallet text-2xl"></i>
+                            </div>
+                            <h3
+                                class="text-sm font-bold text-gray-900 uppercase tracking-wider"
+                            >
+                                Payment Summary
+                            </h3>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <p
+                                    class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1"
+                                >
+                                    Total Amount
+                                </p>
+                                <p
+                                    class="text-4xl font-bold text-black tracking-tight"
+                                >
+                                    ₹<%= order.totalAmount.toLocaleString('en-IN') %>
+                                </p>
+                            </div>
+                            <div
+                                class="pt-6 border-t border-gray-100"
+                            >
+                                <p
+                                    class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2"
+                                >
+                                    Payment Method
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <i class="ph ph-bold ph-credit-card text-xl"></i>
+                                    <span
+                                        class="text-base font-medium text-gray-800"
+                                        ><%= order.paymentMethod ? 'Cash on Delivery' : 'Online Payment' %></span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col justify-between h-full"
+                >
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="p-2 bg-gray-50 rounded-lg"
+                            >
+                                <i class="ph ph-bold ph-package text-2xl"></i>
+                            </div>
+                            <h3
+                                class="text-sm font-bold text-gray-900 uppercase tracking-wider"
+                            >
+                                Delivery Details
+                            </h3>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <p
+                                    class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2"
+                                >
+                                    Shipping Address
+                                </p>
+                                <div
+                                    class="text-base text-gray-600 leading-snug"
+                                >
+                                    <p
+                                        class="font-bold text-black mb-1"
+                                    >
+                                        <%= order.address.name %> - <%= order.address.phone %>
+                                    </p>
+                                    <p><%= order.address.address1 %></p>
+                                    <p><%= order.address.city %></p>
+                                    <p><%= order.address.state %></p>
+                                    <p><%= order.address.zip %></p>
+                                </div>
+                            </div>
+                            <div
+                                class="pt-6 border-t border-gray-100"
+                            >
+                                <p
+                                    class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2"
+                                >
+                                    Estimated Delivery
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <i class="ph ph-bold ph-calendar text-xl"></i>
+                                    <span
+                                        class="text-base font-medium text-gray-800"
+                                        ><%= estDelivery.toLocaleDateString("en-IN", {month: "short", day: "numeric", year: "numeric"}) %></span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full max-w-md flex flex-col gap-4">
+                <a
+                    class="w-full bg-black hover:bg-black/80 text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-200/50 group"
+                    href="user-order-details.html"
+                >
+                    <span>View Order Details</span>
+                    <i class="ph ph-bold ph-arrow-right text-xl"></i>
+                </a>
+                <a
+                    class="w-full bg-transparent hover:bg-gray-100 text-gray-600 hover:text-black font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    href="/products"
+                >
+                    <span>Continue Shopping</span>
+                </a>
+            </div>
+        </div>
+        </div>
+        <%- include('../../partials/footer') %>
+    </body>
+</html>
