@@ -134,4 +134,14 @@ router.get('/order/confirmation/:orderId', requireAuth, orderController.orderCon
 
 router.get('/profile/order/details/:orderId', requireAuth, orderController.orderDetails);
 
+router.patch('/profile/orders/cancel/:orderId', requireAuth, orderController.cancelOrder);
+
+router.patch('/profile/orders/return/:orderId', requireAuth, orderController.returnOrder);
+
+router.patch('/profile/orders/item/cancel/:orderId/:itemId', requireAuth, orderController.cancelOrderItem);
+
+// router.patch('/profile/orders/item/return/:orderId/:itemId', requireAuth, orderController.returnOrderItem);
+
+router.get('/profile/orders/returnDetails/:orderId/:itemId', requireAuth, orderController.returnDetails);
+
 export default router;

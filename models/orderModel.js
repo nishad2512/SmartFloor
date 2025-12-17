@@ -44,24 +44,42 @@ const orderSchema = new mongoose.Schema({
             },
             status: {
                 type: String,
-                enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"],
+                enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Return Request"],
                 default: "Pending"
             },
             returnReason: {
                 type: String,
+            },
+            cancelReason: {
+                type: String,
             }
         }
     ],
+    subTotal: {
+        type: Number,
+        required: true
+    },
     totalAmount: {
+        type: Number,
+        required: true
+    },
+    tax: {
+        type: Number,
+        required: true
+    },
+    shipping: {
         type: Number,
         required: true
     },
     status: {
         type: String,
-        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"],
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Return Request"],
         default: "Pending"
     },
     returnReason: {
+        type: String,
+    },
+    cancelReason: {
         type: String,
     }
 }, { timestamps: true });

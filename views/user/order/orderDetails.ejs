@@ -1,17 +1,14 @@
 <%- include("../../partials/header.ejs") %>
+
     <body
-        class="bg-background-light text-black font-display antialiased min-h-screen flex flex-col selection:bg-black selection:text-white"
-    >
+        class="bg-background-light text-black font-display antialiased min-h-screen flex flex-col selection:bg-black selection:text-white">
         <main class="flex-grow pb-24">
             <div class="px-6 md:px-12 lg:px-20 mx-auto max-w-[1400px]">
                 <div
-                    class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#f2f2f2] mb-10"
-                >
+                    class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#f2f2f2] mb-10">
                     <div class="space-y-2">
                         <div class="flex items-center gap-4">
-                            <h1
-                                class="text-3xl md:text-4xl font-bold tracking-tight text-black"
-                            >
+                            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black">
                                 #<%= order.orderId %>
                             </h1>
                         </div>
@@ -20,591 +17,411 @@
                         </p>
                     </div>
                     <div class="flex flex-wrap gap-3">
-                        <button
-                            class="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#e0e0e0] rounded-full text-sm font-medium hover:bg-surface-light transition-colors text-black shadow-sm"
-                        >
-                            <i class="ph ph-bold ph-arrow-u-up-left"></i>
-                            Return Items
-                        </button>
-                        <button
-                            class="flex items-center gap-2 px-5 py-2.5 bg-black text-white border border-black rounded-full text-sm font-medium hover:bg-black/90 transition-colors shadow-sm"
-                        >
-                            <i class="ph ph-bold ph-download-simple"></i>
-                            Download Invoice
-                        </button>
+                        <% if (order.status!='Returned' && order.status!='Cancelled' && order.status!='Return Request' ) { %>
+                            <button
+                                onclick="<%= order.status == 'Delivered' ? `returnOrder('${order.orderId}')` : `cancelOrder('${order.orderId}')` %>"
+                                class="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#e0e0e0] rounded-full text-sm font-medium hover:bg-surface-light transition-colors text-black shadow-sm">
+                                    <% if (order.status=='Delivered' ) { %>
+                                        <i class="ph ph-bold ph-arrow-u-up-left"></i>
+                                        Return Items
+                                    <% } else { %>
+                                        <i class="ph ph-bold ph-x"></i>
+                                        Cancel Order
+                                    <% } %>
+                            </button>
+                            <button
+                                class="flex items-center gap-2 px-5 py-2.5 bg-black text-white border border-black rounded-full text-sm font-medium hover:bg-black/90 transition-colors shadow-sm">
+                                <i class="ph ph-bold ph-download-simple"></i>
+                                Download Invoice
+                            </button>
+                        <% } %>
                     </div>
                 </div>
-                <div
-                    class="mb-16 bg-surface-light/30 rounded-2xl border border-[#f2f2f2] p-8 md:p-10"
-                >
-                    <div
-                        class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4"
-                    >
+                <div class="mb-16 bg-surface-light/30 rounded-2xl border border-[#f2f2f2] p-8 md:p-10">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
                         <div>
                             <h2 class="text-xl font-bold text-black mb-1">
                                 Order Status
                             </h2>
                             <p class="text-[#757575]">
                                 Estimated delivery:
-                                <span class="font-semibold text-black"
-                                    ><%= estDelivery.toDateString() %></span
-                                >
+                                <span class="font-semibold text-black">
+                                    <%= estDelivery.toDateString() %>
+                                </span>
                             </p>
                         </div>
-                        <div
-                            class="px-4 py-2 bg-accent-green-bg text-accent-green rounded-lg text-sm font-bold tracking-wide uppercase border border-[#C8E6C9] flex items-center gap-2"
-                        >
-                            <span class="relative flex h-2.5 w-2.5">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
-                                ></span>
-                                <span
-                                    class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-green"
-                                ></span>
-                            </span>
-                            <%= order.status %>
-                        </div>
+                        <% let statusClass="bg-gray-100 text-gray-800 border-gray-200" ; let dotClass="bg-gray-500" ; if
+                            (order.status==='Pending' ) { statusClass="bg-yellow-50 text-yellow-700 border-yellow-200" ;
+                            dotClass="bg-yellow-500" ; } else if (order.status==='Processing' ) {
+                            statusClass="bg-blue-50 text-blue-700 border-blue-200" ; dotClass="bg-blue-500" ; } else if
+                            (order.status==='Shipped' ) { statusClass="bg-purple-50 text-purple-700 border-purple-200" ;
+                            dotClass="bg-purple-500" ; } else if (order.status==='Delivered' ) {
+                            statusClass="bg-green-50 text-green-700 border-green-200" ; dotClass="bg-green-500" ; } else
+                            if (order.status==='Cancelled' ) { statusClass="bg-red-50 text-red-700 border-red-200" ;
+                            dotClass="bg-red-500" ; } else if (order.status==='Returned' ) {
+                            statusClass="bg-orange-50 text-orange-700 border-orange-200" ; dotClass="bg-orange-500" ; }
+                            %>
+                            <div
+                                class="px-4 py-2 <%= statusClass %> rounded-lg text-sm font-bold tracking-wide uppercase border flex items-center gap-2">
+                                <span class="relative flex h-2.5 w-2.5">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full <%= dotClass %> opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 <%= dotClass %>"></span>
+                                </span>
+                                <%= order.status %>
+                            </div>
                     </div>
-                    <div class="relative">
-                        <div
-                            class="absolute top-[14px] left-4 right-4 h-0.5 bg-[#e0e0e0] hidden md:block z-0"
-                        ></div>
-                        <div
-                            class="absolute top-[14px] left-4 w-3/5 h-0.5 bg-black hidden md:block z-0 transition-all duration-1000"
-                        ></div>
-                        <div
-                            class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 relative z-10"
-                        >
-                            <div
-                                class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group"
-                            >
-                                <div
-                                    class="flex flex-col items-center md:items-start w-full"
-                                >
-                                    <div
-                                        class="md:w-full md:mb-4 flex md:block items-center"
-                                    >
-                                        <div
-                                            class="w-8 h-8 rounded-full bg-black border-4 border-white shadow-sm flex items-center justify-center shrink-0 md:ml-0 md:-ml-1.5"
-                                        >
-                                            <i class="ph ph-bold ph-check text-white"></i>
+                    <% const statuses=["Pending", "Processing" , "Shipped" , "Delivered" ]; let
+                        currentStep=statuses.indexOf(order.status); let progress=0; if (currentStep===0) progress=0;
+                        else if (currentStep===1) progress=38; else if (currentStep===2) progress=70; else if
+                        (currentStep>= 3) progress = 100;
+
+                        if (order.status === 'Cancelled' || order.status == 'Returned') {
+                        currentStep = -1; // No progress styling
+                        progress = 0;
+                        }
+                        %>
+                        <div class="relative">
+                            <div class="absolute top-[14px] left-4 right-4 h-0.5 bg-[#e0e0e0] hidden md:block z-0">
+                            </div>
+                            <div class="absolute top-[14px] left-4 h-0.5 bg-black hidden md:block z-0 transition-all duration-1000"
+                                style="width: <%= progress %>%;"></div>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 relative z-10">
+                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
+                                    <div class="flex flex-col items-center md:items-start w-full">
+                                        <div class="md:w-full md:mb-4 flex md:block items-center">
+                                            <div
+                                                class="w-8 h-8 rounded-full <%= currentStep >= 0 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> shadow-sm flex items-center justify-center shrink-0 md:ml-0 md:-ml-1.5 transition-colors duration-300">
+                                                <i
+                                                    class="ph ph-bold ph-check <%= currentStep >= 0 ? 'text-white' : 'text-transparent' %>"></i>
+                                            </div>
+                                            <div
+                                                class="md:hidden w-0.5 h-12 <%= currentStep > 0 ? 'bg-black' : 'bg-[#e0e0e0]' %> absolute left-[19px] top-8">
+                                            </div>
                                         </div>
-                                        <div
-                                            class="md:hidden w-0.5 h-12 bg-black absolute left-[19px] top-8"
-                                        ></div>
-                                    </div>
-                                    <div class="pl-4 md:pl-0 pt-1 md:pt-0">
-                                        <h4
-                                            class="font-bold text-sm text-black"
-                                        >
-                                            Order Confirmed
-                                        </h4>
-                                        <p
-                                            class="text-xs text-[#757575] mt-0.5"
-                                        >
-                                            Oct 24, 10:42 AM
-                                        </p>
+                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0">
+                                            <h4
+                                                class="font-bold text-sm <%= currentStep >= 0 ? 'text-black' : 'text-[#bdbdbd]' %>">
+                                                Order Confirmed
+                                            </h4>
+                                            <p class="text-xs text-[#757575] mt-0.5">
+                                                <%= order.createdAt.toLocaleDateString('en-US', { month: 'short' ,
+                                                    day: 'numeric' }) %>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div
-                                class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group"
-                            >
-                                <div
-                                    class="flex flex-col items-center md:items-center w-full"
-                                >
-                                    <div
-                                        class="md:w-full md:mb-4 flex md:justify-center items-center"
-                                    >
-                                        <div
-                                            class="w-8 h-8 rounded-full bg-black border-4 border-white shadow-sm flex items-center justify-center shrink-0"
-                                        >
-                                            <i class="ph ph-bold ph-check text-white"></i>
+                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
+                                    <div class="flex flex-col items-center md:items-center w-full">
+                                        <div class="md:w-full md:mb-4 flex md:justify-center items-center">
+                                            <div
+                                                class="w-8 h-8 rounded-full <%= currentStep >= 1 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> shadow-sm flex items-center justify-center shrink-0 transition-colors duration-300">
+                                                <i
+                                                    class="ph ph-bold ph-check <%= currentStep >= 1 ? 'text-white' : 'text-transparent' %>"></i>
+                                            </div>
+                                            <div
+                                                class="md:hidden w-0.5 h-16 <%= currentStep > 1 ? 'bg-black' : 'bg-[#e0e0e0]' %> absolute left-[19px] -translate-y-[2rem]">
+                                            </div>
                                         </div>
-                                        <div
-                                            class="md:hidden w-0.5 h-16 bg-black absolute left-[19px] -translate-y-[2rem]"
-                                        ></div>
-                                    </div>
-                                    <div
-                                        class="pl-4 md:pl-0 pt-1 md:pt-0 md:text-center"
-                                    >
-                                        <h4
-                                            class="font-bold text-sm text-black"
-                                        >
-                                            Processing
-                                        </h4>
-                                        <p
-                                            class="text-xs text-[#757575] mt-0.5"
-                                        >
-                                            Oct 25, 09:15 AM
-                                        </p>
+                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0 md:text-center">
+                                            <h4
+                                                class="font-bold text-sm <%= currentStep >= 1 ? 'text-black' : 'text-[#bdbdbd]' %>">
+                                                Processing
+                                            </h4>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div
-                                class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group"
-                            >
-                                <div
-                                    class="flex flex-col items-center md:items-center w-full"
-                                >
-                                    <div
-                                        class="md:w-full md:mb-4 flex md:justify-center items-center"
-                                    >
-                                        <div
-                                            class="w-8 h-8 rounded-full bg-white border-[3px] border-black shadow-sm flex items-center justify-center shrink-0"
-                                        >
-                                            <i class="ph ph-bold ph-check text-white"></i>
+                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
+                                    <div class="flex flex-col items-center md:items-center w-full">
+                                        <div class="md:w-full md:mb-4 flex md:justify-center items-center">
+                                            <div
+                                                class="w-8 h-8 rounded-full <%= currentStep >= 2 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> shadow-sm flex items-center justify-center shrink-0 transition-colors duration-300">
+                                                <i
+                                                    class="ph ph-bold ph-check <%= currentStep >= 2 ? 'text-white' : 'text-transparent' %>"></i>
+                                            </div>
+                                            <div
+                                                class="md:hidden w-0.5 h-16 <%= currentStep > 2 ? 'bg-black' : 'bg-[#e0e0e0]' %> absolute left-[19px] -translate-y-[2rem]">
+                                            </div>
                                         </div>
-                                        <div
-                                            class="md:hidden w-0.5 h-16 bg-[#e0e0e0] absolute left-[19px] -translate-y-[2rem]"
-                                        ></div>
-                                    </div>
-                                    <div
-                                        class="pl-4 md:pl-0 pt-1 md:pt-0 md:text-center"
-                                    >
-                                        <h4
-                                            class="font-bold text-sm text-black"
-                                        >
-                                            Shipped
-                                        </h4>
-                                        <p
-                                            class="text-xs text-[#757575] mt-0.5"
-                                        >
-                                            Oct 27, 04:30 PM
-                                        </p>
-                                        <p
-                                            class="text-xs text-black font-medium mt-1"
-                                        >
-                                            Portland Distribution Center
-                                        </p>
+                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0 md:text-center">
+                                            <h4
+                                                class="font-bold text-sm <%= currentStep >= 2 ? 'text-black' : 'text-[#bdbdbd]' %>">
+                                                Shipped
+                                            </h4>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div
-                                class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group"
-                            >
-                                <div
-                                    class="flex flex-col items-center md:items-end w-full"
-                                >
-                                    <div
-                                        class="md:w-full md:mb-4 flex md:justify-end items-center"
-                                    >
-                                        <div
-                                            class="w-8 h-8 rounded-full bg-white border-2 border-[#e0e0e0] flex items-center justify-center shrink-0 md:mr-0 md:-mr-1.5"
-                                        >
-                                            <i class="ph ph-bold ph-check text-white"></i>
+                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
+                                    <div class="flex flex-col items-center md:items-end w-full">
+                                        <div class="md:w-full md:mb-4 flex md:justify-end items-center">
+                                            <div
+                                                class="w-8 h-8 rounded-full <%= currentStep >= 3 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> flex items-center justify-center shrink-0 md:mr-0 md:-mr-1.5 transition-colors duration-300">
+                                                <i
+                                                    class="ph ph-bold ph-check <%= currentStep >= 3 ? 'text-white' : 'text-transparent' %>"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div
-                                        class="pl-4 md:pl-0 pt-1 md:pt-0 text-right"
-                                    >
-                                        <h4
-                                            class="font-medium text-sm text-[#bdbdbd]"
-                                        >
-                                            Delivered
-                                        </h4>
-                                        <p
-                                            class="text-xs text-[#bdbdbd] mt-0.5"
-                                        >
-                                            Expected Oct 30
-                                        </p>
+                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0 text-right">
+                                            <h4
+                                                class="font-medium text-sm <%= currentStep >= 3 ? 'text-black' : 'text-[#bdbdbd]' %>">
+                                                Delivered
+                                            </h4>
+                                            <p class="text-xs text-[#757575] mt-0.5">
+                                                <% if (currentStep>= 3) { %>
+                                                    Delivered
+                                                <% } else { %>
+                                                    Expected <%= estDelivery.toLocaleDateString('en-US', {
+                                                        month: 'short' , day: 'numeric' }) %>
+                                                <% } %>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
                     <div class="lg:col-span-8 flex flex-col gap-12">
                         <section>
                             <h3 class="text-xl font-bold mb-6 font-display">
-                                Items Ordered (2)
+                                Items Ordered (<%= order.items.length %>)
                             </h3>
                             <div class="flex flex-col gap-8">
-                                <div
-                                    class="group flex flex-col sm:flex-row gap-6 items-start pb-8 border-b border-[#f2f2f2] last:border-0"
-                                >
+                                <% order.items.forEach((item, index)=> { %>
                                     <div
-                                        class="relative overflow-hidden rounded-xl bg-surface-light w-full sm:w-36 aspect-square shrink-0 border border-[#f2f2f2]"
-                                    >
+                                        class="group flex flex-col sm:flex-row gap-6 items-start pb-8 border-b border-[#f2f2f2] last:border-0">
                                         <div
-                                            class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                                            data-alt="Close up texture of light french oak wood flooring"
-                                            style="
-                                                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAdbY1Ut3lSOmAJJfvR4nUUOuScHwXmpGbzQUTixzXNdV6hT2cdgA_8Caf4Anr2aapefMPtky7ZUFXYoFbh1PNYgOZpevHVphQ5RuJ1JCvy47FRsntRwv1o97YQ65ZSLqxQFLOM65cGvZO2D-mU_eMPQqj9Y-GyvkuPkzvfMkRZZJHRO82zkTU53G2ECvVmhYMoDzTsM0wBLuVJ56lvGk1u3NRGggSWxC822T3uU4B5fCAwRUfO1LmU-GaaPoAKRxNcBwdaWCzeMMI');
-                                            "
-                                        ></div>
-                                    </div>
-                                    <div class="flex-1 w-full pt-1">
-                                        <div
-                                            class="flex flex-col md:flex-row md:justify-between gap-4"
-                                        >
-                                            <div>
-                                                <h4
-                                                    class="text-lg font-bold text-black mb-1"
-                                                >
-                                                    French Oak - Wide Plank
-                                                </h4>
-                                                <p
-                                                    class="text-sm text-[#757575] mb-3"
-                                                >
-                                                    SKU: WD-8821
-                                                </p>
-                                                <div
-                                                    class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[#757575]"
-                                                >
-                                                    <p>
-                                                        <span
-                                                            class="font-medium text-black"
-                                                            >Finish:</span
-                                                        >
-                                                        Matte Natural
+                                            class="relative overflow-hidden rounded-xl bg-surface-light w-full sm:w-36 aspect-square shrink-0 border border-[#f2f2f2]">
+                                            <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                                data-alt="Close up texture of light french oak wood flooring" style="
+                                                background-image: url('<%= item.product.productImages[0] %>');
+                                            "></div>
+                                        </div>
+                                        <div class="flex-1 w-full pt-1">
+                                            <div class="flex flex-col md:flex-row md:justify-between gap-4">
+                                                <div>
+                                                    <h4 class="text-lg font-bold text-black mb-1">
+                                                        <%= item.product.name %>
+                                                    </h4>
+                                                    <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[#757575]">
+                                                        <p>
+                                                            <span class="font-medium text-black">Size:</span>
+                                                            <%= variants[index].size %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-left md:text-right">
+                                                    <p class="text-lg font-bold text-black">
+                                                        ₹<%= item.subTotal.toLocaleString('en-IN') %>
                                                     </p>
-                                                    <p>
-                                                        <span
-                                                            class="font-medium text-black"
-                                                            >Coverage:</span
-                                                        >
-                                                        25.5 sq ft / box
+                                                    <p class="text-sm text-[#757575]">
+                                                        ₹<%= variants[index].price.toLocaleString('en-IN') %> / sq ft
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div
-                                                class="text-left md:text-right"
-                                            >
-                                                <p
-                                                    class="text-lg font-bold text-black"
-                                                >
-                                                    $1,125.00
-                                                </p>
-                                                <p
-                                                    class="text-sm text-[#757575]"
-                                                >
-                                                    $4.50 / sq ft
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="mt-4 flex items-center justify-between"
-                                        >
-                                            <div
-                                                class="flex items-center gap-2 bg-surface-light px-3 py-1.5 rounded-md text-sm"
-                                            >
-                                                <span
-                                                    class="font-medium text-black"
-                                                    >Qty:</span
-                                                >
-                                                <span class="text-[#757575]"
-                                                    >10 boxes</span
-                                                >
-                                            </div>
-                                            <button
-                                                class="text-sm font-medium text-black hover:text-[#757575] transition-colors"
-                                            >
-                                                Buy Again
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    class="group flex flex-col sm:flex-row gap-6 items-start pb-8 border-b border-[#f2f2f2] last:border-0"
-                                >
-                                    <div
-                                        class="relative overflow-hidden rounded-xl bg-surface-light w-full sm:w-36 aspect-square shrink-0 border border-[#f2f2f2]"
-                                    >
-                                        <div
-                                            class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                                            data-alt="Roll of acoustic underlayment foam material"
-                                            style="
-                                                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA3988odt6SGaFZuKqXHleYdmuEBoZ2sByy9sQ7si8akn0biNJ9JiWqgSz_yHXkZNHNX2VmcsZI3EZN2tjOa7UszNCxReRi6px9KoMy4qhj5KhMO1pxKjahZBZb4PBEBuTWMXqTKZFnrZWcULW3kPTooNILjDFTNbop4iY2rwTScbtY7TL5G5SFHarwpbpn_MLYDlWdgsTwzx5W3wZFWJjCjusPYOepPiqy_QOaBDVDtQphULzWGq2BGnpqiKJ97VXUttx4tBBf_aw');
-                                            "
-                                        ></div>
-                                    </div>
-                                    <div class="flex-1 w-full pt-1">
-                                        <div
-                                            class="flex flex-col md:flex-row md:justify-between gap-4"
-                                        >
-                                            <div>
-                                                <h4
-                                                    class="text-lg font-bold text-black mb-1"
-                                                >
-                                                    Premium Acoustic
-                                                    Underlayment
-                                                </h4>
-                                                <p
-                                                    class="text-sm text-[#757575] mb-3"
-                                                >
-                                                    SKU: AC-9902
-                                                </p>
+                                            <div class="mt-4 flex items-center justify-between">
                                                 <div
-                                                    class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[#757575]"
-                                                >
-                                                    <p>
-                                                        <span
-                                                            class="font-medium text-black"
-                                                            >Thickness:</span
-                                                        >
-                                                        3mm
-                                                    </p>
+                                                    class="flex items-center gap-2 bg-surface-light px-3 py-1.5 rounded-md text-sm">
+                                                    <span class="font-medium text-black">Qty:</span>
+                                                    <span class="text-[#757575]">
+                                                        <%= item.quantity %> sq.ft
+                                                    </span>
                                                 </div>
+                                                <% if (item.status==='Cancelled' ) { %>
+                                                    <span
+                                                        class="text-sm font-medium text-red-500 bg-red-50 px-3 py-1.5 rounded-md border border-red-200">Cancelled</span>
+                                                <% } else if (item.status==='Returned' ) { %>
+                                                    <span
+                                                        class="text-sm font-medium text-orange-500 bg-orange-50 px-3 py-1.5 rounded-md border border-orange-200">Returned</span>
+                                                <% } else if (item.status==='Return Request' ) { %>
+                                                    <a  href="/profile/orders/returnDetails/<%= order._id %>/<%= item._id %>"
+                                                        class="text-sm font-medium text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-md border border-yellow-200">Return Requested</a>
+                                                <% } else { %>
+                                                    <% if (order.status==='Pending' ||
+                                                        order.status==='Processing' ) { %>
+                                                        <button
+                                                            onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')"
+                                                            class="text-sm font-medium text-red-600 hover:text-red-800 transition-colors bg-red-50 px-3 py-1.5 rounded-md border border-red-100">
+                                                            Cancel Item
+                                                        </button>
+                                                    <% } else if (order.status==='Delivered' ) { %>
+                                                        <button
+                                                            onclick="returnItem('<%= order.orderId %>', '<%= item._id %>')"
+                                                            class="text-sm font-medium text-black hover:text-[#757575] transition-colors bg-surface-light px-3 py-1.5 rounded-md border border-[#e0e0e0]">
+                                                            Return Item
+                                                        </button>
+                                                    <% } else { %>
+                                                        <!-- Optional: Buy Again for other statuses if needed, or keeping it blank -->
+                                                        <button
+                                                            class="text-sm font-medium text-black hover:text-[#757575] transition-colors">
+                                                            Buy Again
+                                                        </button>
+                                                    <% } %>
+                                                <% } %>
                                             </div>
-                                            <div
-                                                class="text-left md:text-right"
-                                            >
-                                                <p
-                                                    class="text-lg font-bold text-black"
-                                                >
-                                                    $120.00
-                                                </p>
-                                                <p
-                                                    class="text-sm text-[#757575]"
-                                                >
-                                                    $40.00 / roll
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="mt-4 flex items-center justify-between"
-                                        >
-                                            <div
-                                                class="flex items-center gap-2 bg-surface-light px-3 py-1.5 rounded-md text-sm"
-                                            >
-                                                <span
-                                                    class="font-medium text-black"
-                                                    >Qty:</span
-                                                >
-                                                <span class="text-[#757575]"
-                                                    >3 rolls</span
-                                                >
-                                            </div>
-                                            <button
-                                                class="text-sm font-medium text-black hover:text-[#757575] transition-colors"
-                                            >
-                                                Buy Again
-                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </section>
-                        <section class="border-t border-[#f2f2f2] pt-8">
-                            <h3 class="text-xl font-bold mb-8 font-display">
-                                Order Information
-                            </h3>
-                            <div
-                                class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12"
-                            >
-                                <div class="flex flex-col gap-4">
-                                    <h4
-                                        class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[18px]"
-                                            >location_on</span
-                                        >
-                                        Shipping Address
-                                    </h4>
-                                    <address
-                                        class="not-italic text-black leading-relaxed pl-7 border-l-2 border-surface-light"
-                                    >
-                                        <span
-                                            class="font-bold block text-lg mb-1"
-                                            >Jane Doe</span
-                                        >
-                                        1234 Maple Wood Drive<br />
-                                        Suite 400<br />
-                                        Portland, OR 97205<br />
-                                        United States
-                                    </address>
-                                </div>
-                                <div class="flex flex-col gap-4">
-                                    <h4
-                                        class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[18px]"
-                                            >receipt</span
-                                        >
-                                        Billing Address
-                                    </h4>
-                                    <address
-                                        class="not-italic text-black leading-relaxed pl-7 border-l-2 border-surface-light"
-                                    >
-                                        <span
-                                            class="font-bold block text-lg mb-1"
-                                            >Jane Doe</span
-                                        >
-                                        1234 Maple Wood Drive<br />
-                                        Suite 400<br />
-                                        Portland, OR 97205<br />
-                                        United States
-                                    </address>
-                                </div>
-                                <div class="flex flex-col gap-4">
-                                    <h4
-                                        class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[18px]"
-                                            >local_shipping</span
-                                        >
-                                        Delivery Method
-                                    </h4>
-                                    <div
-                                        class="pl-7 border-l-2 border-surface-light"
-                                    >
-                                        <p class="font-medium text-lg mb-1">
-                                            Standard Ground
-                                        </p>
-                                        <p class="text-sm text-[#757575]">
-                                            FedEx Tracking:
-                                            <a
-                                                class="underline decoration-1 underline-offset-2 hover:text-black"
-                                                href="#"
-                                                >7823912384</a
-                                            >
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-4">
-                                    <h4
-                                        class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[18px]"
-                                            >credit_card</span
-                                        >
-                                        Payment Method
-                                    </h4>
-                                    <div
-                                        class="pl-7 border-l-2 border-surface-light flex items-center gap-4"
-                                    >
-                                        <div
-                                            class="h-10 w-14 bg-white border border-[#e0e0e0] rounded flex items-center justify-center shadow-sm"
-                                        >
-                                            <svg
-                                                class="w-8 h-8"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M10 16L12 6M16 16L18 6M6 6L4 16M2 6H22"
-                                                    stroke="#141414"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="1.5"
-                                                ></path>
-                                            </svg>
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <p class="font-medium text-lg">
-                                                Visa ending in 4242
-                                            </p>
-                                            <p class="text-xs text-[#757575]">
-                                                Exp 12/25
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <% }); %>
                             </div>
                         </section>
                     </div>
                     <div class="lg:col-span-4">
                         <div class="sticky top-28 space-y-6">
                             <div
-                                class="bg-surface-light/30 border border-[#f2f2f2] rounded-2xl p-6 md:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.02)]"
-                            >
+                                class="bg-surface-light/30 border border-[#f2f2f2] rounded-2xl p-6 md:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.02)]">
                                 <h3 class="text-xl font-bold mb-6 font-display">
                                     Order Summary
                                 </h3>
                                 <div class="space-y-4 text-sm">
-                                    <div
-                                        class="flex justify-between text-[#757575]"
-                                    >
+                                    <div class="flex justify-between text-[#757575]">
                                         <span>Subtotal</span>
-                                        <span class="font-medium text-black"
-                                            >$1,245.00</span
-                                        >
+                                        <span class="font-medium text-black">
+                                            ₹<%= order.subTotal.toLocaleString('en-IN') %>
+                                        </span>
                                     </div>
-                                    <div
-                                        class="flex justify-between text-[#757575]"
-                                    >
+                                    <div class="flex justify-between text-[#757575]">
                                         <span>Discount</span>
-                                        <span class="font-medium text-black"
-                                            >-$0.00</span
-                                        >
+                                        <span class="font-medium text-black">-$0.00</span>
                                     </div>
-                                    <div
-                                        class="flex justify-between text-[#757575]"
-                                    >
+                                    <div class="flex justify-between text-[#757575]">
                                         <span>Shipping</span>
-                                        <span
-                                            class="font-medium text-accent-green"
-                                            >Free</span
-                                        >
+                                        <span class="font-medium text-accent-green"><%= order.shipping == 0 ? 'Free' : '₹' + order.shipping %></span>
                                     </div>
-                                    <div
-                                        class="flex justify-between text-[#757575]"
-                                    >
+                                    <div class="flex justify-between text-[#757575]">
                                         <span>Estimated Tax</span>
-                                        <span class="font-medium text-black"
-                                            >$87.15</span
-                                        >
+                                        <span class="font-medium text-black">₹<%= order.tax.toLocaleString('en-IN') %></span>
                                     </div>
                                 </div>
-                                <div
-                                    class="my-6 border-t border-[#e0e0e0] border-dashed"
-                                ></div>
-                                <div
-                                    class="flex justify-between items-baseline mb-2"
-                                >
+                                <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
+                                <div class="flex justify-between items-baseline mb-2">
                                     <span class="font-bold text-lg">Total</span>
-                                    <span
-                                        class="font-bold text-3xl tracking-tight"
-                                        >$1,332.15</span
-                                    >
+                                    <span class="font-bold text-3xl tracking-tight">
+                                        ₹<%= order.totalAmount.toLocaleString('en-IN') %>
+                                    </span>
                                 </div>
-                                <p class="text-xs text-[#757575] text-right">
+                                <!-- <p class="text-xs text-[#757575] text-right">
                                     Paid on Oct 24, 2023
-                                </p>
-                            </div>
-                            <div class="flex flex-col gap-3">
-                                <button
-                                    class="w-full py-3 rounded-full bg-black text-white text-sm font-bold hover:bg-black/80 transition-all shadow-md hover:shadow-lg"
-                                >
-                                    Track Package
-                                </button>
-                            </div>
-                            <div
-                                class="rounded-xl border border-[#f2f2f2] p-6 text-center space-y-4 bg-white"
-                            >
-                                <div
-                                    class="mx-auto w-10 h-10 rounded-full bg-surface-light flex items-center justify-center mb-2"
-                                >
-                                    <span
-                                        class="material-symbols-outlined text-[20px] text-black"
-                                        >support_agent</span
-                                    >
-                                </div>
-                                <h4 class="font-bold">Need Help?</h4>
-                                <p class="text-sm text-[#757575]">
-                                    Questions about your installation or
-                                    delivery?
-                                </p>
-                                <a
-                                    class="block text-sm font-bold text-black underline hover:no-underline"
-                                    href="#"
-                                >
-                                    Contact Support
-                                </a>
+                                </p> -->
                             </div>
                         </div>
                     </div>
                 </div>
+                <section class="border-t border-[#f2f2f2] pt-8">
+                    <h3 class="text-xl font-bold mb-8 font-display">
+                        Order Information
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12">
+                        <div class="flex flex-col gap-4">
+                            <h4
+                                class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2">
+                                <i class="ph ph-bold ph-map-pin"></i>
+                                Shipping Address
+                            </h4>
+                            <address class="not-italic text-black leading-relaxed pl-7 border-l-2 border-surface-light">
+                                <span class="font-bold block text-lg mb-1">
+                                    <%= order.address.name %> - <span class="font-semibold text-sm">
+                                            <%= order.address.phone %>
+                                        </span>
+                                </span>
+                                <%= order.address.address1 %><br />
+                                    <%= order.address.city %><br />
+                                        <%= order.address.state %><br />
+                                            <%= order.address.zip %>
+                            </address>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <h4
+                                class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2">
+                                <i class="ph ph-bold ph-truck"></i>
+                                Delivery Method
+                            </h4>
+                            <div class="pl-7 border-l-2 border-surface-light">
+                                <p class="font-medium text-lg mb-1">
+                                    Standard Ground
+                                </p>
+                                <p class="text-sm text-[#757575]">
+                                    FedEx Tracking:
+                                    <a class="underline decoration-1 underline-offset-2 hover:text-black"
+                                        href="#">7823912384</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <h4
+                                class="font-bold text-sm uppercase tracking-wider text-[#9e9e9e] flex items-center gap-2">
+                                <i class="ph ph-bold ph-credit-card"></i>
+                                Payment Method
+                            </h4>
+                            <div class="pl-7 border-l-2 border-surface-light flex items-center gap-4">
+                                <div
+                                    class="h-10 w-14 bg-white border border-[#e0e0e0] rounded flex items-center justify-center shadow-sm">
+                                    <i class="ph ph-bold ph-money-wavy text-2xl"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="font-medium text-lg">
+                                        <%= order.paymentMethod=='cod' ? 'Cash on Delivery' : order.paymentMethod %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
-    </div>
-    <%- include('../../partials/footer.ejs') %>
+        </div>
+        <%- include('../../partials/footer.ejs') %>
+            <script>
+                async function handleAction(url, title, inputPlaceholder, successMessage) {
+                    const { value: reason } = await Swal.fire({
+                        title: title,
+                        input: 'text',
+                        inputLabel: 'Reason',
+                        inputPlaceholder: inputPlaceholder,
+                        showCancelButton: true,
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'You need to write something!'
+                            }
+                        }
+                    });
+
+                    if (reason) {
+                        try {
+                            const response = await fetch(url, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ reason })
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                Swal.fire('Success', successMessage, 'success').then(() => location.reload());
+                            } else {
+                                Swal.fire('Error', data.message, 'error');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            Swal.fire('Error', 'Something went wrong', 'error');
+                        }
+                    }
+                }
+
+                function cancelOrder(orderId) {
+                    handleAction(`/profile/orders/cancel/${orderId}`, 'Cancel Order', 'Why do you want to cancel?', 'Order cancelled successfully');
+                }
+
+                function returnOrder(orderId) {
+                    handleAction(`/profile/orders/return/${orderId}`, 'Return Order', 'Why do you want to return?', 'Return request placed successfully');
+                }
+
+                function cancelItem(orderId, itemId) {
+                    handleAction(`/profile/orders/item/cancel/${orderId}/${itemId}`, 'Cancel Item', 'Why do you want to cancel this item?', 'Item cancelled successfully');
+                }
+
+                function returnItem(orderId, itemId) {
+                    handleAction(`/profile/orders/item/return/${orderId}/${itemId}`, 'Return Item', 'Why do you want to return this item?', 'Item return request placed successfully');
+                }
+            </script>
     </body>
-</html>
+
+    </html>

@@ -205,13 +205,13 @@
                                             class="flex justify-between text-base text-[#757575]"
                                         >
                                             <span>Shipping</span>
-                                            <span>$15.00</span>
+                                            <span><%= shipping == 0 ? 'Free' : '₹' + shipping %></span>
                                         </div>
                                         <div
                                             class="flex justify-between text-base text-[#757575]"
                                         >
                                             <span>Taxes</span>
-                                            <span>$26.24</span>
+                                            <span>₹<%= tax %></span>
                                         </div>
                                     </div>
                                     <div
@@ -221,7 +221,7 @@
                                         class="flex justify-between text-lg font-bold text-black"
                                     >
                                         <span>Total</span>
-                                        <span>₹<%= totalAmount.toLocaleString('en-IN') %></span>
+                                        <span>₹<%= total.toLocaleString('en-IN') %></span>
                                     </div>
                                 </div>
                             </div>
