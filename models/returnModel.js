@@ -27,9 +27,6 @@ const returnSchema = new mongoose.Schema({
     refundAmount: {
         type: Number,
         required: true
-    },
-    adminComment: {
-        type: String
     }
 }, { timestamps: true });
 

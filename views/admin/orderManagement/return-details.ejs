@@ -1,0 +1,211 @@
+<%- include('../../partials/admin-header.ejs') %>
+
+    <body class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white">
+        <%- include('../../partials/flash.ejs') %>
+            <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+                <div class="flex min-h-screen">
+                    <%- include('../../partials/sidebar.ejs') %>
+                        <main class="flex-1 p-6 lg:p-10">
+                            <div class="layout-content-container flex flex-col w-full">
+                                <!-- Header -->
+                                <div class="flex flex-wrap justify-between gap-4 items-center mb-6">
+                                    <div class="flex flex-col gap-1">
+                                        <h1
+                                            class="text-[#141414] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">
+                                            Return Details
+                                        </h1>
+                                        <p
+                                            class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal">
+                                            Return ID: #<%= returnRequest._id %> • <span class="text-primary">
+                                                    <%= new Date(returnRequest.createdAt).toLocaleDateString() %>
+                                                </span>
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <a href="/admin/returns"
+                                            class="flex items-center gap-2 bg-gray-100 dark:bg-[#1f1f1f] text-[#141414] dark:text-white font-medium px-4 py-2 rounded-lg hover:opacity-90">
+                                            <span class="material-symbols-outlined text-xl">arrow_back</span>
+                                            Back to List
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col lg:flex-row gap-6">
+                                    <!-- Left Column: Return Item -->
+                                    <div class="flex-1 flex flex-col gap-6">
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2
+                                                    class="text-[#141414] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                                                    Returned Item
+                                                </h2>
+                                            </div>
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full text-left">
+                                                    <thead
+                                                        class="text-sm text-[#757575] dark:text-gray-400 bg-gray-50 dark:bg-[#2a2a2a]">
+                                                        <tr>
+                                                            <th class="px-6 py-3 font-medium">Product</th>
+                                                            <th class="px-6 py-3 font-medium">Size</th>
+                                                            <th class="px-6 py-3 font-medium text-right">Refund Amount
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            class="border-b border-[#e0e0e0] dark:border-primary/20 last:border-0">
+                                                            <td class="px-6 py-4">
+                                                                <div class="flex items-center gap-4">
+                                                                    <img src="<%= orderItem.product.productImages[0] || 'https://via.placeholder.com/60' %>"
+                                                                        alt="Product"
+                                                                        class="w-16 h-16 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
+                                                                    <div>
+                                                                        <h6
+                                                                            class="text-[#141414] dark:text-white font-semibold">
+                                                                            <%= orderItem.product.name %>
+                                                                        </h6>
+                                                                        <p
+                                                                            class="text-sm text-[#757575] dark:text-gray-400">
+                                                                            Reason: <%= returnRequest.reason %>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-6 py-4 text-[#757575] dark:text-gray-400">
+                                                                <%= variant ? variant.size : 'N/A' %>
+                                                            </td>
+                                                            <td
+                                                                class="px-6 py-4 text-right font-bold text-[#141414] dark:text-white">
+                                                                ₹<%= returnRequest.refundAmount.toLocaleString() %>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Update Status Section -->
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2 class="text-[#141414] dark:text-white text-lg font-bold">Update
+                                                    Return Status</h2>
+                                            </div>
+                                            <div class="p-6">
+                                                <form id="statusForm" class="flex flex-col sm:flex-row gap-4 items-end">
+                                                    <div class="flex-1 w-full">
+                                                        <label
+                                                            class="block text-sm font-medium text-[#757575] dark:text-gray-400 mb-2">Current
+                                                            Status</label>
+                                                        <div class="relative">
+                                                            <select name="status" id="statusSelect"
+                                                                class="w-full px-4 py-3 bg-gray-50 dark:bg-[#2a2a2a] border border-[#e0e0e0] dark:border-primary/20 rounded-lg text-[#141414] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none">
+                                                                <option value="Return Request"
+                                                                    <%=returnRequest.status==='Return Request'
+                                                                    ? 'selected' : '' %>>Return Request</option>
+                                                                <option value="Approved"
+                                                                    <%=returnRequest.status==='Approved' ? 'selected'
+                                                                    : '' %>>Approved</option>
+                                                                <option value="Rejected"
+                                                                    <%=returnRequest.status==='Rejected' ? 'selected'
+                                                                    : '' %>>Rejected</option>
+                                                                <option value="Picked"
+                                                                    <%=returnRequest.status==='Picked' ? 'selected' : ''
+                                                                    %>>Picked</option>
+                                                                <option value="Returned"
+                                                                    <%=returnRequest.status==='Returned' ? 'selected'
+                                                                    : '' %>>Returned</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit"
+                                                        class="w-full sm:w-auto px-6 py-3 bg-primary text-white font-medium rounded-lg hover:opacity-90 transition-opacity">
+                                                        Update Status
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column: Requested By -->
+                                    <div class="lg:w-[400px] flex flex-col gap-6">
+
+                                        <!-- Customer Details -->
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2 class="text-[#141414] dark:text-white text-lg font-bold">Requested
+                                                    By</h2>
+                                            </div>
+                                            <div class="p-6">
+                                                <div class="flex items-center gap-4 mb-6">
+                                                    <div
+                                                        class="w-12 h-12 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center text-[#757575]">
+                                                        <span class="material-symbols-outlined">person</span>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="text-[#141414] dark:text-white font-bold">
+                                                            <%= returnRequest.userId.name %>
+                                                        </h6>
+                                                        <p class="text-sm text-[#757575] dark:text-gray-400">
+                                                            <%= returnRequest.userId.email %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="text-xs uppercase font-bold text-[#757575] dark:text-gray-400 tracking-wider">Original
+                                                        Order ID</label>
+                                                    <p class="mt-1 text-sm text-[#141414] dark:text-white">
+                                                        <a href="/admin/orders/details/<%= returnRequest.orderId._id %>"
+                                                            class="text-primary hover:underline">
+                                                            #<%= returnRequest.orderId.orderId.split('-')[2] %>
+                                                        </a>
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                </div>
+            </div>
+    </body>
+    <script>
+        document.getElementById('statusForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const status = document.getElementById('statusSelect').value;
+            const returnId = '<%= returnRequest._id %>';
+
+            try {
+                const response = await fetch(`/admin/returns/update-status/${returnId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.ok) { // Check if ok since controller uses res.json({success: true}) which is status 200
+                    const data = await response.json();
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        console.error('Failed to update status');
+                        location.reload(); // Or show alert
+                    }
+                } else {
+                    console.error('Failed to update status');
+                    alert('Failed to update status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        });
+    </script>

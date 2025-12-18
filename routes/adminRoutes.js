@@ -3,6 +3,7 @@ import { checkAdmin, redirectIfLoggedIn } from "../middlewares/adminAuthMiddlewa
 import * as categories from "../controllers/adminControllers/categoryManagement.js";
 import * as users from "../controllers/adminControllers/userManagement.js";
 import * as products from "../controllers/adminControllers/productManagement.js";
+import * as orders from "../controllers/adminControllers/orderManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
 import upload from "../utils/cloudinary.js";
 import nocache from "nocache";
@@ -61,6 +62,20 @@ router.route("/products/edit/:id")
 router.get("/products/delete/:id", products.deleteProduct);
 
 router.get("/products/unblock/:id", products.unblockProduct);
+
+// orderManagement
+
+router.get('/orders', orders.orders);
+
+router.get('/returns', orders.returns);
+
+router.get('/orders/details/:orderId', orders.orderDetails);
+
+router.patch('/orders/update-status/:orderId', orders.updateStatus);
+
+router.get('/returns/details/:returnId', orders.returnDetails);
+
+router.patch('/returns/update-status/:returnId', orders.updateReturnStatus);
 
 // logout
 

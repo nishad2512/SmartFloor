@@ -190,7 +190,8 @@
                                     <div
                                         class="group flex flex-col sm:flex-row gap-6 items-start pb-8 border-b border-[#f2f2f2] last:border-0">
                                         <div
-                                            class="relative overflow-hidden rounded-xl bg-surface-light w-full sm:w-36 aspect-square shrink-0 border border-[#f2f2f2]">
+                                            onclick="window.location.href='/products/product/<%= item.product._id %>'"
+                                            class="relative overflow-hidden rounded-xl bg-surface-light w-full sm:w-36 aspect-square shrink-0 border cursor-pointer border-[#f2f2f2]">
                                             <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                                                 data-alt="Close up texture of light french oak wood flooring" style="
                                                 background-image: url('<%= item.product.productImages[0] %>');
@@ -233,8 +234,8 @@
                                                     <span
                                                         class="text-sm font-medium text-orange-500 bg-orange-50 px-3 py-1.5 rounded-md border border-orange-200">Returned</span>
                                                 <% } else if (item.status==='Return Request' ) { %>
-                                                    <a  href="/profile/orders/returnDetails/<%= order._id %>/<%= item._id %>"
-                                                        class="text-sm font-medium text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-md border border-yellow-200">Return Requested</a>
+                                                    <a href="/profile/orders/returnDetails/<%= order._id %>/<%= item._id %>"
+                                                        class="text-md font-semibold text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-md border border-yellow-200">Return Details</a>
                                                 <% } else { %>
                                                     <% if (order.status==='Pending' ||
                                                         order.status==='Processing' ) { %>

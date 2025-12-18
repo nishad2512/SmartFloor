@@ -1,0 +1,152 @@
+<%- include('../../partials/admin-header.ejs') %>
+
+    <body class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white">
+        <%- include('../../partials/flash.ejs') %>
+            <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+                <div class="flex min-h-screen">
+                    <%- include('../../partials/sidebar.ejs') %>
+                        <main class="flex-1 p-6 lg:p-10">
+                            <div class="layout-content-container flex flex-col w-full">
+                                <div class="flex flex-wrap justify-between gap-4 items-center mb-6">
+                                    <div class="flex flex-col gap-1">
+                                        <p
+                                            class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                                            Returns
+                                        </p>
+                                        <p
+                                            class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal">
+                                            Manage all customer returns from this page.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                    <div class="p-6">
+                                        <h2
+                                            class="text-[#141414] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                                            All Returns
+                                        </h2>
+                                        <p class="text-[#757575] dark:text-gray-400 text-sm mt-1">
+                                            A comprehensive list of all transactions.
+                                        </p>
+                                    </div>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left">
+                                            <thead class="text-sm text-[#757575] dark:text-gray-400">
+                                                <tr class="border-b border-t border-[#e0e0e0] dark:border-primary/20">
+                                                    <th class="px-6 py-3 font-medium">
+                                                        Product
+                                                    </th>
+                                                    <th class="px-6 py-3 font-medium">
+                                                        Customer Name
+                                                    </th>
+                                                    <th class="px-6 py-3 font-medium">
+                                                        Return Date
+                                                    </th>
+                                                    <th class="px-6 py-3 font-medium">
+                                                        Status
+                                                    </th>
+                                                    <th class="px-6 py-3 font-medium text-right">
+                                                        Refund Amount
+                                                    </th>
+                                                    <th class="px-6 py-3 font-medium text-center">
+                                                        Actions
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% returns.forEach(item=> { %>
+                                                    <tr class="border-b border-[#e0e0e0] dark:border-primary/20">
+                                                        <td
+                                                            class="px-6 py-4 font-medium text-[#141414] dark:text-white">
+                                                            <% const orderItem=item.orderId.items.find(i=>
+                                                                i._id.toString() === item.itemId.toString());
+                                                                const productImage = orderItem && orderItem.product &&
+                                                                orderItem.product.productImages &&
+                                                                orderItem.product.productImages.length > 0
+                                                                ? orderItem.product.productImages[0]
+                                                                : 'https://via.placeholder.com/60';
+                                                                const productName = orderItem && orderItem.product ?
+                                                                orderItem.product.name : 'Unknown Product';
+                                                                %>
+                                                                <div class="flex items-center gap-3">
+                                                                    <img src="<%= productImage %>" alt="Product"
+                                                                        class="w-10 h-10 rounded object-cover border border-[#e0e0e0] dark:border-primary/10">
+                                                                    <span class="text-sm truncate max-w-[150px]"
+                                                                        title="<%= productName %>">
+                                                                        <%= productName %>
+                                                                    </span>
+                                                                </div>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-[#757575] dark:text-gray-400">
+                                                            <%= item.userId.name %>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-[#757575] dark:text-gray-400">
+                                                            <%= item.createdAt.toLocaleDateString('en-IN',
+                                                                {month: 'short' , day: 'numeric' , year: 'numeric' }) %>
+                                                        </td>
+                                                        <td class="px-6 py-4">
+                                                            <% let statusClasses='' ; switch (item.status) {
+                                                                case 'Return Request' :
+                                                                statusClasses='bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
+                                                                ; break; case 'Approved' :
+                                                                statusClasses='bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+                                                                ; break; case 'Picked' :
+                                                                statusClasses='bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
+                                                                ; break; case 'Refunded' :
+                                                                statusClasses='bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                                                                ; break; case 'Rejected' :
+                                                                statusClasses='bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                                                                ; break; default:
+                                                                statusClasses='bg-gray-100 text-gray-700 dark:bg-gray-900/50 dark:text-gray-300'
+                                                                ; } %>
+
+                                                                <span
+                                                                    class="<%= statusClasses %> text-xs font-medium px-2.5 py-1 rounded-full">
+                                                                    <%= item.status %>
+                                                                </span>
+
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-4 text-right font-medium text-[#141414] dark:text-white">
+                                                            ₹<%= item.refundAmount.toLocaleString() %>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-center">
+                                                            <div class="flex justify-center gap-2">
+                                                                <a href="/admin/returns/details/<%= item._id %>"
+                                                                    class="p-2 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-lg">visibility</span>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div
+                                        class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
+                                        <p class="text-[#757575] dark:text-gray-400">
+                                            Showing 1 to 6 of 24 orders
+                                        </p>
+                                        <div class="flex gap-2 items-center">
+                                            <button
+                                                class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50"
+                                                disabled="">
+                                                Previous
+                                            </button>
+                                            <button
+                                                class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30">
+                                                Next
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                </div>
+            </div>
+    </body>
+
+    </html>
