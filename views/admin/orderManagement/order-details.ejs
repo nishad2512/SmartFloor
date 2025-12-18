@@ -1,0 +1,284 @@
+<%- include('../../partials/admin-header.ejs') %>
+
+    <body class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white">
+        <%- include('../../partials/flash.ejs') %>
+            <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+                <div class="flex min-h-screen">
+                    <%- include('../../partials/sidebar.ejs') %>
+                        <main class="flex-1 p-6 lg:p-10">
+                            <div class="layout-content-container flex flex-col w-full">
+                                <!-- Header -->
+                                <div class="flex flex-wrap justify-between gap-4 items-center mb-6">
+                                    <div class="flex flex-col gap-1">
+                                        <h1
+                                            class="text-[#141414] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">
+                                            Order Details
+                                        </h1>
+                                        <p
+                                            class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal">
+                                            Order ID: #<%= order.orderId.split('-')[2] %> • <span class="text-primary">
+                                                    <%= new Date(order.createdAt).toLocaleDateString() %>
+                                                </span>
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <a href="/admin/orders"
+                                            class="flex items-center gap-2 bg-gray-100 dark:bg-[#1f1f1f] text-[#141414] dark:text-white font-medium px-4 py-2 rounded-lg hover:opacity-90">
+                                            <span class="material-symbols-outlined text-xl">arrow_back</span>
+                                            Back to List
+                                        </a>
+                                        <button onclick="window.print()"
+                                            class="flex items-center gap-2 bg-primary text-white font-medium px-4 py-2 rounded-lg hover:opacity-90">
+                                            <span class="material-symbols-outlined text-xl">print</span>
+                                            Print Invoice
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col lg:flex-row gap-6">
+                                    <!-- Left Column: Order Items -->
+                                    <div class="flex-1 flex flex-col gap-6">
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2
+                                                    class="text-[#141414] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                                                    Order Items (<%= order.items.length %>)
+                                                </h2>
+                                            </div>
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full text-left">
+                                                    <thead
+                                                        class="text-sm text-[#757575] dark:text-gray-400 bg-gray-50 dark:bg-[#2a2a2a]">
+                                                        <tr>
+                                                            <th class="px-6 py-3 font-medium">Product</th>
+                                                            <th class="px-6 py-3 font-medium">Unit Price</th>
+                                                            <th class="px-6 py-3 font-medium">Qty</th>
+                                                            <th class="px-6 py-3 font-medium text-center">status</th>
+                                                            <th class="px-6 py-3 font-medium text-right">Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% order.items.forEach((item, index)=> { %>
+                                                            <tr
+                                                                class="border-b border-[#e0e0e0] dark:border-primary/20 last:border-0">
+                                                                <td class="px-6 py-4">
+                                                                    <div class="flex items-center gap-4">
+                                                                        <img src="<%= item.product.productImages[0] || 'https://via.placeholder.com/60' %>"
+                                                                            alt="Product"
+                                                                            class="w-16 h-16 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
+                                                                        <div>
+                                                                            <h6
+                                                                                class="text-[#141414] dark:text-white font-semibold">
+                                                                                <%= item.product.name %>
+                                                                            </h6>
+                                                                            <p
+                                                                                class="text-sm text-[#757575] dark:text-gray-400">
+                                                                                Size: <%= variants[index] ?
+                                                                                    variants[index].size : 'N/A' %>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="px-6 py-4 text-[#757575] dark:text-gray-400">
+                                                                    ₹<%= variants[index] ?
+                                                                        variants[index].price.toFixed(2) : '0.00' %>
+                                                                </td>
+                                                                <td class="px-6 py-4 text-[#757575] dark:text-gray-400">
+                                                                    x <%= item.quantity %>
+                                                                </td>
+                                                                <td class="px-6 text-center py-4 text-[#757575] dark:text-gray-400">
+                                                                    <%= item.status %>
+                                                                </td>
+                                                                <td
+                                                                    class="px-6 py-4 text-right font-bold text-[#141414] dark:text-white">
+                                                                    ₹<%= item.subTotal.toLocaleString() %>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Update Status Section -->
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2 class="text-[#141414] dark:text-white text-lg font-bold">Update
+                                                    Order Status</h2>
+                                            </div>
+                                            <div class="p-6">
+                                                <form id="statusForm" class="flex flex-col sm:flex-row gap-4 items-end">
+                                                    <div class="flex-1 w-full">
+                                                        <label
+                                                            class="block text-sm font-medium text-[#757575] dark:text-gray-400 mb-2">Current
+                                                            Status</label>
+                                                        <div class="relative">
+                                                            <select name="status" id="statusSelect"
+                                                                class="w-full px-4 py-3 bg-gray-50 dark:bg-[#2a2a2a] border border-[#e0e0e0] dark:border-primary/20 rounded-lg text-[#141414] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none">
+                                                                <option value="Pending" <%=order.status==='Pending'
+                                                                    ? 'selected' : '' %>>Pending</option>
+                                                                <option value="Processing"
+                                                                    <%=order.status==='Processing' ? 'selected' : '' %>
+                                                                    >Processing</option>
+                                                                <option value="Shipped" <%=order.status==='Shipped'
+                                                                    ? 'selected' : '' %>>Shipped</option>
+                                                                <option value="Delivered" <%=order.status==='Delivered'
+                                                                    ? 'selected' : '' %>>Delivered</option>
+                                                                <option value="Cancelled" <%=order.status==='Cancelled'
+                                                                    ? 'selected' : '' %>>Cancelled</option>
+                                                                <option value="Return Request" <%=order.status==='Return Request'
+                                                                    ? 'selected' : '' %>>Return Request</option>
+                                                                <option value="Returned" <%=order.status==='Returned'
+                                                                    ? 'selected' : '' %>>Returned</option>
+                                                            </select>
+                                                            <div
+                                                                class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-[#757575]">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit"
+                                                        class="w-full sm:w-auto px-6 py-3 bg-primary text-white font-medium rounded-lg hover:opacity-90 transition-opacity">
+                                                        Update Status
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column: Summary & Info -->
+                                    <div class="lg:w-[400px] flex flex-col gap-6">
+
+                                        <!-- Order Summary -->
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2 class="text-[#141414] dark:text-white text-lg font-bold">Order
+                                                    Summary</h2>
+                                            </div>
+                                            <div class="p-6 flex flex-col gap-3">
+                                                <div class="flex justify-between text-[#757575] dark:text-gray-400">
+                                                    <span>Subtotal</span>
+                                                    <span>₹<%= order.subTotal.toFixed(2) %></span>
+                                                </div>
+                                                <div class="flex justify-between text-[#757575] dark:text-gray-400">
+                                                    <span>Shipping</span>
+                                                    <span>₹<%= order.shipping.toFixed(2) %></span>
+                                                </div>
+                                                <div class="flex justify-between text-[#757575] dark:text-gray-400">
+                                                    <span>Tax</span>
+                                                    <span>₹<%= order.tax.toFixed(2) %></span>
+                                                </div>
+                                                <div class="h-px bg-[#e0e0e0] dark:bg-primary/20 my-2"></div>
+                                                <div class="flex justify-between items-center">
+                                                    <span
+                                                        class="text-lg font-bold text-[#141414] dark:text-white">Total</span>
+                                                    <span class="text-xl font-bold text-primary">₹<%=
+                                                            order.totalAmount.toLocaleString('en-IN') %></span>
+                                                </div>
+
+                                                <div class="mt-4 pt-4 border-t border-[#e0e0e0] dark:border-primary/20">
+                                                    <label
+                                                        class="text-xs uppercase font-bold text-[#757575] dark:text-gray-400 tracking-wider">Payment
+                                                        Method</label>
+                                                    <div
+                                                        class="flex items-center gap-2 mt-2 text-[#141414] dark:text-white font-medium">
+                                                        <span
+                                                            class="material-symbols-outlined text-gray-400">credit_card</span>
+                                                        <%= order.paymentMethod=='cod' ? 'Cash on Delivery' :
+                                                            order.paymentMethod %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Customer Details -->
+                                        <div
+                                            class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
+                                            <div class="p-6 border-b border-[#e0e0e0] dark:border-primary/20">
+                                                <h2 class="text-[#141414] dark:text-white text-lg font-bold">Customer
+                                                </h2>
+                                            </div>
+                                            <div class="p-6">
+                                                <div class="flex items-center gap-4 mb-6">
+                                                    <div
+                                                        class="w-12 h-12 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center text-[#757575]">
+                                                        <span class="material-symbols-outlined">person</span>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="text-[#141414] dark:text-white font-bold">
+                                                            <%= order.user.name %>
+                                                        </h6>
+                                                        <p class="text-sm text-[#757575] dark:text-gray-400">
+                                                            <%= order.user.email %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="space-y-4">
+                                                    <div>
+                                                        <label
+                                                            class="text-xs uppercase font-bold text-[#757575] dark:text-gray-400 tracking-wider">Shipping
+                                                            Address</label>
+                                                        <p
+                                                            class="mt-2 text-sm text-[#141414] dark:text-white leading-relaxed">
+                                                            <%= order.address.address1 %><br>
+                                                                <%= order.address.city %>, <%= order.address.state %>
+                                                                        <br>
+                                                                        <%= order.address.zip %><br>
+                                                                            <span
+                                                                                class="inline-block mt-1 px-2 py-0.5 bg-gray-100 dark:bg-[#2a2a2a] text-[#757575] text-xs rounded border border-[#e0e0e0] dark:border-primary/10">
+                                                                                <%= order.address.type %>
+                                                                            </span>
+                                                        </p>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="text-xs uppercase font-bold text-[#757575] dark:text-gray-400 tracking-wider">Billing
+                                                            Address</label>
+                                                        <p class="mt-1 text-sm text-[#757575] dark:text-gray-400">Same
+                                                            as shipping address</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                </div>
+            </div>
+    </body>
+    <script>
+        document.getElementById('statusForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const status = document.getElementById('statusSelect').value;
+            const orderId = '<%= order._id %>';
+
+            try {
+                const response = await fetch(`/admin/orders/update-status/${orderId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.success) {
+                    location.reload();
+                } else {
+                    console.error('Failed to update status');
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        });
+    </script>
+
+    </html>

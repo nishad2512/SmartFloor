@@ -1,0 +1,130 @@
+<%- include("../../partials/header.ejs") %>
+
+    <div class="flex flex-col md:flex-row py-12 gap-[100px] min-h-[90vh]">
+        <!-- Sidebar -->
+        <%- include("../../partials/user-sidebar.ejs") %>
+            <!-- Main Content -->
+            <main class="flex-1">
+                <div class="mx-auto">
+                    <!-- PageHeading -->
+                    <div class="flex flex-wrap justify-between gap-3 mb-6">
+                        <h1 class="text-black text-4xl font-black leading-tight tracking-[-0.033em]">
+                            Order History
+                        </h1>
+                    </div>
+                    <!-- Search and Filters -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-8">
+                        <!-- SearchBar -->
+                        <div class="flex-1">
+                            <label class="flex flex-col min-w-40 h-12 w-full">
+                                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                                    <div
+                                        class="text-gray-500 flex bg-white items-center justify-center pl-4 rounded-l-lg border-r-0">
+                                        <span class="material-symbols-outlined">search</span>
+                                    </div>
+                                    <input
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-black focus:outline-0 focus:ring-2 focus:ring-black/50 border-none bg-white h-full placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal"
+                                        placeholder="Search by Order # or Product" value="" />
+                                </div>
+                            </label>
+                        </div>
+                        <!-- Chips -->
+                        <div class="flex gap-3 items-center">
+                            <button
+                                class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white px-4">
+                                <p class="text-black text-sm font-medium leading-normal">
+                                    Order Date
+                                </p>
+                                <span class="material-symbols-outlined text-black">expand_more</span>
+                            </button>
+                            <button
+                                class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white px-4">
+                                <p class="text-black text-sm font-medium leading-normal">
+                                    Order Status
+                                </p>
+                                <span class="material-symbols-outlined text-black">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Order List -->
+                    <div class="flex flex-col gap-4">
+                        <!-- ListItem 1 -->
+                        <% orders.forEach(order=> { %>
+                            <div onclick="window.location.href='/profile/order/details/<%= order.orderId %>'"
+                                class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg justify-between hover:shadow-md transition-shadow duration-300 cursor-pointer">
+                                <div class="flex items-center gap-4 flex-1">
+                                    <div
+                                        class="text-black flex items-center justify-center rounded-lg bg-background-light shrink-0 size-12">
+                                        <i class="ph ph-bold ph-scroll text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
+                                        <div class="flex flex-col">
+                                            <p class="text-gray-500 text-xs font-medium">
+                                                Order #
+                                            </p>
+                                            <p class="text-black text-base font-medium leading-normal">
+                                                ORD<%= order.orderId.split('-')[2] %>
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <p class="text-gray-500 text-xs font-medium">
+                                                Date
+                                            </p>
+                                            <p class="text-black text-sm font-normal leading-normal">
+                                                <%= order.createdAt.toLocaleDateString('en-IN', {day: 'numeric' ,
+                                                    month: "short" , year: 'numeric' }) %>
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <p class="text-gray-500 text-xs font-medium">
+                                                Total
+                                            </p>
+                                            <p class="text-black text-sm font-normal leading-normal">
+                                                ₹<%= order.totalAmount.toLocaleString('en-IN') %>
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col justify-self-start md:justify-self-end">
+                                            <% let statusClass="text-gray-800 bg-gray-100" ; if
+                                                (order.status==='Pending' ) statusClass="text-yellow-800 bg-yellow-100"
+                                                ; else if (order.status==='Processing' )
+                                                statusClass="text-blue-800 bg-blue-100" ; else if
+                                                (order.status==='Shipped' ) statusClass="text-purple-800 bg-purple-100"
+                                                ; else if (order.status==='Delivered' )
+                                                statusClass="text-green-800 bg-green-100" ; else if
+                                                (order.status==='Cancelled' ) statusClass="text-red-800 bg-red-100" ;
+                                                else if (order.status==='Returned' )
+                                                statusClass="text-orange-800 bg-orange-100" ; %>
+                                                <span
+                                                    class="text-sm font-medium leading-normal rounded-full px-3 py-1 text-center <%= statusClass %>">
+                                                    <%= order.status %>
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="shrink-0 text-black">
+                                    <i class="ph ph-bold ph-caret-right text-xl"></i>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <!-- ListItem 2 -->
+                    </div>
+                    <!-- Pagination -->
+                    <div class="flex justify-center items-center gap-4 mt-8">
+                        <button
+                            class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100 disabled:opacity-50"
+                            disabled="">
+                            <i class="ph ph-bold ph-caret-left text-xl"></i>
+                        </button>
+                        <span class="text-sm text-gray-700">Page 1 of 5</span>
+                        <button class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100">
+                            <i class="ph ph-bold ph-caret-right text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+    </div>
+    </div>
+    <%- include('../../partials/footer.ejs') %>
+        </body>
+
+        </html>

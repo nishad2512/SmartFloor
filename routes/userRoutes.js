@@ -6,6 +6,7 @@ import * as addressController from "../controllers/userControllers/addressContro
 import * as cartController from "../controllers/userControllers/cartController.js";
 import * as wishlistController from "../controllers/userControllers/wishlistController.js";
 import * as checkoutController from "../controllers/userControllers/checkoutController.js";
+import * as orderController from "../controllers/userControllers/orderController.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -69,7 +70,7 @@ router.get('/products/:category', productController.filterByCategory);
 
 router.get('/products/product/:id', productController.productDetails);
 
-// profile
+// profile -----------------
 
 // profile auth routes
 
@@ -122,5 +123,25 @@ router.get('/wishlist', requireAuth, wishlistController.wishlist);
 // checkout routes
 
 router.get('/checkout', requireAuth, checkoutController.checkout);
+
+router.post('/checkout/place-order', requireAuth, checkoutController.placeOrder);
+
+// orders routes
+
+router.get('/profile/orders', requireAuth, orderController.orders)
+
+router.get('/order/confirmation/:orderId', requireAuth, orderController.orderConfirmation);
+
+router.get('/profile/order/details/:orderId', requireAuth, orderController.orderDetails);
+
+router.patch('/profile/orders/cancel/:orderId', requireAuth, orderController.cancelOrder);
+
+router.patch('/profile/orders/return/:orderId', requireAuth, orderController.returnOrder);
+
+router.patch('/profile/orders/item/cancel/:orderId/:itemId', requireAuth, orderController.cancelOrderItem);
+
+router.patch('/profile/orders/item/return/:orderId/:itemId', requireAuth, orderController.returnOrderItem);
+
+router.get('/profile/orders/returnDetails/:orderId/:itemId', requireAuth, orderController.returnDetails);
 
 export default router;
