@@ -1,10 +1,7 @@
 <%- include('../../partials/header') %>
-    <body
-        class="font-display bg-background-light text-[#141414]"
-    >
-        <div
-            class="relative flex h-auto min-h-[90vh] w-full flex-col group/design-root overflow-x-hidden"
-        >
+
+    <body class="font-display bg-background-light text-[#141414]">
+        <div class="relative flex h-auto min-h-[90vh] w-full flex-col group/design-root overflow-x-hidden">
             <div class="layout-container flex h-full grow flex-col">
                 <main class="flex-1">
                     <div class="container mx-auto px-4 lg:px-8 py-10 lg:py-20">
@@ -13,20 +10,14 @@
                                 <div class="flex flex-col gap-4">
                                     <details
                                         class="flex flex-col rounded-lg border border-[#e0e0e0] bg-white px-4 py-2 group"
-                                        open=""
-                                    >
-                                        <summary
-                                            class="flex list-none items-center justify-between gap-6 py-2"
-                                        >
-                                            <p
-                                                class="text-[#141414] text-lg font-medium leading-normal"
-                                            >
+                                        open="">
+                                        <summary class="flex list-none items-center justify-between gap-6 py-2">
+                                            <p class="text-[#141414] text-lg font-medium leading-normal">
                                                 Shipping Address
                                             </p>
-                                            <div
-                                                class="text-[#141414]"
-                                            >
-                                                <a href="/profile/addresses" class="text-[#141414] hover:underline">manage</a>
+                                            <div class="text-[#141414]">
+                                                <a href="/profile/addresses"
+                                                    class="text-[#141414] hover:underline">manage</a>
                                             </div>
                                         </summary>
                                         <div class="pb-4 pt-2">
@@ -35,71 +26,52 @@
                                                     Shipping Address Options
                                                 </legend>
                                                 <div class="space-y-4">
-                                                    <% addresses.forEach(addr => { %>
-                                                    <label
-                                                        class="flex items-start p-4 rounded-lg border border-[#e0e0e0] has-[:checked]:border-gray-800 has-[:checked]:ring-black/50 cursor-pointer"
-                                                    >
-                                                        <input
-                                                            class="form-radio h-4 w-4 mt-1 text-black focus:ring-black/50 border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:checked:bg-black"
-                                                            name="shipping-address"
-                                                            type="radio"
-                                                            value="<%= addr._id %>"
-                                                        />
-                                                        <div
-                                                            class="ml-4 flex-1"
-                                                        >
-                                                            <p
-                                                                class="font-medium text-[#141414]"
-                                                            >
-                                                                <%= addr.name %>
-                                                            </p>
-                                                            <p
-                                                                class="text-sm text-[#757575]"
-                                                            >
-                                                                <%= addr.address1 %>
-                                                            </p>
-                                                        </div>
-                                                    </label>
-                                                    <% }); %>
-                                                    <div
-                                                        onclick="window.location.href='/profile/addresses/add?next=checkout'"
-                                                        class="rounded-lg border bg-gray-100 hover:bg-gray-200 transition-colors border-[#e0e0e0]"
-                                                    >
+                                                    <% addresses.forEach(addr=> { %>
                                                         <label
-                                                            class="flex justify-center p-4 cursor-pointer"
-                                                        >
-                                                            <div
-                                                                class="ml-4"
-                                                            >
-                                                                <p
-                                                                    class="font-medium text-[#141414]"
-                                                                >
-                                                                    Add a new
-                                                                    shipping
-                                                                    address
+                                                            class="flex items-start p-4 rounded-lg border border-[#e0e0e0] has-[:checked]:border-gray-800 has-[:checked]:ring-black/50 cursor-pointer">
+                                                            <input
+                                                                class="form-radio h-4 w-4 mt-1 text-black focus:ring-black/50 border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:checked:bg-black"
+                                                                name="shipping-address" type="radio"
+                                                                checked
+                                                                value="<%= addr._id %>" />
+                                                            <div class="ml-4 flex-1">
+                                                                <p class="font-medium text-[#141414]">
+                                                                    <%= addr.name %>
                                                                 </p>
+                                                                <p class="text-sm text-[#757575]">
+                                                                    <%= addr.address1 %>
+                                                                </p>
+                                                                <span
+                                                                    class="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-[#757575] text-xs rounded border border-[#e0e0e0]">
+                                                                    <%= addr.type %>
+                                                                </span>
                                                             </div>
                                                         </label>
-                                                    </div>
+                                                        <% }); %>
+                                                            <div onclick="window.location.href='/profile/addresses/add?next=checkout'"
+                                                                class="rounded-lg border bg-gray-100 hover:bg-gray-200 transition-colors border-[#e0e0e0]">
+                                                                <label class="flex justify-center p-4 cursor-pointer">
+                                                                    <div class="ml-4">
+                                                                        <p class="font-medium text-[#141414]">
+                                                                            Add a new
+                                                                            shipping
+                                                                            address
+                                                                        </p>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
                                                 </div>
                                             </fieldset>
                                         </div>
                                     </details>
                                     <details
                                         class="flex flex-col rounded-lg border border-[#e0e0e0] bg-white px-4 py-2 group"
-                                        open=""
-                                    >
-                                        <summary
-                                            class="flex list-none items-center justify-between gap-6 py-2"
-                                        >
-                                            <p
-                                                class="text-[#141414] text-lg font-medium leading-normal"
-                                            >
+                                        open="">
+                                        <summary class="flex list-none items-center justify-between gap-6 py-2">
+                                            <p class="text-[#141414] text-lg font-medium leading-normal">
                                                 Payment Method
                                             </p>
-                                            <div
-                                                class="text-[#141414] group-open:rotate-180 transition-transform"
-                                            >
+                                            <div class="text-[#141414] group-open:rotate-180 transition-transform">
                                                 <i class="ph ph-bold ph-caret-down"></i>
                                             </div>
                                         </summary>
@@ -110,26 +82,15 @@
                                                 </legend>
                                                 <div class="space-y-4">
                                                     <label
-                                                        class="flex items-start p-4 rounded-lg border border-[#e0e0e0] has-[:checked]:border-gray-800 has-[:checked]:ring-black/50 cursor-pointer"
-                                                    >
+                                                        class="flex items-start p-4 rounded-lg border border-[#e0e0e0] has-[:checked]:border-gray-800 has-[:checked]:ring-black/50 cursor-pointer">
                                                         <input
                                                             class="form-radio h-4 w-4 mt-1 text-black focus:ring-black/50 border-gray-300"
-                                                            name="payment-method"
-                                                            type="radio"
-                                                            value="cod"
-                                                            checked
-                                                        />
-                                                        <div
-                                                            class="ml-4 flex-1"
-                                                        >
-                                                            <p
-                                                                class="font-medium text-[#141414]"
-                                                            >
+                                                            name="payment-method" type="radio" value="cod" checked />
+                                                        <div class="ml-4 flex-1">
+                                                            <p class="font-medium text-[#141414]">
                                                                 Cash on Delivery
                                                             </p>
-                                                            <p
-                                                                class="text-sm text-[#757575]"
-                                                            >
+                                                            <p class="text-sm text-[#757575]">
                                                                 Pay when you receive the product
                                                             </p>
                                                         </div>
@@ -139,87 +100,81 @@
                                         </div>
                                     </details>
                                     <div
-                                        class="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4"
-                                    >
-                                        <button
-                                            onclick="placeOrder()"
-                                            class="flex w-full sm:w-auto items-center justify-center rounded-lg bg-black text-white font-bold h-12 px-8 text-base leading-normal transition-colors hover:bg-opacity-90"
-                                        >
+                                        class="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4">
+                                        <button onclick="placeOrder()"
+                                            class="flex w-full sm:w-auto items-center justify-center rounded-lg bg-black text-white font-bold h-12 px-8 text-base leading-normal transition-colors hover:bg-opacity-90">
                                             Place Order
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="lg:col-span-5 mt-10 lg:mt-0">
-                                <div
-                                    class="sticky top-10 rounded-lg bg-white border border-[#e0e0e0] p-6"
-                                >
-                                    <h2
-                                        class="text-xl font-semibold mb-6 text-black"
-                                    >
+                                <div class="sticky top-10 rounded-lg bg-white border border-[#e0e0e0] p-6">
+                                    <h2 class="text-xl font-semibold mb-6 text-black">
                                         Order Summary
                                     </h2>
                                     <div class="space-y-4">
-                                        <% cartItems.forEach(item => { %>
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-20 h-20 rounded-lg bg-gray-200 flex-shrink-0"
-                                            >
-                                                <img
-                                                    class="w-full h-full object-cover rounded-lg"
-                                                    data-alt="light wood flooring"
-                                                    src="<%= item.product.productImages[0] %>"
-                                                />
-                                            </div>
-                                            <div class="flex-grow">
-                                                <p
-                                                    class="font-medium text-base text-[#141414]"
-                                                >
-                                                    <%= item.product.name %>
-                                                </p>
-                                                <p
-                                                    class="text-sm text-[#757575]"
-                                                >
-                                                    Qty: <%= item.quantity %>
+                                        <% if (locals.product) { %>
+                                         <div class="flex items-center gap-4">
+                                                <div class="w-20 h-20 rounded-lg bg-gray-200 flex-shrink-0">
+                                                    <img class="w-full h-full object-cover rounded-lg"
+                                                        data-alt="light wood flooring"
+                                                        src="<%= product.productImages[0] %>" />
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="font-medium text-base text-[#141414]">
+                                                        <%= product.name %>
+                                                    </p>
+                                                    <p class="text-sm text-[#757575]">
+                                                        Qty: <%= quantity %>
+                                                    </p>
+                                                </div>
+                                                <p class="font-medium text-base text-[#141414]">
+                                                    ₹<%= total.toLocaleString('en-IN') %>
                                                 </p>
                                             </div>
-                                            <p
-                                                class="font-medium text-base text-[#141414]"
-                                            >
-                                                ₹<%= item.total.toLocaleString('en-IN') %>
-                                            </p>
-                                        </div>
-                                        <% }); %>
+                                        <% } else { %>
+                                        <% cartItems.forEach(item=> { %>
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-20 h-20 rounded-lg bg-gray-200 flex-shrink-0">
+                                                    <img class="w-full h-full object-cover rounded-lg"
+                                                        data-alt="light wood flooring"
+                                                        src="<%= item.product.productImages[0] %>" />
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <p class="font-medium text-base text-[#141414]">
+                                                        <%= item.product.name %>
+                                                    </p>
+                                                    <p class="text-sm text-[#757575]">
+                                                        Qty: <%= item.quantity %>
+                                                    </p>
+                                                </div>
+                                                <p class="font-medium text-base text-[#141414]">
+                                                    ₹<%= item.total.toLocaleString('en-IN') %>
+                                                </p>
+                                            </div>
+                                            <% }); %>
+                                            <% } %>
                                     </div>
-                                    <div
-                                        class="my-6 border-t border-[#e0e0e0]"
-                                    ></div>
+                                    <div class="my-6 border-t border-[#e0e0e0]"></div>
                                     <div class="space-y-2">
-                                        <div
-                                            class="flex justify-between text-base text-[#757575]"
-                                        >
+                                        <div class="flex justify-between text-base text-[#757575]">
                                             <span>Subtotal</span>
                                             <span>₹<%= totalAmount.toLocaleString('en-IN') %></span>
                                         </div>
-                                        <div
-                                            class="flex justify-between text-base text-[#757575]"
-                                        >
+                                        <div class="flex justify-between text-base text-[#757575]">
                                             <span>Shipping</span>
-                                            <span><%= shipping == 0 ? 'Free' : '₹' + shipping %></span>
+                                            <span>
+                                                <%= shipping==0 ? 'Free' : '₹' + shipping %>
+                                            </span>
                                         </div>
-                                        <div
-                                            class="flex justify-between text-base text-[#757575]"
-                                        >
+                                        <div class="flex justify-between text-base text-[#757575]">
                                             <span>Taxes</span>
                                             <span>₹<%= tax %></span>
                                         </div>
                                     </div>
-                                    <div
-                                        class="my-6 border-t border-[#e0e0e0]"
-                                    ></div>
-                                    <div
-                                        class="flex justify-between text-lg font-bold text-black"
-                                    >
+                                    <div class="my-6 border-t border-[#e0e0e0]"></div>
+                                    <div class="flex justify-between text-lg font-bold text-black">
                                         <span>Total</span>
                                         <span>₹<%= total.toLocaleString('en-IN') %></span>
                                     </div>
@@ -232,64 +187,65 @@
         </div>
         </div>
         <%- include('../../partials/footer') %>
-        <script>
-            function placeOrder() {
-                const selectedAddress = document.querySelector('input[name="shipping-address"]:checked');
-                const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked');
-                const totalAmount = '<%= totalAmount %>';
+            <script>
+                function placeOrder() {
+                    const selectedAddress = document.querySelector('input[name="shipping-address"]:checked');
+                    const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked');
+                    const totalAmount = '<%= totalAmount %>';
 
-                if (!selectedAddress) {
-                    swal.fire({
-                        icon: 'warning',
-                        title: 'No Address Selected',
-                        text: 'Please select a shipping address to proceed.',
-                    });
-                    return;
-                }
-
-                if (!selectedPaymentMethod) {
-                    swal.fire({
-                        icon: 'warning',
-                        title: 'No Payment Method Selected',
-                        text: 'Please select a payment method to proceed.',
-                    });
-                    return;
-                }
-
-                const orderData = {
-                    addressId: selectedAddress.value,
-                    paymentMethod: selectedPaymentMethod.value,
-                    totalAmount: parseInt(totalAmount)
-                };
-
-                fetch('/checkout/place-order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(orderData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = '/order/confirmation/' + data.orderId;
-                    } else {
+                    if (!selectedAddress) {
                         swal.fire({
-                            icon: 'error',
-                            title: 'Order Failed',
-                            text: data.message || 'There was an issue placing your order. Please try again.',
+                            icon: 'warning',
+                            title: 'No Address Selected',
+                            text: 'Please select a shipping address to proceed.',
                         });
+                        return;
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    swal.fire({
-                        icon: 'error',
-                        title: 'Order Failed',
-                        text: 'There was an issue placing your order. Please try again.',
-                    });
-                });
-            }
-        </script>
+
+                    if (!selectedPaymentMethod) {
+                        swal.fire({
+                            icon: 'warning',
+                            title: 'No Payment Method Selected',
+                            text: 'Please select a payment method to proceed.',
+                        });
+                        return;
+                    }
+
+                    const orderData = {
+                        addressId: selectedAddress.value,
+                        paymentMethod: selectedPaymentMethod.value,
+                        totalAmount: parseInt(totalAmount)
+                    };
+
+                    fetch('/checkout/place-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderData)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = '/order/confirmation/' + data.orderId;
+                            } else {
+                                swal.fire({
+                                    icon: 'error',
+                                    title: 'Order Failed',
+                                    text: data.message || 'There was an issue placing your order. Please try again.',
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            swal.fire({
+                                icon: 'error',
+                                title: 'Order Failed',
+                                text: 'There was an issue placing your order. Please try again.',
+                            });
+                        });
+                }
+            </script>
     </body>
-</html>
+
+    </html>

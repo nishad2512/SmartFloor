@@ -19,8 +19,7 @@
                         <span class="mx-2 text-gray-300">/</span>
                     </li>
 
-                    <%  if (product &&
-                        product.category) { %>
+                    <% if (product && product.category) { %>
                         <li class="flex items-center">
                             <a href="/products/<%= product.category.name.toLowerCase() %>"
                                 class="hover:text-black transition capitalize">
@@ -73,7 +72,8 @@
                 </p>
 
                 <div class="mb-8">
-                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
+                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%=
+                            product.variants[0].price.toLocaleString('en-IN') %>
                     </span>
                     <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
                     <div id="stockInfo"
@@ -227,7 +227,8 @@
                                 <span class="font-bold text-base text-[#1A1A1A]">
                                     <%= relProduct.name %>
                                 </span>
-                                <span class="font-bold text-base text-[#1A1A1A]">₹<%= relProduct.variants[0].price.toLocaleString('en-IN') %>
+                                <span class="font-bold text-base text-[#1A1A1A]">₹<%=
+                                        relProduct.variants[0].price.toLocaleString('en-IN') %>
                                 </span>
                             </div>
                             <a href="/products/product/<%= relProduct._id %>"
@@ -275,27 +276,29 @@
                         quantity: quantity
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = '/cart';
-                    } else {
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload()
+                        } else {
+                            console.error(data.message);
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
                         swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: data.message || 'An error occurred while adding the product to cart.'
+                            text: 'An error occurred while adding the product to cart.'
                         });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while adding the product to cart.'
                     });
-                });
 
+            });
+
+            document.getElementById('buyNowBtn').addEventListener('click', () => {
+                const quantity = parseInt(document.getElementById('quantityInput').value);
+                window.location.href = `/checkout?productId=${productId}&variantId=${currentVariantId}&quantity=${quantity}`;
             });
 
             // --- IMAGE GALLERY ---

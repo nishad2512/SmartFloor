@@ -27,7 +27,7 @@
                                             <span class="material-symbols-outlined text-xl">arrow_back</span>
                                             Back to List
                                         </a>
-                                        <button onclick="window.print()"
+                                        <button onclick="window.location.href='/order/invoice/<%= order.orderId %>'"
                                             class="flex items-center gap-2 bg-primary text-white font-medium px-4 py-2 rounded-lg hover:opacity-90">
                                             <span class="material-symbols-outlined text-xl">print</span>
                                             Print Invoice
@@ -128,8 +128,6 @@
                                                                     ? 'selected' : '' %>>Delivered</option>
                                                                 <option value="Cancelled" <%=order.status==='Cancelled'
                                                                     ? 'selected' : '' %>>Cancelled</option>
-                                                                <option value="Return Request" <%=order.status==='Return Request'
-                                                                    ? 'selected' : '' %>>Return Request</option>
                                                                 <option value="Returned" <%=order.status==='Returned'
                                                                     ? 'selected' : '' %>>Returned</option>
                                                             </select>

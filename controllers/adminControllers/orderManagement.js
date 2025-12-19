@@ -1,12 +1,39 @@
 import Order from "../../models/orderModel.js";
 import Return from "../../models/returnModel.js";
+import Product from "../../models/productModel.js";
 
 export const orders = async (req, res) => {
     try {
+        const { search, page = 1 } = req.query;
+        const limit = 5;
+        const skip = (page - 1) * limit;
 
-        const orders = await Order.find().sort({createdAt: -1}).populate('user');
+        let query = {};
 
-        res.render('admin/orderManagement/orders', { orders });
+        if (search) {
+            query.$or = [
+                { orderId: { $regex: search, $options: 'im' } }
+            ];
+        }
+
+        const totalOrders = await Order.countDocuments(query);
+        const orders = await Order.find(query)
+            .sort({ createdAt: -1 })
+            .populate('user')
+            .skip(skip)
+            .limit(limit);
+
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        res.render('admin/orderManagement/orders', {
+            orders,
+            currentPage: parseInt(page),
+            totalPages,
+            search,
+            totalOrders,
+            limit,
+            skip
+        });
 
     } catch (error) {
         console.error(error);
@@ -58,6 +85,7 @@ export const updateStatus = async (req, res) => {
 
         await order.save();
 
+        req.flash("success", "Status changed successfully");
         res.json({ success: true });
 
     } catch (error) {
@@ -69,7 +97,7 @@ export const updateStatus = async (req, res) => {
 export const returns = async (req, res) => {
     try {
 
-        const returns = await Return.find().sort({createdAt: -1}).populate('userId').populate({
+        const returns = await Return.find().sort({ createdAt: -1 }).populate('userId').populate({
             path: 'orderId',
             populate: {
                 path: 'items.product'
@@ -133,11 +161,15 @@ export const updateReturnStatus = async (req, res) => {
         returnRequest.status = status;
         await returnRequest.save();
 
-        if (status === 'Returned') {
-            const order = await Order.findById(returnRequest.orderId);
+        if (status === 'Refunded') {
+            const order = await Order.findById(returnRequest.orderId)
             const item = order.items.id(returnRequest.itemId);
             if (item) {
                 item.status = 'Returned';
+                let product = await Product.findById(item.product);
+                let variant = product.variants.id(item.variant);
+                variant.stock = variant.stock + item.quantity;
+                await product.save();
             }
             if (order.items.every(i => i.status == 'Returned')) {
                 order.status = 'Returned';

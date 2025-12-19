@@ -44,14 +44,39 @@
 </aside>
 
 <script>
-    const sidebarLinks = document.querySelectorAll('aside nav a');
-    const currentPath = window.location.pathname;
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebarLinks = document.querySelectorAll('aside nav a');
+        
+        // 1. Get current path and remove trailing slash (e.g., "/profile/" becomes "/profile")
+        const currentPath = window.location.pathname.replace(/\/$/, "");
+        
+        console.log("📍 Current Browser Path:", currentPath);
 
-    sidebarLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && href !== '#' && currentPath === href) {
-            link.classList.add('bg-black', 'text-white', 'shadow-lg', 'shadow-black/5');
-            link.classList.remove('text-gray-500', 'hover:bg-gray-50', 'hover:text-black');
-        }
+        sidebarLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href || href === '#') return;
+
+            // 2. Clean the link href too
+            const cleanHref = href.replace(/\/$/, "");
+
+            console.log("🔗 Checking Link:", cleanHref);
+
+            // 3. Robust Comparison
+            // Condition A: Exact Match (Normal pages)
+            // Condition B: Sub-path Match (Order details page)
+            const isActive = 
+                currentPath === cleanHref || 
+                (currentPath.startsWith(cleanHref) && cleanHref !== '/profile' && cleanHref.length > 1);
+
+            if (isActive) {
+                console.log("✅ MATCH FOUND!");
+                
+                // Force remove old classes
+                link.classList.remove('text-gray-500', 'hover:bg-gray-50', 'hover:text-black');
+                
+                // Force add active classes
+                link.classList.add('bg-gray-100', 'text-black', 'shadow-lg', 'shadow-gray/5');
+            }
+        });
     });
 </script>

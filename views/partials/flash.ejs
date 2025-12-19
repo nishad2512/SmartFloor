@@ -1,3 +1,22 @@
+<style>
+    /* Custom classes for vibrant toasts */
+    .colored-toast.swal2-icon-success {
+        background-color: #18582eea !important; /* Tailwind Green-500 */
+    }
+    .colored-toast.swal2-icon-error {
+        background-color: #581010 !important; /* Tailwind Red-500 */
+    }
+    .colored-toast .swal2-title {
+        color: white !important;
+    }
+    .colored-toast .swal2-close {
+        color: white !important;
+    }
+    .colored-toast .swal2-html-container {
+        color: white !important;
+    }
+</style>
+
 <script>
     const Toast = Swal.mixin({
         toast: true,
@@ -5,6 +24,10 @@
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
+        iconColor: 'white', // Icon is white on colored background
+        customClass: {
+            popup: 'colored-toast rounded-full shadow-lg mt-4 mr-2 px-4 py-2', // Add our custom class
+        },
         didOpen: (toast) => {
             toast.addEventListener("mouseenter", Swal.stopTimer);
             toast.addEventListener("mouseleave", Swal.resumeTimer);
@@ -12,14 +35,16 @@
     });
 </script>
 
-<% if (success && success.length> 0) { %>
+<% if (success && success.length > 0) { %>
 <script>
     Toast.fire({
         icon: "success",
         title: "<%= success %>",
     });
 </script>
-<% } %> <% if (error && error.length> 0) { %>
+<% } %> 
+
+<% if (error && error.length > 0) { %>
 <script>
     Toast.fire({
         icon: "error",

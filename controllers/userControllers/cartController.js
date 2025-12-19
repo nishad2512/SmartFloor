@@ -62,7 +62,7 @@ export const addToCart = async (req, res) => {
             cartItem.quantity = variant.stock;
             cartItem.total = variant.stock * variant.price;
             await cartItem.save();
-            req.flash("success", `Only ${variant.stock} items available in stock`);
+            req.flash("success", `Only ${variant.stock} items available in stock, ${variant.stock} items added.`);
             return res.json({ success: true });
         }
 
@@ -75,7 +75,7 @@ export const addToCart = async (req, res) => {
                 total: variant.stock * variant.price
             });
             await cartItem.save();
-            req.flash("success", `Only ${variant.stock} items available in stock`);
+            req.flash("success", `Only ${variant.stock} items available in stock, ${variant.stock} items added.`);
             return res.json({ success: true });
         }
 
@@ -85,7 +85,7 @@ export const addToCart = async (req, res) => {
             cartItem.total = cartItem.quantity * variant.price;
             await cartItem.save();
 
-            req.flash("success", "Product added to cart");
+            req.flash("success", `Product quantity increased by ${quantity} in cart`);
             res.json({ success: true });
 
         } else if (!cartItem && quantity <= 500) {
@@ -102,7 +102,7 @@ export const addToCart = async (req, res) => {
             res.json({ success: true });
         }
 
-        req.flash("error", "You can add a maximum of 500 items at once");
+        req.flash("error", "You can only add a maximum of 500 items at once");
         res.json({ success: false, message: "Maximum limit exceeded" });
     } catch (error) {
         console.error(error);
@@ -134,9 +134,17 @@ export const updateCartQuantity = async (req, res) => {
         }
 
         // Stock check
-        if (quantity > variant.stock || quantity > 500) {
+        if (quantity > 500) {
             return res.status(400).json({
-                message: "Requested quantity exceeds available stock or maximum limit of 500",
+                message: "You can only add a maximum of 500 items at once",
+                success: false,
+                quantity: cartItem.quantity
+            });
+        }
+
+        if (quantity > variant.stock) {
+            return res.status(400).json({
+                message: "Product stock limit reached",
                 success: false,
                 quantity: cartItem.quantity
             });

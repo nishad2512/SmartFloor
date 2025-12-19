@@ -13,113 +13,136 @@
                         </h1>
                     </div>
                     <!-- Search and Filters -->
-                    <div class="flex flex-col md:flex-row gap-4 mb-8">
+                    <form method="GET" action="/profile/orders" class="flex flex-col md:flex-row gap-4 mb-8">
                         <!-- SearchBar -->
                         <div class="flex-1">
                             <label class="flex flex-col min-w-40 h-12 w-full">
-                                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                                <div class="flex w-full flex-1 border border-gray-200 items-stretch rounded-lg h-full">
                                     <div
                                         class="text-gray-500 flex bg-white items-center justify-center pl-4 rounded-l-lg border-r-0">
-                                        <span class="material-symbols-outlined">search</span>
+                                        <span class="ph ph-magnifying-glass text-xl"></span>
                                     </div>
-                                    <input
-                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-black focus:outline-0 focus:ring-2 focus:ring-black/50 border-none bg-white h-full placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal"
-                                        placeholder="Search by Order # or Product" value="" />
+                                    <input name="search" value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg focus:outline-none text-black border-none bg-white h-full placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal"
+                                        placeholder="Search by Order # or Product" />
                                 </div>
                             </label>
                         </div>
-                        <!-- Chips -->
+                        <!-- Chips / Selects using native select for simplicity as user requested typical backend style -->
                         <div class="flex gap-3 items-center">
-                            <button
-                                class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white px-4">
-                                <p class="text-black text-sm font-medium leading-normal">
-                                    Order Date
-                                </p>
-                                <span class="material-symbols-outlined text-black">expand_more</span>
-                            </button>
-                            <button
-                                class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white px-4">
-                                <p class="text-black text-sm font-medium leading-normal">
-                                    Order Status
-                                </p>
-                                <span class="material-symbols-outlined text-black">expand_more</span>
-                            </button>
+                            <select name="sort" onchange="this.form.submit()"
+                                class="h-12 rounded-lg bg-white px-4 text-black text-sm font-medium border-none focus:ring-2 focus:ring-black/50 cursor-pointer">
+                                <option value="Newest" <%=typeof sort !=='undefined' && sort==='Newest' ? 'selected'
+                                    : '' %>>Newest</option>
+                                <option value="Oldest" <%=typeof sort !=='undefined' && sort==='Oldest' ? 'selected'
+                                    : '' %>>Oldest</option>
+                                <option value="Price: Low to High" <%=typeof sort !=='undefined' &&
+                                    sort==='Price: Low to High' ? 'selected' : '' %>>Price: Low to High</option>
+                                <option value="Price: High to Low" <%=typeof sort !=='undefined' &&
+                                    sort==='Price: High to Low' ? 'selected' : '' %>>Price: High to Low</option>
+                            </select>
+
+                            <select name="status" onchange="this.form.submit()"
+                                class="h-12 rounded-lg bg-white px-4 text-black text-sm font-medium border-none focus:ring-2 focus:ring-black/50 cursor-pointer">
+                                <option value="All" <%=typeof status !=='undefined' && status==='All' ? 'selected' : ''
+                                    %>>All Status</option>
+                                <option value="Pending" <%=typeof status !=='undefined' && status==='Pending'
+                                    ? 'selected' : '' %>>Pending</option>
+                                <option value="Processing" <%=typeof status !=='undefined' && status==='Processing'
+                                    ? 'selected' : '' %>>Processing</option>
+                                <option value="Shipped" <%=typeof status !=='undefined' && status==='Shipped'
+                                    ? 'selected' : '' %>>Shipped</option>
+                                <option value="Delivered" <%=typeof status !=='undefined' && status==='Delivered'
+                                    ? 'selected' : '' %>>Delivered</option>
+                                <option value="Cancelled" <%=typeof status !=='undefined' && status==='Cancelled'
+                                    ? 'selected' : '' %>>Cancelled</option>
+                                <option value="Return Request" <%=typeof status !=='undefined' && status==='Return Request'
+                                    ? 'selected' : '' %>>Return Request</option>
+                                <option value="Returned" <%=typeof status !=='undefined' && status==='Returned'
+                                    ? 'selected' : '' %>>Returned</option>
+                            </select>
                         </div>
-                    </div>
+                    </form>
+
                     <!-- Order List -->
                     <div class="flex flex-col gap-4">
-                        <!-- ListItem 1 -->
-                        <% orders.forEach(order=> { %>
-                            <div onclick="window.location.href='/profile/order/details/<%= order.orderId %>'"
-                                class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg justify-between hover:shadow-md transition-shadow duration-300 cursor-pointer">
-                                <div class="flex items-center gap-4 flex-1">
-                                    <div
-                                        class="text-black flex items-center justify-center rounded-lg bg-background-light shrink-0 size-12">
-                                        <i class="ph ph-bold ph-scroll text-xl"></i>
+                        <% if (orders && orders.length> 0) { %>
+                            <% orders.forEach(order=> { %>
+                                <div onclick="window.location.href='/profile/order/details/<%= order.orderId %>'"
+                                    class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg justify-between hover:shadow-md transition-shadow duration-300 cursor-pointer">
+                                    <div class="flex items-center gap-4 flex-1">
+                                        <div
+                                            class="text-black flex items-center justify-center rounded-lg bg-background-light shrink-0 size-12">
+                                            <i class="ph ph-bold ph-scroll text-xl"></i>
+                                        </div>
+                                        <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
+                                            <div class="flex flex-col">
+                                                <p class="text-gray-500 text-xs font-medium">Order #</p>
+                                                <p class="text-black text-base font-medium leading-normal">
+                                                    ORD<%= order.orderId.split('-')[2] %>
+                                                </p>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <p class="text-gray-500 text-xs font-medium">Date</p>
+                                                <p class="text-black text-sm font-normal leading-normal">
+                                                    <%= order.createdAt.toLocaleDateString('en-IN', {day: 'numeric' ,
+                                                        month: "short" , year: 'numeric' }) %>
+                                                </p>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <p class="text-gray-500 text-xs font-medium">Total</p>
+                                                <p class="text-black text-sm font-normal leading-normal">
+                                                    ₹<%= order.totalAmount.toLocaleString('en-IN') %>
+                                                </p>
+                                            </div>
+                                            <div class="flex flex-col justify-self-start md:justify-self-end">
+                                                <% let statusClass="text-gray-800 bg-gray-100" ; if
+                                                    (order.status==='Pending' )
+                                                    statusClass="text-yellow-800 bg-yellow-100" ; else if
+                                                    (order.status==='Processing' )
+                                                    statusClass="text-blue-800 bg-blue-100" ; else if
+                                                    (order.status==='Shipped' )
+                                                    statusClass="text-purple-800 bg-purple-100" ; else if
+                                                    (order.status==='Delivered' )
+                                                    statusClass="text-green-800 bg-green-100" ; else if
+                                                    (order.status==='Cancelled' ) statusClass="text-red-800 bg-red-100"
+                                                    ; else if (order.status==='Returned' )
+                                                    statusClass="text-orange-800 bg-orange-100" ; else if
+                                                    (order.status==='Return Request' )
+                                                    statusClass="text-orange-800 bg-orange-100" ; %>
+                                                    <span
+                                                        class="text-sm font-medium leading-normal rounded-full px-3 py-1 text-center <%= statusClass %>">
+                                                        <%= order.status %>
+                                                    </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
-                                        <div class="flex flex-col">
-                                            <p class="text-gray-500 text-xs font-medium">
-                                                Order #
-                                            </p>
-                                            <p class="text-black text-base font-medium leading-normal">
-                                                ORD<%= order.orderId.split('-')[2] %>
-                                            </p>
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <p class="text-gray-500 text-xs font-medium">
-                                                Date
-                                            </p>
-                                            <p class="text-black text-sm font-normal leading-normal">
-                                                <%= order.createdAt.toLocaleDateString('en-IN', {day: 'numeric' ,
-                                                    month: "short" , year: 'numeric' }) %>
-                                            </p>
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <p class="text-gray-500 text-xs font-medium">
-                                                Total
-                                            </p>
-                                            <p class="text-black text-sm font-normal leading-normal">
-                                                ₹<%= order.totalAmount.toLocaleString('en-IN') %>
-                                            </p>
-                                        </div>
-                                        <div class="flex flex-col justify-self-start md:justify-self-end">
-                                            <% let statusClass="text-gray-800 bg-gray-100" ; if
-                                                (order.status==='Pending' ) statusClass="text-yellow-800 bg-yellow-100"
-                                                ; else if (order.status==='Processing' )
-                                                statusClass="text-blue-800 bg-blue-100" ; else if
-                                                (order.status==='Shipped' ) statusClass="text-purple-800 bg-purple-100"
-                                                ; else if (order.status==='Delivered' )
-                                                statusClass="text-green-800 bg-green-100" ; else if
-                                                (order.status==='Cancelled' ) statusClass="text-red-800 bg-red-100" ;
-                                                else if (order.status==='Returned' )
-                                                statusClass="text-orange-800 bg-orange-100" ; %>
-                                                <span
-                                                    class="text-sm font-medium leading-normal rounded-full px-3 py-1 text-center <%= statusClass %>">
-                                                    <%= order.status %>
-                                                </span>
-                                        </div>
+                                    <div class="shrink-0 text-black">
+                                        <i class="ph ph-bold ph-caret-right text-xl"></i>
                                     </div>
                                 </div>
-                                <div class="shrink-0 text-black">
-                                    <i class="ph ph-bold ph-caret-right text-xl"></i>
-                                </div>
-                            </div>
-                            <% }) %>
-                                <!-- ListItem 2 -->
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="text-center py-12 text-gray-500">
+                                            <p>No orders found matching your criteria.</p>
+                                        </div>
+                                        <% } %>
                     </div>
+
                     <!-- Pagination -->
-                    <div class="flex justify-center items-center gap-4 mt-8">
-                        <button
-                            class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100 disabled:opacity-50"
-                            disabled="">
-                            <i class="ph ph-bold ph-caret-left text-xl"></i>
-                        </button>
-                        <span class="text-sm text-gray-700">Page 1 of 5</span>
-                        <button class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100">
-                            <i class="ph ph-bold ph-caret-right text-xl"></i>
-                        </button>
-                    </div>
+                    <% if (typeof totalPages !=='undefined' && totalPages > 1) { %>
+                        <div class="flex justify-center items-center gap-4 mt-8">
+                            <a href="/profile/orders?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %><%= sort ? '&sort=' + sort : '' %><%= status ? '&status=' + status : '' %>"
+                                class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100 <%= currentPage === 1 ? 'pointer-events-none opacity-50' : '' %>">
+                                <i class="ph ph-bold ph-caret-left text-xl"></i>
+                            </a>
+                            <span class="text-sm text-gray-700">Page <%= currentPage %> of <%= totalPages %></span>
+                            <a href="/profile/orders?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %><%= sort ? '&sort=' + sort : '' %><%= status ? '&status=' + status : '' %>"
+                                class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100 <%= currentPage === totalPages ? 'pointer-events-none opacity-50' : '' %>">
+                                <i class="ph ph-bold ph-caret-right text-xl"></i>
+                            </a>
+                        </div>
+                        <% } %>
                 </div>
             </main>
     </div>

@@ -132,6 +132,8 @@ router.get('/profile/orders', requireAuth, orderController.orders)
 
 router.get('/order/confirmation/:orderId', requireAuth, orderController.orderConfirmation);
 
+router.get('/order/invoice/:orderId', requireAuth, orderController.downloadInvoice);
+
 router.get('/profile/order/details/:orderId', requireAuth, orderController.orderDetails);
 
 router.patch('/profile/orders/cancel/:orderId', requireAuth, orderController.cancelOrder);

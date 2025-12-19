@@ -1,5 +1,7 @@
 import Order from "../../models/orderModel.js";
 import Return from "../../models/returnModel.js";
+import Product from "../../models/productModel.js";
+import generateInvoice from "../../utils/invoice.js";
 
 export const orderConfirmation = async (req, res) => {
     try {
@@ -23,12 +25,83 @@ export const orderConfirmation = async (req, res) => {
     }
 };
 
+export const downloadInvoice = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        
+        // Fetch order and populate product details
+        const order = await Order.findOne({ orderId }).populate('items.product').populate('address').populate('user');
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        // Set Headers to tell browser this is a PDF file to download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
+
+        // Generate PDF
+        generateInvoice(order, res);
+
+    } catch (error) {
+        console.error('Invoice Error:', error);
+        res.status(500).send('Error generating invoice');
+    }
+};
+
 export const orders = async (req, res) => {
     try {
         const userId = req.userId;
-        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 })
+        const { status, sort, search, page = 1 } = req.query;
+        const limit = 5;
+        const skip = (page - 1) * limit;
 
-        res.render('user/order/orders', { orders });
+        let query = { user: userId };
+
+        // SEARCH
+        if (search) {
+            const products = await Product.find({ name: { $regex: search, $options: 'i' } }).select('_id');
+            const productIds = products.map(p => p._id);
+
+            // Update query to be OR: OrderID matches OR items.product is in productIds
+            const searchCondition = {
+                $or: [
+                    { orderId: { $regex: search, $options: 'im' } },
+                    { "items.product": { $in: productIds } }
+                ]
+            };
+            // Merge with user filter
+            query = { ...query, ...searchCondition };
+        }
+
+        // FILTER
+        if (status && status !== 'All') {
+            query.status = status;
+        }
+
+        // SORT
+        let sortOption = { createdAt: -1 }; // Default Newest
+        if (sort === 'Oldest') sortOption = { createdAt: 1 };
+        if (sort === 'Price: Low to High') sortOption = { totalAmount: 1 };
+        if (sort === 'Price: High to Low') sortOption = { totalAmount: -1 };
+
+        const orders = await Order.find(query)
+            .populate('items.product')
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
+
+        const finalCount = await Order.countDocuments(query);
+        const totalPages = Math.ceil(finalCount / limit);
+
+        res.render('user/order/orders', {
+            orders: orders,
+            currentPage: parseInt(page),
+            totalPages,
+            status,
+            sort,
+            search
+        });
 
     } catch (error) {
         console.error(error);
@@ -68,7 +141,7 @@ export const cancelOrder = async (req, res) => {
         const orderId = req.params.orderId;
         const userId = req.userId;
 
-        const order = await Order.findOne({ orderId, user: userId });
+        const order = await Order.findOne({ orderId, user: userId }).populate('items.product')
 
         if (!order) {
             return res.json({ success: false, message: "Invalid Order" })
@@ -76,6 +149,16 @@ export const cancelOrder = async (req, res) => {
 
         order.cancelReason = reason;
         order.status = 'Cancelled';
+
+        order.items.forEach(async item => {
+            item.status = 'Cancelled';
+            
+            const product = await Product.findById(item.product);
+            const variant = product.variants.id(item.variant);
+            variant.stock = variant.stock + item.quantity;
+            await product.save();
+        })
+
         await order.save();
 
         res.json({ success: true });
@@ -108,6 +191,11 @@ export const cancelOrderItem = async (req, res) => {
 
         item.status = 'Cancelled';
         item.cancelReason = reason;
+
+        const product = await Product.findById(item.product);
+        const variant = product.variants.id(item.variant);
+        variant.stock = variant.stock + item.quantity;
+        await product.save();
 
         const cancel = order.items.every(i => i.status == 'Cancelled');
 
@@ -241,17 +329,17 @@ export const returnDetails = async (req, res) => {
         // Since itemId is a sub-document ID in the Order, we find the specific item details
         const order = returnDoc.orderId;
         const item = order.items.id(itemId);
-        
+
         // Manually find the variant from the populated product
         // We assume the order.items.product was populated or we fetch it here
         await order.populate('items.product');
         const variant = item.product.variants.id(item.variant);
 
-        res.render('user/order/returnDetails', { 
-            returnDoc, 
-            order, 
-            item, 
-            variant 
+        res.render('user/order/returnDetails', {
+            returnDoc,
+            order,
+            item,
+            variant
         });
 
     } catch (error) {

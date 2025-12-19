@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import Cart from "../models/cartModel.js";
 
 export const requireAuth = (req, res, next) => {
     const token = req.cookies.jwt;
@@ -51,6 +52,8 @@ export const checkUser = (req, res, next) => {
                     next();
                 } else {
                     res.locals.user = user;
+                    const cartCount = await Cart.countDocuments({ user: user._id });
+                    res.locals.cartCount = cartCount;
                     next();
                 }
             }

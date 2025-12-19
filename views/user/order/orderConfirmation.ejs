@@ -3,7 +3,7 @@
         class="bg-background-light font-display text-black antialiased selection:bg-black selection:text-white"
     >
         <div
-            class="min-h-[80vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+            class="min-h-[80vh] flex flex-col items-center justify-center py-5 px-4 sm:px-6 lg:px-8"
         >
             <div class="text-center max-w-2xl mx-auto mb-12">
                 <div
@@ -134,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div class="w-full max-w-md flex flex-col gap-4">
+            <div class="w-full max-w-lg flex flex-row gap-4">
                 <a
                     class="w-full bg-black hover:bg-black/80 text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-200/50 group"
                     href="/profile/order/details/<%= order.orderId %>"
@@ -143,12 +143,19 @@
                     <i class="ph ph-bold ph-arrow-right text-xl"></i>
                 </a>
                 <a
-                    class="w-full bg-transparent hover:bg-gray-100 text-gray-600 hover:text-black font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-                    href="/products"
+                    class="w-full bg-transparent hover:bg-gray-100 text-gray-600 hover:text-black border border-gray-400 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    href="/order/invoice/<%= order.orderId %>"
                 >
-                    <span>Continue Shopping</span>
+                    <span>Download Invoice</span>
+                    <i class="ph ph-bold ph-download-simple"></i>
                 </a>
             </div>
+            <a
+                class="w-full max-w-lg mt-4 bg-transparent hover:bg-gray-100 text-gray-600 hover:text-black font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                href="/products"
+            >
+                <span>Continue Shopping</span>
+            </a>
         </div>
         </div>
         <%- include('../../partials/footer') %>
