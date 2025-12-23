@@ -1,7 +1,16 @@
+import Wishlist from "../../models/wishlistModel.js";
+
 export const wishlist = async (req, res) => {
     try {
 
-        res.render('user/wishlist/wishlist');
+        const userId = req.userId;
+        const wishlistItems = await Wishlist.find({ user: userId }).populate('product');
+
+        const variants = wishlistItems.map(item => {
+            return item.product.variants.id(item.variant)
+        });
+
+        res.render('user/wishlist/wishlist', {wishlistItems, variants});
         
     } catch (error) {
         console.error("Error fetching wishlist:", error);
@@ -9,6 +18,3 @@ export const wishlist = async (req, res) => {
     }
 };
 
-
-// const userId = req.userId;
-// const wishlistItems = await Wishlist.find({ user: userId }).populate('product').populate('variant');

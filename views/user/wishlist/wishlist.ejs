@@ -43,156 +43,74 @@
                         </div>
                         <!-- Wishlist with items -->
                         <div
-                            class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 p-4"
+                            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
                         >
                             <!-- Product Card 1 -->
-                            <div
-                                class="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-white"
-                            >
-                                <div
-                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                    data-alt="Close-up of light brown Nordic Oak laminate flooring texture"
-                                    style="
-                                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCudA5zETteRuoftKQ8rifpbS2hRCx_xwU18Xcfw7UqlnTtPb9w-3zYz_JEXNsqjZxxVrjEEvqIviKvS4X1sWqmxpYM0PC579TYZGZsEePrQ1-dm2szOOluxSUZhhiBioisesRbVMnrsIeQKMyMfsy47VNbY8LeJXY6e152E9ZPUWNjA1TqRdLxwLtm7n_dcti3Ns-dIbOgZ04IlJePX6zrcSK439rNe7-0-lxnbr_aHoQl7qMlnQcOFblekzmcL2BxuBRVPADt-6c');
-                                    "
-                                ></div>
-                                <div class="flex flex-col flex-1">
-                                    <div class="flex-grow">
-                                        <p
-                                            class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]"
-                                        >
-                                            Nordic Oak Laminate Flooring
-                                        </p>
-                                        <p
-                                            class="text-[#757575] text-sm font-normal leading-normal mt-1"
-                                        >
-                                            Color: Natural Light
-                                        </p>
-                                        <p
-                                            class="text-[#141414] text-base font-medium leading-normal mt-2"
-                                        >
-                                            $4.99 / sq. ft.
-                                        </p>
+                             <% wishlistItems.forEach((item, index) => { %>
+                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
+    
+                                <!-- Image section -->
+                                <div class="w-full aspect-square overflow-hidden">
+                                    <img
+                                        src="<%= item.product.productImages[0] %>"
+                                        alt="<%= item.product.name %>"
+                                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                    />
+                                </div>
+
+                                <!-- Content section -->
+                                <div class="p-4 flex flex-col gap-2">
+                                    <p class="text-lg font-bold text-[#141414] line-clamp-2">
+                                        <%= item.product.name %>
+                                    </p>
+
+                                    <p class="text-sm text-gray-600">
+                                        Size: <%= variants[index].size %>
+                                    </p>
+
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <% if (variants[index].offerPrice) { %>
+                                            <span class="text-lg font-bold text-green-600">
+                                                ₹<%= variants[index].offerPrice %>
+                                            </span>
+                                            <span class="text-sm line-through text-gray-400">
+                                                ₹<%= variants[index].price %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-lg font-bold">
+                                                ₹<%= variants[index].price %>
+                                            </span>
+                                        <% } %>
                                     </div>
-                                    <div
-                                        class="flex flex-col items-stretch gap-3 mt-4"
-                                    >
-                                        <button
-                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] w-full"
-                                        >
-                                            <span class="truncate"
-                                                >Add to Cart</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent text-[#141414] hover:bg-gray-100 text-sm font-bold leading-normal tracking-[0.015em] w-full"
-                                        >
-                                            <span class="truncate">Remove</span>
+
+                                    <!-- Actions -->
+                                    <div class="mt-3 flex flex-col gap-2">
+                                        <form action="/cart/add" method="post">
+                                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                            <input type="hidden" name="variantId" value="<%= variants[index]._id %>">
+                                            <input type="hidden" name="quantity" value="1">
+
+                                            <button type="submit"
+                                                class="w-full h-10 rounded-lg bg-black text-white font-semibold hover:bg-gray-900">
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                        <button class="h-10 rounded-lg border font-semibold hover:bg-gray-100">
+                                            Remove
                                         </button>
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Product Card 2 -->
-                            <div
-                                class="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-white"
-                            >
-                                <div
-                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                    data-alt="Sample of rich, dark Hickory engineered hardwood flooring with a matte finish"
-                                    style="
-                                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_DQNS_rVKQ0e_N3SADV1CUhHXETkpN7niCf1Z5KSJgEGriS7P462v6MeArktxHuSJ8HKuEZb-eJ6Dn5SuV0Tk2JC9D8WbG3dCQ29vcaUq6aiogcZNUNgHjoEK32g59G33aYN2QUF6khhxqcVy_Q_ORc_zEEC9EIZAXHey91Nc2lDMf9AH-0bx2HAVAmU-6OxbBI9E97E_Coc3jiUFQWKZN4o2-u4TohSTgAwFXbyf2D9qMh4IGx8yflCPbgHK1rP4ugUShQ_wTBQ');
-                                    "
-                                ></div>
-                                <div class="flex flex-col flex-1">
-                                    <div class="flex-grow">
-                                        <p
-                                            class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]"
-                                        >
-                                            Hickory Engineered Hardwood
-                                        </p>
-                                        <p
-                                            class="text-[#757575] text-sm font-normal leading-normal mt-1"
-                                        >
-                                            Finish: Matte
-                                        </p>
-                                        <p
-                                            class="text-[#141414] text-base font-medium leading-normal mt-2"
-                                        >
-                                            $7.25 / sq. ft.
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="flex flex-col items-stretch gap-3 mt-4"
-                                    >
-                                        <button
-                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] w-full"
-                                        >
-                                            <span class="truncate"
-                                                >Add to Cart</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent text-[#141414] hover:bg-gray-100 text-sm font-bold leading-normal tracking-[0.015em] w-full"
-                                        >
-                                            <span class="truncate">Remove</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Product Card 3 -->
-                            <div
-                                class="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-white"
-                            >
-                                <div
-                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                    data-alt="Luxury vinyl tile with a light grey Silverstone pattern"
-                                    style="
-                                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA-CxLEu91PP350IvcM2YuvR3V72bydLnD1BGkxKIz8LUaxQNv-FRMsdwkXCrEeYxcSrWM8y_t1RMSePr-vFX41j1lS-uNH8l9CSl6mJx9DvOMSamA3FzQ9eOTxPdugfa46DallQ7ht9FoubBHB7hSD34rQsFvkY1EpiUoHCUJR5PfAb9d2nZG-JQm_M5sjt8Kj31jZLrN1ioil9I-aW0iQEuX1SsPe3lNHrttiaMaPykljykFySnhQn9ydv__ZtEPekUWun23ESDE');
-                                    "
-                                ></div>
-                                <div class="flex flex-col flex-1">
-                                    <div class="flex-grow">
-                                        <p
-                                            class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]"
-                                        >
-                                            Silverstone Luxury Vinyl Tile
-                                        </p>
-                                        <p
-                                            class="text-[#757575] text-sm font-normal leading-normal mt-1"
-                                        >
-                                            Style: Stone Look
-                                        </p>
-                                        <p
-                                            class="text-[#141414] text-base font-medium leading-normal mt-2"
-                                        >
-                                            $5.50 / sq. ft.
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="flex flex-col items-stretch gap-3 mt-4"
-                                    >
-                                        <button
-                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] w-full"
-                                        >
-                                            <span class="truncate"
-                                                >Add to Cart</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent text-[#141414] hover:bg-gray-100 text-sm font-bold leading-normal tracking-[0.015em] w-full"
-                                        >
-                                            <span class="truncate">Remove</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <% }) %>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         </div>
-    <%- include('../../partials/footer') %>
+        <%- include('../../partials/footer') %>
     </body>
 </html>
 

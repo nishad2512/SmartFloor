@@ -17,25 +17,26 @@ export const checkout = async (req, res) => {
 
             const product = await Product.findById(productId)
             const variant = product.variants.id(variantId);
-            totalAmount = variant.price * quantity;
+            totalAmount = (variant.offerPrice || variant.price) * quantity;
             if (totalAmount < 50000) {
                 shipping = 200;
             }
             tax = (totalAmount * 18) / 100;
             total = totalAmount + shipping + tax;
-            // req.session.order = {product, variant, quantity};
-            res.render('user/checkout/checkout', { product, totalAmount, addresses, shipping, tax, total, quantity });
+            req.session.item = {product, variant, quantity: parseInt(quantity), total};
+            return res.render('user/checkout/checkout', { product, totalAmount, addresses, shipping, tax, total, quantity });
 
         }
-
-        tax = (totalAmount * 18) / 100;
-        total = totalAmount + shipping + tax;
 
         const cartItems = await Cart.find({ user: userId }).populate("product");
         totalAmount = cartItems.reduce((sum, item) => sum + item.total, 0);
         if (totalAmount < 50000) {
             shipping = 200;
         }
+
+        tax = (totalAmount * 18) / 100;
+        total = totalAmount + shipping + tax;
+
 
         if (!cartItems || cartItems.length == 0) {
             req.flash("error", "There are no products.");
@@ -74,19 +75,9 @@ export const placeOrder = async (req, res) => {
             tax
         });
 
-        // if(req.session.product) {
-        //     const product = req.session.product
-        //     newOrder.items.push({
-        //         product: product._id,
-        //         variant: item.variant,
-        //         quantity: item.quantity,
-        //         subTotal: item.total,
-        //     });
-        // }
+        if(req.session.item) {
 
-        const cartItems = await Cart.find({ user: userId }).populate("product");
-
-        cartItems.forEach(async item => {
+            const item = req.session.item;
             newOrder.items.push({
                 product: item.product._id,
                 variant: item.variant,
@@ -97,11 +88,31 @@ export const placeOrder = async (req, res) => {
             let variant = product.variants.id(item.variant);
             variant.stock = variant.stock - item.quantity;
             await product.save();
-        });
+
+            req.session.item = null;
+
+        } else {
+
+            const cartItems = await Cart.find({ user: userId }).populate("product");
+
+            for(item of cartItems) {
+                newOrder.items.push({
+                    product: item.product._id,
+                    variant: item.variant,
+                    quantity: item.quantity,
+                    subTotal: item.total,
+                });
+                let product = await Product.findById(item.product._id);
+                let variant = product.variants.id(item.variant);
+                variant.stock = variant.stock - item.quantity;
+                await product.save();
+            }
+
+            await Cart.deleteMany({ user: userId });
+
+        }
 
         await newOrder.save();
-
-        await Cart.deleteMany({ user: userId });
 
         res.json({ success: true, orderId: newOrder.orderId });
 

@@ -56,7 +56,7 @@
                                                 <p
                                                     class="text-[#757575] text-sm font-normal leading-normal"
                                                 >
-                                                    ₹<%= item.price %> / sq. ft.
+                                                    ₹<%= item.offerPrice || item.price %> <span class="text-gray-400 text-xs line-through"><%= item.originalPrice || '' %></span> / sq. ft.
                                                 </p>
                                                 <p
                                                     class="text-[#757575] text-sm font-normal leading-normal"

@@ -72,14 +72,23 @@
                 </p>
 
                 <div class="mb-8">
-                    <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%=
-                            product.variants[0].price.toLocaleString('en-IN') %>
-                    </span>
-                    <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
-                    <div id="stockInfo"
-                        class="mt-2 text-sm font-bold <%= product.variants[0].stock > 0 ? 'text-green-600' : 'text-red-600' %>">
-                        <%= product.variants[0].stock> 0 ? `In Stock: ${product.variants[0].stock}` : "Out of Stock" %>
-                    </div>
+                    <% if (product.variants[0]?.offerPrice) { %>
+                        <span class="text-3xl font-bold text-[#1A1A1A]" id="displayOfferPrice">₹<%=
+                                product.variants[0].offerPrice.toLocaleString('en-IN') %>
+                        </span>
+                        <span class="text-2xl font-semibold text-gray-500 line-through" id="displayPrice">₹<%=
+                                product.variants[0].price.toLocaleString('en-IN') %>
+                        </span>
+                        <% } else { %>
+                            <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%=
+                                    product.variants[0].price.toLocaleString('en-IN') %>
+                            </span>
+                            <% } %>
+                                <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
+                                <div id="stockInfo"
+                                    class="mt-2 text-sm font-bold <%= product.variants[0].stock > 0 ? 'text-green-600' : 'text-red-600' %>">
+                                    <%= product.variants[0].stock> 0 ? 'In Stock: ' + product.variants[0].stock : "Out of Stock" %>
+                                </div>
                 </div>
 
                 <div class="mb-8">
@@ -87,7 +96,7 @@
                     <div class="flex flex-wrap gap-3">
                         <% product.variants.forEach((variant, index)=> { %>
                             <button
-                                onclick="selectVariant(this, '<%= variant.price %>', '<%= variant._id %>', '<%= variant.stock %>')"
+                                onclick="selectVariant(this, '<%= variant.price %>', '<%= variant._id %>', '<%= variant.stock %>', '<%= variant.offerPrice %>')"
                                 class="variant-btn px-6 py-3 rounded-full border text-sm font-bold transition <%= index === 0 ? 'bg-black text-white border-black' : 'border-gray-300 text-[#1A1A1A] hover:border-black' %>"
                                 data-price="<%= variant.price %>">
                                 <%= variant.size %>
@@ -140,13 +149,9 @@
                         </button>
                         <div id="content-specs" class="hidden pb-6 text-gray-500 text-sm leading-relaxed">
                             <div class="grid grid-cols-2 gap-y-2">
-                                <% product.specifications.forEach(spec=> { %>
-                                    <div class="flex gap-4">
-                                        <div class="text-black font-medium">
-                                            <%= spec %>
-                                        </div>
-                                    </div>
-                                    <% }) %>
+                                <div class="text-black font-medium">
+                                    <%= product.specifications %>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -162,13 +167,9 @@
                         </button>
                         <div id="content-highlights" class="hidden pb-6 text-gray-500 text-sm leading-relaxed">
                             <div class="grid grid-cols-2 gap-y-2">
-                                <% product.highlights.forEach(highlight=> { %>
-                                    <div class="flex gap-4">
-                                        <div class="text-black font-medium">
-                                            <%= highlight %>
-                                        </div>
-                                    </div>
-                                    <% }) %>
+                                <div class="text-black font-medium">
+                                    <%= product.highlights %>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -251,7 +252,7 @@
 
         <script>
             // --- STATE MANAGEMENT ---
-            let currentPrice = '<%= product.variants[0].price %>';
+            let currentPrice = '<%= product.variants[0].offerPrice || product.variants[0].price %>';
             let currentVariantId = '<%= product.variants[0]._id %>';
             let currentStock = '<%= product.variants[0].stock %>';
             const productId = '<%= product._id %>';
@@ -261,6 +262,12 @@
                 calculateTotal();
                 checkStock();
             });
+
+            document.getElementById('buyNowBtn').addEventListener('click', () => {
+                const quantity = parseInt(document.getElementById('quantityInput').value);
+
+                window.location.href=`/checkout?productId=${productId}&variantId=${currentVariantId}&quantity=${quantity}`;
+            })
 
             document.getElementById('addToCartBtn').addEventListener('click', () => {
                 const quantity = parseInt(document.getElementById('quantityInput').value);
@@ -273,7 +280,8 @@
                     body: JSON.stringify({
                         productId: productId,
                         variantId: currentVariantId,
-                        quantity: quantity
+                        quantity: quantity,
+                        price: currentPrice
                     })
                 })
                     .then(response => response.json())
@@ -323,16 +331,32 @@
             }
 
             // --- VARIANT SELECTION ---
-            function selectVariant(btn, price, id, stock) {
+            function selectVariant(btn, price, id, stock, offerPrice) {
                 // Update State
-                currentPrice = parseFloat(price);
+                if (offerPrice && offerPrice !== 'undefined' && offerPrice !== '') {
+                    currentPrice = parseFloat(offerPrice);
+                } else {
+                    currentPrice = parseFloat(price);
+                }
+
                 currentVariantId = id;
                 currentStock = parseInt(stock);
 
                 checkStock();
 
                 // Update UI Text
-                document.getElementById('displayPrice').innerText = '₹' + currentPrice.toLocaleString('en-IN');
+                const displayOfferPrice = document.getElementById('displayOfferPrice');
+                const displayPrice = document.getElementById('displayPrice');
+
+                if (displayOfferPrice && offerPrice) {
+                    // Update offer price display
+                    displayOfferPrice.innerText = '₹' + parseFloat(offerPrice).toLocaleString('en-IN');
+                    // Update original price display (strikethrough)
+                    displayPrice.innerText = '₹' + parseFloat(price).toLocaleString('en-IN');
+                } else {
+                    // Normal price display
+                    displayPrice.innerText = '₹' + parseFloat(currentPrice).toLocaleString('en-IN');
+                }
 
                 // Update Buttons Styling
                 document.querySelectorAll('.variant-btn').forEach(b => {

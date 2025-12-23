@@ -1,0 +1,182 @@
+<%- include('../../partials/admin-header.ejs') %>
+    <body
+        class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white"
+    >
+    <%- include('../../partials/flash.ejs') %>
+        <div
+            class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+        >
+            <div class="flex min-h-screen">
+                <%- include('../../partials/sidebar.ejs') %>
+                <main class="flex-1 p-6 lg:p-10">
+                    <div
+                        class="layout-content-container flex flex-col w-full max-w-7xl mx-auto"
+                    >
+                        <div
+                            class="flex flex-col gap-1 mb-6 sm:flex-row sm:items-center sm:justify-between"
+                        >
+                            <div>
+                                <p
+                                    class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                                >
+                                    Offer Management
+                                </p>
+                                <p
+                                    class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal"
+                                >
+                                    Create, view, edit, and delete promotional
+                                    offers.
+                                </p>
+                            </div>
+                            <button
+                                onclick="window.location.href='/admin/offers/create'"
+                                class="flex items-center justify-center gap-2 rounded-lg bg-primary text-white px-5 py-2.5 font-medium hover:opacity-90 w-full mt-4 sm:w-auto sm:mt-0 h-[46px]"
+                            >
+                                <span class="material-symbols-outlined"
+                                    >add</span
+                                >
+                                <span>Create New Offer</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-col gap-6">
+                            <div
+                                class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] overflow-x-auto"
+                            >
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr
+                                            class="border-b border-[#e0e0e0] dark:border-primary/20"
+                                        >
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                Offer Name
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                Type
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                Scope
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                Value
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                Start Date
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                End Date
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm text-center font-semibold text-[#757575] dark:text-gray-400"
+                                            >
+                                                Status
+                                            </th>
+                                            <th
+                                                class="p-4 text-sm font-semibold text-[#757575] dark:text-gray-400 text-right"
+                                            >
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="divide-y divide-[#e0e0e0] dark:divide-primary/20"
+                                    >
+                                        <% if (offers && offers.length > 0) { %>
+                                            <% offers.forEach(offer => { %>
+                                            <tr>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-sm font-medium text-[#141414] dark:text-white"
+                                                >
+                                                    <%= offer.name %>
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-sm text-[#141414] dark:text-white"
+                                                >
+                                                    <%= offer.type %>
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-sm text-[#141414] dark:text-white"
+                                                >
+                                                    <%= offer.scope %>
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-sm text-[#141414] dark:text-white"
+                                                >
+                                                    <%= offer.value %>
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-sm text-[#141414] dark:text-white"
+                                                >
+                                                    <%= offer.start.toLocaleDateString() %>
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-sm text-[#141414] dark:text-white"
+                                                >
+                                                    <%= offer.end.toLocaleDateString() %>
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap text-center">
+                                                    <button  onclick="blockOffer('<%= offer._id %>', '<%= offer.isActive %>')"
+                                                        class="inline-flex items-center rounded-full <%= offer.isActive ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' %> px-2.5 py-0.5 text-xs font-medium"
+                                                        ><%= offer.isActive ? 'Active' : 'Invactive' %></button
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-nowrap text-center"
+                                                >
+                                                    <div
+                                                        class="flex justify-end gap-2"
+                                                    >
+                                                        <button
+                                                            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-primary/20"
+                                                        >
+                                                            <span
+                                                                class="material-symbols-outlined text-xl"
+                                                                >edit</span
+                                                            >
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="6"
+                                                    class="px-6 py-12 text-center text-gray-500">
+                                                    No offers found.
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script>
+            async function blockOffer(id, active) {
+                fetch(`/admin/offers/block/${id}?isActive=${active}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => {
+                    location.reload();
+                })
+            }
+        </script>
+    </body>
+</html>

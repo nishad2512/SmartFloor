@@ -1,5 +1,6 @@
 import Cart from "../../models/cartModel.js";
 import Product from "../../models/productModel.js";
+import applyOffer from "../../utils/offerFetch.js";
 
 export const cart = async (req, res) => {
     try {
@@ -19,7 +20,8 @@ export const cart = async (req, res) => {
                     name: item.product.name,
                     image: item.product.productImages[0],
                     size: variant.size,
-                    price: variant.price,
+                    price: item.offerPrice || variant.price,
+                    originalPrice: item.offerPrice ? variant.price : null,
                     quantity: item.quantity,
                     total: item.total,
                 };
@@ -38,12 +40,18 @@ export const cart = async (req, res) => {
 export const addToCart = async (req, res) => {
     try {
         const userId = req.userId;
-        const { productId, variantId, quantity } = req.body;
+        const { productId, variantId } = req.body;
+        const quantity = parseInt(req.body.quantity, 10);
+
+        // We will ignore req.body.price for security and use server-calculated price
+        // const price = parseInt(req.body.price, 10); 
+
         let cartItem = await Cart.findOne({
             user: userId,
             product: productId,
             variant: variantId,
         });
+
         const product = await Product.findOne({ _id: productId, isActive: true });
 
         if (!product) {
@@ -58,9 +66,21 @@ export const addToCart = async (req, res) => {
             return res.json({ success: false, message: "Invalid product variant" });
         }
 
+        // Apply Offer Logic
+        const productObj = product.toObject();
+        const productWithOffer = await applyOffer(productObj);
+        const variantWithOffer = productWithOffer.variants.find(v => v._id.toString() === variantId);
+
+        const unitPrice = variantWithOffer.offerPrice || variantWithOffer.price;
+        const offerId = productWithOffer.offer ? productWithOffer.offer._id : null;
+        const offerPrice = variantWithOffer.offerPrice || null;
+
+
         if (cartItem && (cartItem.quantity + quantity) > variant.stock && cartItem.quantity + quantity <= 500) {
             cartItem.quantity = variant.stock;
-            cartItem.total = variant.stock * variant.price;
+            cartItem.total = variant.stock * unitPrice;
+            cartItem.offerId = offerId; // Update offer if it changed
+            cartItem.offerPrice = offerPrice;
             await cartItem.save();
             req.flash("success", `Only ${variant.stock} items available in stock, ${variant.stock} items added.`);
             return res.json({ success: true });
@@ -72,7 +92,9 @@ export const addToCart = async (req, res) => {
                 product: productId,
                 variant: variantId,
                 quantity: variant.stock,
-                total: variant.stock * variant.price
+                total: variant.stock * unitPrice,
+                offerId: offerId,
+                offerPrice: offerPrice
             });
             await cartItem.save();
             req.flash("success", `Only ${variant.stock} items available in stock, ${variant.stock} items added.`);
@@ -82,7 +104,9 @@ export const addToCart = async (req, res) => {
         if (cartItem && cartItem.quantity + quantity <= 500) {
 
             cartItem.quantity += quantity;
-            cartItem.total = cartItem.quantity * variant.price;
+            cartItem.total = cartItem.quantity * unitPrice;
+            cartItem.offerId = offerId; // Update latest offer
+            cartItem.offerPrice = offerPrice;
             await cartItem.save();
 
             req.flash("success", `Product quantity increased by ${quantity} in cart`);
@@ -94,7 +118,9 @@ export const addToCart = async (req, res) => {
                 product: productId,
                 variant: variantId,
                 quantity: quantity,
-                total: quantity * variant.price
+                total: quantity * unitPrice,
+                offerId: offerId,
+                offerPrice: offerPrice
             });
             await cartItem.save();
 
@@ -121,7 +147,7 @@ export const updateCartQuantity = async (req, res) => {
         if (quantity < 1) {
             return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
         }
-        
+
         if (!cartItem) {
             return res.status(404).json({ success: false, message: "Cart item not found" });
         }
@@ -132,6 +158,8 @@ export const updateCartQuantity = async (req, res) => {
         if (!variant) {
             return res.status(400).json({ success: false, message: "Variant not found" });
         }
+
+        const unitPrice = cartItem.offerPrice || variant.price;
 
         // Stock check
         if (quantity > 500) {
@@ -151,7 +179,7 @@ export const updateCartQuantity = async (req, res) => {
         }
 
         cartItem.quantity = quantity;
-        cartItem.total = variant.price * quantity;
+        cartItem.total = unitPrice * quantity;
         await cartItem.save();
 
         const cartItems = await Cart.find({ user: req.userId }).populate("product");
@@ -163,7 +191,7 @@ export const updateCartQuantity = async (req, res) => {
             success: true,
             message: "Quantity updated",
             quantity: cartItem.quantity,
-            itemTotal: variant.price * cartItem.quantity,
+            itemTotal: unitPrice * cartItem.quantity,
             cartTotal: totalAmount.toLocaleString('en-IN')
         });
 
@@ -180,12 +208,12 @@ export const removeFromCart = async (req, res) => {
         const cartItem = await Cart.findById(cartItemId);
 
         if (!cartItem) {
-            res.json({success: false, message: "Item not found"})
+            res.json({ success: false, message: "Item not found" })
         }
 
-        await Cart.deleteOne({_id: cartItemId});
+        await Cart.deleteOne({ _id: cartItemId });
         req.flash("success", "Item deleted successfully");
-        res.json({success: true});
+        res.json({ success: true });
 
     } catch (error) {
         console.error(error);

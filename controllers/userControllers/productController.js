@@ -1,5 +1,6 @@
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
+import applyOffer from "../../utils/offerFetch.js"
 
 export const products = async (req, res) => {
     try {
@@ -43,7 +44,12 @@ export const products = async (req, res) => {
                 break;
         }
 
-        const products = await Product.find(filter).sort(sortOption).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit);
+        let products = await Product.find(filter).sort(sortOption).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit).lean();
+
+        products = await Promise.all(
+            products.map(product => applyOffer(product))
+        )
+
         res.render("user/products/products", { products, page, search, categories, totalPages, query: req.query });
     } catch (error) {
         console.error(error);
@@ -97,7 +103,12 @@ export const filterByCategory = async (req, res) => {
                 break;
         }
 
-        const products = await Product.find(filter).sort(sortOption).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit);
+        let products = await Product.find(filter).sort(sortOption).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit).lean();
+
+        products = await Promise.all(
+            products.map(product => applyOffer(product))
+        );
+
         res.render("user/products/products", { products, page, search, categories, totalPages, category, query: req.query });
     } catch (error) {
         console.error(error);
@@ -109,7 +120,8 @@ export const filterByCategory = async (req, res) => {
 export const productDetails = async (req, res) => {
     const productId = req.params.id;
     try {
-        const product = await Product.findById(productId).populate("category");
+        const product = await Product.findById(productId).populate("category").lean();
+
         if (!product || !product.isActive) {
             req.flash('error', 'Product not found');
             return res.redirect('/products');
@@ -120,8 +132,11 @@ export const productDetails = async (req, res) => {
                 outOfStockVariants.push(index);
             }
         });
+
+        let offerApplied = await applyOffer(product);
+
         const relatedProducts = await Product.find({ category: product.category._id, _id: { $ne: product._id } }).limit(3);
-        res.render("user/products/product-details", { product, relatedProducts, outOfStockVariants });
+        res.render("user/products/product-details", { product: offerApplied, relatedProducts, outOfStockVariants });
     } catch (error) {
         console.error(error);
         req.flash('error', 'An error occurred while fetching the product details');

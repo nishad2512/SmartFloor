@@ -1,0 +1,289 @@
+<%- include('../../partials/admin-header.ejs') %>
+
+    <body class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white">
+        <%- include('../../partials/flash.ejs') %>
+            <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+                <div class="flex min-h-screen">
+                    <%- include('../../partials/sidebar.ejs') %>
+                        <main class="flex-1 p-6 lg:p-10">
+                            <div class="layout-content-container flex flex-col w-full max-w-7xl mx-auto">
+                                <div class="flex flex-col gap-1 mb-6">
+                                    <p
+                                        class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                                        Create New Offer
+                                    </p>
+                                    <p class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal">
+                                        Fill in the details below to create a new
+                                        promotional offer.
+                                    </p>
+                                </div>
+                                <div
+                                    class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6 lg:p-8">
+                                    <form class="flex flex-col gap-6" action="/admin/offers/create" method="POST"
+                                        id="create-offer-form">
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                for="offer-name">Offer Name</label>
+                                            <input
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                id="offer-name" name="name" placeholder="e.g. Summer Sale"
+                                                type="text" />
+                                        </div>
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                for="discount-type">Scope Type</label>
+                                            <select
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right pr-8"
+                                                id="scope-type" name="scope">
+                                                <option value="all">All</option>
+                                                <option value="product">Product</option>
+                                                <option value="category">Category</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Product Selection -->
+                                        <div id="product-selection" class="hidden flex-col gap-2">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white">Select
+                                                Products</label>
+                                            <input type="text" id="product-search" placeholder="Search products..."
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 mb-2">
+                                            <div
+                                                class="max-h-60 overflow-y-auto border border-[#e0e0e0] dark:border-primary/20 rounded-lg p-3 bg-white dark:bg-[#1f1f1f]">
+                                                <% if (typeof products !=='undefined' && products.length> 0) { %>
+                                                    <% products.forEach(product=> { %>
+                                                        <div
+                                                            class="flex items-center gap-3 py-2 border-b border-[#e0e0e0] dark:border-primary/10 last:border-0 product-item hover:bg-gray-50 dark:hover:bg-white/5 transition-colors px-2">
+                                                            <input type="checkbox" name="products"
+                                                                value="<%= product._id %>" id="prod-<%= product._id %>"
+                                                                class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
+                                                            <img src="<%= product.productImages[0] %>"
+                                                                alt="<%= product.name %>"
+                                                                class="w-10 h-10 rounded object-cover border border-[#e0e0e0] dark:border-primary/20 bg-gray-100">
+                                                            <label for="prod-<%= product._id %>"
+                                                                class="text-sm text-[#141414] dark:text-white cursor-pointer select-none flex-1 product-name">
+                                                                <%= product.name %>
+                                                            </label>
+                                                        </div>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <p class="text-sm text-gray-500">No products available
+                                                                </p>
+                                                                <% } %>
+                                            </div>
+                                        </div>
+
+                                        <!-- Category Selection -->
+                                        <div id="category-selection" class="hidden flex-col gap-2">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                for="category-select">Select Category</label>
+                                            <select
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right pr-8"
+                                                id="category-select" name="category">
+                                                <option value="">Select a category</option>
+                                                <% if (typeof categories !=='undefined' && categories.length> 0) { %>
+                                                    <% categories.forEach(category=> { %>
+                                                        <option value="<%= category._id %>">
+                                                            <%= category.name %>
+                                                        </option>
+                                                        <% }) %>
+                                                            <% } %>
+                                            </select>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="discount-type">Discount Type</label>
+                                                <select
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right pr-8"
+                                                    id="discount-type" name="type">
+                                                    <option value="percentage">Percentage</option>
+                                                    <option value="fixed">Fixed Amount</option>
+                                                    <option value="shipping">Free Shipping</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="value">Value</label>
+                                                <input
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                    id="value" placeholder="e.g. 15 or 25.00" type="text"
+                                                    name="value" />
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="start-date">Start Date</label>
+                                                <input
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                    id="start-date" type="date" name="start"
+                                                    onclick="this.showPicker()" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="end-date">End Date</label>
+                                                <input
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                    id="end-date" type="date" name="end" onclick="this.showPicker()" />
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex flex-col items-center justify-end gap-3 pt-4 mt-4 border-t border-[#e0e0e0] dark:border-primary/20 sm:flex-row">
+                                            <button
+                                                class="flex items-center justify-center gap-2 rounded-lg border border-primary/20 bg-transparent px-5 py-2.5 font-medium text-[#141414] dark:text-white hover:bg-primary/5 dark:hover:bg-primary/20 w-full sm:w-auto h-[46px]">
+                                                <span>Cancel</span>
+                                            </button>
+                                            <button
+                                                class="flex items-center justify-center gap-2 rounded-lg bg-primary text-white px-5 py-2.5 font-medium hover:opacity-90 w-full sm:w-auto h-[46px]">
+                                                <span class="material-symbols-outlined">save</span>
+                                                <span>Save Offer</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </main>
+                </div>
+            </div>
+    </body>
+
+    </html>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const scopeSelect = document.getElementById('scope-type');
+            const productSelection = document.getElementById('product-selection');
+            const categorySelection = document.getElementById('category-selection');
+            const productSearch = document.getElementById('product-search');
+            const productItems = document.querySelectorAll('.product-item');
+
+            function toggleSelection() {
+                const scope = scopeSelect.value;
+                if (scope === 'product') {
+                    productSelection.classList.remove('hidden');
+                    productSelection.classList.add('flex');
+                    categorySelection.classList.add('hidden');
+                    categorySelection.classList.remove('flex');
+                } else if (scope === 'category') {
+                    categorySelection.classList.remove('hidden');
+                    categorySelection.classList.add('flex');
+                    productSelection.classList.add('hidden');
+                    productSelection.classList.remove('flex');
+                } else {
+                    productSelection.classList.add('hidden');
+                    productSelection.classList.remove('flex');
+                    categorySelection.classList.add('hidden');
+                    categorySelection.classList.remove('flex');
+                }
+            }
+
+            scopeSelect.addEventListener('change', toggleSelection);
+
+            // Initial state
+            toggleSelection();
+
+            // Product search functionality
+            if (productSearch) {
+                productSearch.addEventListener('input', function (e) {
+                    const searchTerm = e.target.value.toLowerCase();
+
+                    productItems.forEach(item => {
+                        const name = item.querySelector('.product-name').textContent.toLowerCase();
+                        if (name.includes(searchTerm)) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+
+            // Form Validation
+            const form = document.getElementById('create-offer-form');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+
+                    const name = document.getElementById('offer-name').value;
+                    const scope = document.getElementById('scope-type').value;
+                    const discountType = document.getElementById('discount-type') ? document.getElementById('discount-type').value : 'percentage';
+                    const value = document.getElementById('value').value;
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+
+                    let isValid = true;
+                    let errorMessage = '';
+
+                    // Validate Name
+                    if (!name.trim()) {
+                        isValid = false;
+                        errorMessage = 'Offer name is required';
+                    }
+
+                    // Validate Value
+                    else if (!value || isNaN(value) || parseFloat(value) <= 0) {
+                        isValid = false;
+                        errorMessage = 'Please enter a valid positive value';
+                    }
+
+                    // Validate Percentage
+                    else if (discountType === 'percentage' && parseFloat(value) > 100) {
+                        isValid = false;
+                        errorMessage = 'Percentage cannot exceed 100%';
+                    }
+
+                    // Validate Scope
+                    else if (scope === 'product') {
+                        const checkedProducts = document.querySelectorAll('input[name="products"]:checked');
+                        if (checkedProducts.length === 0) {
+                            isValid = false;
+                            errorMessage = 'Please select at least one product';
+                        }
+                    } else if (scope === 'category') {
+                        const category = document.getElementById('category-select').value;
+                        if (!category) {
+                            isValid = false;
+                            errorMessage = 'Please select a category';
+                        }
+                    }
+
+                    // Validate Dates
+                    else if (!startDate) {
+                        isValid = false;
+                        errorMessage = 'Start date is required';
+                    }
+                    else if (!endDate) {
+                        isValid = false;
+                        errorMessage = 'End date is required';
+                    }
+                    else {
+                        const start = new Date(startDate);
+                        const end = new Date(endDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        if (start < today) {
+                            isValid = false;
+                            errorMessage = 'Start date cannot be in the past';
+                        } else if (end < start) {
+                            isValid = false;
+                            errorMessage = 'End date cannot be before start date';
+                        }
+                    }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Error',
+                                text: errorMessage,
+                                confirmButtonColor: '#141414'
+                            });
+                        } else {
+                            alert(errorMessage);
+                        }
+                    }
+                });
+            }
+        });
+    </script>

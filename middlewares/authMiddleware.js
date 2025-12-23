@@ -39,7 +39,7 @@ export const redirectIfLoggedIn = (req, res, next) => {
 export const checkUser = (req, res, next) => {
     const token = req.cookies.jwt;
     if (token) {
-        jwt.verify(token, "smart-floor", async (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET_USER, async (err, decodedToken) => {
             if (err) {
                 res.locals.user = null;
                 next();

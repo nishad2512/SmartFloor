@@ -4,6 +4,7 @@ import * as categories from "../controllers/adminControllers/categoryManagement.
 import * as users from "../controllers/adminControllers/userManagement.js";
 import * as products from "../controllers/adminControllers/productManagement.js";
 import * as orders from "../controllers/adminControllers/orderManagement.js";
+import * as offers from "../controllers/adminControllers/offerManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
 import upload from "../utils/cloudinary.js";
 import nocache from "nocache";
@@ -76,6 +77,16 @@ router.patch('/orders/update-status/:orderId', orders.updateStatus);
 router.get('/returns/details/:returnId', orders.returnDetails);
 
 router.patch('/returns/update-status/:returnId', orders.updateReturnStatus);
+
+// offer routes
+
+router.get('/offers', offers.offers);
+
+router.route('/offers/create')
+    .get(offers.createOfferPage)
+    .post(offers.createOffer)
+
+router.patch('/offers/block/:id', offers.blockOrUnblock)
 
 // logout
 

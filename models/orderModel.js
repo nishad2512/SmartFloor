@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
         unique: true,
         required: true,
         default: () => {
-            return 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 100000); 
+            return 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
         }
     },
     address: {
@@ -33,6 +33,13 @@ const orderSchema = new mongoose.Schema({
             variant: {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true
+            },
+            offerId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Offer"
+            },
+            offerPrice: {
+                type: Number
             },
             quantity: {
                 type: Number,
