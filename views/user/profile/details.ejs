@@ -58,23 +58,26 @@
                         <h3 class="text-xl font-bold text-[#1A1A1A]">Referral</h3>
                     </div>
                     <div class="space-y-4">
-                        <div
-                            class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-lg transition-shadow duration-300">
+                        <div class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-lg transition-all duration-300">
                             <div class="flex items-center gap-5 w-full">
-                                <div
-                                    class="size-12 rounded-full bg-gray-50 flex items-center justify-center shrink-0 text-[#1A1A1A]">
+                                <div class="size-12 rounded-full bg-gray-50 flex items-center justify-center shrink-0 text-[#1A1A1A]">
                                     <i class="ph-bold ph-users text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-[#1A1A1A] font-bold text-base mb-1">Code</p>
+                                    <p class="text-[#1A1A1A] font-black text-lg tracking-wider font-mono mb-1 uppercase"><%= user.referral %></p>
                                     <p class="text-gray-500 text-sm leading-relaxed">
-                                        Sharable link
+                                        Refer users using this code to get <span class="font-bold text-gray-800">₹100</span> for each referral
                                     </p>
                                 </div>
                             </div>
+                            
                             <button
-                                class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-colors shrink-0">
-                                Share
+                                id="copyBtn"
+                                onclick="copyReferral('<%= user.referral %>')"
+                                class="flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-all duration-300 shrink-0 min-w-[100px] justify-center"
+                            >
+                                <i id="copyIcon" class="ph-bold ph-copy"></i>
+                                <span id="copyText">Copy</span>
                             </button>
                         </div>
 
@@ -88,6 +91,35 @@
 
     </div> <!-- Close the header container -->
     <%- include("../../partials/footer.ejs") %>
+    <script>
+        function copyReferral(code) {
+            // Copy to clipboard
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const text = document.getElementById('copyText');
+                const icon = document.getElementById('copyIcon');
+
+                // 1. Apply "Success" styles
+                btn.classList.add('bg-green-600', 'text-white', 'border-green-600');
+                btn.classList.remove('text-[#1A1A1A]', 'hover:bg-black', 'hover:border');
+                text.innerText = 'Copied!';
+                icon.className = 'ph-bold ph-check'; // Change icon to checkmark
+
+                // 2. Animate the button (subtle pop effect)
+                btn.style.transform = 'scale(1.05)';
+                setTimeout(() => btn.style.transform = 'scale(1)', 150);
+
+                // 3. Revert after 2 seconds
+                setTimeout(() => {
+                    btn.classList.remove('bg-green-600', 'text-white', 'border-green-600');
+                    btn.classList.add('text-[#1A1A1A]', 'hover:bg-black');
+                    text.innerText = 'Copy';
+                    icon.className = 'ph-bold ph-copy';
+                    btn.style.transform = '';
+                }, 2000);
+            });
+        }
+    </script>
         </body>
 
         </html>

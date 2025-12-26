@@ -86,6 +86,10 @@ router.route('/offers/create')
     .get(offers.createOfferPage)
     .post(offers.createOffer)
 
+router.route('/offers/edit/:id')
+    .get(offers.editOfferPage)
+    .patch(offers.editOffer)
+
 router.patch('/offers/block/:id', offers.blockOrUnblock)
 
 // logout

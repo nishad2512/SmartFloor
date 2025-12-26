@@ -146,4 +146,10 @@ router.patch('/profile/orders/item/return/:orderId/:itemId', requireAuth, orderC
 
 router.get('/profile/orders/returnDetails/:orderId/:itemId', requireAuth, orderController.returnDetails);
 
+// wallet routes
+
+router.get('/profile/wallet', requireAuth, (req, res) => {
+    res.render('user/profile/wallet');
+})
+
 export default router;

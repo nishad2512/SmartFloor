@@ -45,7 +45,7 @@ export const checkUser = (req, res, next) => {
                 next();
             } else {
                 let user = await User.findById(decodedToken.id);
-                if (user && user.isBlocked) {
+                if (!user || user.isBlocked) {
                     res.clearCookie("jwt");
                     res.locals.user = null;
                     req.flash("error", "Your account has been blocked. Please contact support.");

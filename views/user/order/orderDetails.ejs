@@ -226,7 +226,7 @@
                                                         ₹<%= item.subTotal.toLocaleString('en-IN') %>
                                                     </p>
                                                     <p class="text-sm text-[#757575]">
-                                                        ₹<%= variants[index].price.toLocaleString('en-IN') %> / sq ft
+                                                        ₹<%= item.offerPrice || variants[index].price.toLocaleString('en-IN') %> / sq ft
                                                     </p>
                                                 </div>
                                             </div>

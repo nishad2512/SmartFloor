@@ -110,7 +110,7 @@ export const addToCart = async (req, res) => {
             await cartItem.save();
 
             req.flash("success", `Product quantity increased by ${quantity} in cart`);
-            res.json({ success: true });
+            return res.json({ success: true });
 
         } else if (!cartItem && quantity <= 500) {
             cartItem = new Cart({
@@ -125,7 +125,7 @@ export const addToCart = async (req, res) => {
             await cartItem.save();
 
             req.flash("success", "Product added to cart");
-            res.json({ success: true });
+            return res.json({ success: true });
         }
 
         req.flash("error", "You can only add a maximum of 500 items at once");

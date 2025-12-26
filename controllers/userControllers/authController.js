@@ -3,6 +3,7 @@ import { createToken, maxAge } from "../../utils/generateToken.js";
 import crypto from "crypto";
 import { sendOTPEmail, sendResetEmail } from "../../utils/email.js";
 import { createHash, compare } from "../../services/authServices.js";
+import generateCode from "../../utils/referral.js";
 
 function generateOtp() {
     return crypto.randomInt(100000, 999999).toString();
@@ -53,14 +54,25 @@ export const signup = async (req, res) => {
         const otp = generateOtp();
         sendOTPEmail(email, otp);
         console.log("Generated OTP:", otp);
+
+        let referredUser = await User.findOne({ referral });
+        if (!referredUser) {
+            req.flash('error', 'Enter a valid referral code.');
+            return res.redirect("/signup");
+        }
+
+        const referralCode = generateCode(name);
+        console.log(referralCode);
+
         req.session.otp = otp;
         req.session.expires = Date.now() + 60 * 1000;
         req.session.user = {
             name: name,
             email: email,
             password: await createHash(password),
-            referral: referral,
+            referral: referralCode,
         };
+
         req.flash('success', 'OTP sent to your email');
         res.redirect("/otp");
     } catch (err) {

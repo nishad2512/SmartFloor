@@ -1,0 +1,159 @@
+<%- include("../../partials/header.ejs") %>
+
+    <div class="flex flex-col md:flex-row py-12 min-h-[90vh]">
+        <!-- Sidebar -->
+        <%- include("../../partials/user-sidebar.ejs") %>
+
+        <!-- Main Content -->
+                <main class="flex-1 p-6 sm:p-8 md:p-12">
+                    <div class="max-w-3xl mx-auto">
+                        <div class="flex flex-col items-start text-left">
+                            <h1
+                                class="text-[#141414] text-3xl sm:text-4xl font-black leading-tight tracking-[-0.033em]"
+                            >
+                                My Wallet
+                            </h1>
+                            <p
+                                class="mt-2 text-[#757575] text-base font-normal leading-normal"
+                            >
+                                Manage your payment methods and view your
+                                balance.
+                            </p>
+                        </div>
+                        <div class="mt-10 space-y-8">
+                            <div
+                                class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8"
+                            >
+                                <div
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                                >
+                                    <div>
+                                        <h2
+                                            class="text-sm font-medium text-[#757575]"
+                                        >
+                                            Wallet Balance
+                                        </h2>
+                                        <p
+                                            class="text-3xl font-bold text-[#141414] mt-1"
+                                        >
+                                            $250.00
+                                        </p>
+                                    </div>
+                                    <button
+                                        class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal w-full sm:w-auto hover:bg-opacity-90"
+                                        type="button"
+                                    >
+                                        <span class="truncate">Add Funds</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8"
+                            >
+                                <div class="flex justify-between items-center">
+                                    <h2
+                                        class="text-xl font-bold text-[#141414]"
+                                    >
+                                        Transaction history
+                                    </h2>
+                                </div>
+                                <div class="mt-8 space-y-6">
+                                    <div
+                                        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-background-light"
+                                    >
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                                alt="Visa card icon"
+                                                class="w-10 h-auto"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXJgHFU56P8e4hEEvshjgT-bNE02m9OEmIrIsfaVw2dH9YuIMHwtzemopsKmQPJc381DEZ3-3F7plYpT9NnADSXTrf1rv7amxnpauTtUyDOi-QVYkDEu9NgN-kSkJfP1EV_PxpNaSC1nqOPWccsGpcg-Od_Wmxow5Jh_kJwblbSJG6rMzsPIYBkgwW0fhfgFvtnxZ_C44zhr3SfyWDPN2Exo4COhu4zU86ZCK5STQ3sN0SW0yXb9OowY3vWCxkB1V5a61Ev5_4y28"
+                                            />
+                                            <div>
+                                                <p
+                                                    class="font-medium text-[#141414]"
+                                                >
+                                                    Visa ending in 1234
+                                                </p>
+                                                <p
+                                                    class="text-sm text-[#757575]"
+                                                >
+                                                    Expires 08/26
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex gap-2 self-end sm:self-center"
+                                        >
+                                            <button
+                                                aria-label="Edit card"
+                                                class="p-2 rounded-md hover:bg-gray-200"
+                                            >
+                                                <span
+                                                    class="material-symbols-outlined text-base"
+                                                    >edit</span
+                                                >
+                                            </button>
+                                            <button
+                                                aria-label="Remove card"
+                                                class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-white/10"
+                                            >
+                                                <span
+                                                    class="material-symbols-outlined text-base text-red-600"
+                                                    >delete</span
+                                                >
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-background-light"
+                                    >
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                                alt="Mastercard icon"
+                                                class="w-10 h-auto"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBitV9P2D285Su0-DNb1idjnHANZUzUbp2wHq2l-UFKfKsnBC_1vei1ENHrG2ABt1AXLyaeTMBddZtJoHLpUJ7HLmFML8Mxcc1vqrkzBLVexWGj5Qi9_vtgXNvq73A5PdR3rkM2y1tKjym2ZIOaDdoO_dm2CNf7fyDW4ylaZVfT8CuyXvLAsM3NkgEhTYqUNfA6_s6E-gYChn3--EQKn8dFGiEE2tRRg6BplCGsAS9oDA7mhY04N706EC6-C7lpYEDYhfw3PBITbJs"
+                                            />
+                                            <div>
+                                                <p
+                                                    class="font-medium text-[#141414]"
+                                                >
+                                                    Mastercard ending in 5678
+                                                </p>
+                                                <p
+                                                    class="text-sm text-[#757575]"
+                                                >
+                                                    Expires 11/25
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex gap-2 self-end sm:self-center"
+                                        >
+                                            <button
+                                                aria-label="Edit card"
+                                                class="p-2 rounded-md hover:bg-gray-200"
+                                            >
+                                                <span
+                                                    class="material-symbols-outlined text-base"
+                                                    >edit</span
+                                                >
+                                            </button>
+                                            <button
+                                                aria-label="Remove card"
+                                                class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-white/10"
+                                            >
+                                                <span
+                                                    class="material-symbols-outlined text-base text-red-600"
+                                                    >delete</span
+                                                >
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>
