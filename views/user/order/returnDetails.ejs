@@ -211,12 +211,24 @@
                                             ₹<%= item.subTotal.toLocaleString('en-IN') %>
                                         </span>
                                     </div>
+                                    <div class="flex justify-between text-[#757575]">
+                                        <span>Discount</span>
+                                        <span class="font-medium text-black">
+                                            ₹<%= itemDiscountShare.toLocaleString('en-IN') %>
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between text-[#757575]">
+                                        <span>Tax</span>
+                                        <span class="font-medium text-black">
+                                            ₹<%= itemTaxShare.toLocaleString('en-IN') %>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
                                 <div class="flex justify-between items-baseline mb-2">
                                     <span class="font-bold text-lg">Total Refund</span>
                                     <span class="font-bold text-3xl tracking-tight">
-                                        ₹<%= item.subTotal.toLocaleString('en-IN') %>
+                                        ₹<%= finalRefund.toLocaleString('en-IN') %>
                                     </span>
                                 </div>
                             </div>

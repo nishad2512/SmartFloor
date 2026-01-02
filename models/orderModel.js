@@ -21,7 +21,11 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        required: true
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["pending", "paid", "failed"],
+        default: "pending"
     },
     items: [
         {
@@ -73,6 +77,12 @@ const orderSchema = new mongoose.Schema({
     tax: {
         type: Number,
         required: true
+    },
+    coupenDiscount: {
+        type: Number
+    },
+    coupenCode: {
+        type: String
     },
     shipping: {
         type: Number,

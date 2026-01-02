@@ -126,10 +126,12 @@
                                                                     ? 'selected' : '' %>>Shipped</option>
                                                                 <option value="Delivered" <%=order.status==='Delivered'
                                                                     ? 'selected' : '' %>>Delivered</option>
+                                                                <option value="Delivered" <%=order.status==='Return Request'
+                                                                    ? 'selected' : '' %> disabled>Return Request</option>
                                                                 <option value="Cancelled" <%=order.status==='Cancelled'
-                                                                    ? 'selected' : '' %>>Cancelled</option>
+                                                                    ? 'selected' : '' %> disabled>Cancelled</option>
                                                                 <option value="Returned" <%=order.status==='Returned'
-                                                                    ? 'selected' : '' %>>Returned</option>
+                                                                    ? 'selected' : '' %> disabled>Returned</option>
                                                             </select>
                                                             <div
                                                                 class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-[#757575]">
@@ -159,6 +161,10 @@
                                                 <div class="flex justify-between text-[#757575] dark:text-gray-400">
                                                     <span>Subtotal</span>
                                                     <span>₹<%= order.subTotal.toFixed(2) %></span>
+                                                </div>
+                                                <div class="flex justify-between text-[#757575] dark:text-gray-400">
+                                                    <span>Discount</span>
+                                                    <span class="text-green-600">-₹<%= order.coupenDiscount ? order.coupenDiscount.toFixed(2) : "0.00" %></span>
                                                 </div>
                                                 <div class="flex justify-between text-[#757575] dark:text-gray-400">
                                                     <span>Shipping</span>

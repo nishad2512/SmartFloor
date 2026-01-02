@@ -24,6 +24,7 @@ export const cart = async (req, res) => {
                     originalPrice: item.offerPrice ? variant.price : null,
                     quantity: item.quantity,
                     total: item.total,
+                    active: item.product.isActive
                 };
             })
             .filter(Boolean);

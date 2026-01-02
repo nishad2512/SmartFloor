@@ -30,10 +30,10 @@
                     All
                 </a>
 
-                <% categories.forEach(ctg=> { %>
+                <% categories.forEach((ctg, index)=> { %>
                     <a href="/products/<%= ctg.name.toLowerCase() %><%= getQueryString({ page: 1 }) %>"
                         class="px-8 py-2.5 rounded-full border border-gray-300 text-gray-400 text-sm font-bold hover:border-black hover:text-black transition">
-                        <%= ctg.name %>
+                        <%= ctg.name %> (<%= productCounts[index] %>)
                     </a>
                     <% }) %>
             </div>

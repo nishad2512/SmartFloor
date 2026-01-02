@@ -1,6 +1,7 @@
 import Order from "../../models/orderModel.js";
 import Return from "../../models/returnModel.js";
 import Product from "../../models/productModel.js";
+import refund from "../../utils/refund.js";
 
 export const orders = async (req, res) => {
     try {
@@ -83,6 +84,10 @@ export const updateStatus = async (req, res) => {
 
         order.status = status;
 
+        if (order.paymentMethod == 'cod' && status == 'Delivered') {
+            order.paymentStatus = 'paid';
+        }
+
         await order.save();
 
         req.flash("success", "Status changed successfully");
@@ -97,14 +102,20 @@ export const updateStatus = async (req, res) => {
 export const returns = async (req, res) => {
     try {
 
-        const returns = await Return.find().sort({ createdAt: -1 }).populate('userId').populate({
+        const totalCount = await Return.countDocuments();
+        const page = req.query.page || 1;
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const totalPages = totalCount / limit
+
+        const returns = await Return.find().skip(skip).limit(limit).sort({ createdAt: -1 }).populate('userId').populate({
             path: 'orderId',
             populate: {
                 path: 'items.product'
             }
         });
 
-        res.render('admin/orderManagement/returns', { returns });
+        res.render('admin/orderManagement/returns', { returns, page, totalCount, totalPages });
 
     } catch (error) {
         console.error(error);
@@ -152,18 +163,23 @@ export const updateReturnStatus = async (req, res) => {
     try {
         const returnId = req.params.returnId;
         const { status } = req.body;
-
         const returnRequest = await Return.findById(returnId);
+
         if (!returnRequest) {
             return res.status(404).json({ success: false, message: "Return request not found" });
+        }
+
+        const order = await Order.findById(returnRequest.orderId)
+        const item = order.items.id(returnRequest.itemId);
+
+        if (item.status == "Return Request" && status == "Approved") {
+            await refund(order, item)
         }
 
         returnRequest.status = status;
         await returnRequest.save();
 
         if (status === 'Refunded') {
-            const order = await Order.findById(returnRequest.orderId)
-            const item = order.items.id(returnRequest.itemId);
             if (item) {
                 item.status = 'Returned';
                 let product = await Product.findById(item.product);

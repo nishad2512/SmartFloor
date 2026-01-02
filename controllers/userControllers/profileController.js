@@ -176,3 +176,39 @@ export const newMail = async (req, res) => {
         res.redirect("/profile/details");
     }
 }
+
+export const wallet = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        const user = await User.findById(userId);
+
+        // Sort history by date descending
+        const sortedHistory = user.walletHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Paginate
+        const transactions = sortedHistory.slice(skip, skip + limit);
+        const hasMore = sortedHistory.length > (skip + limit);
+
+        if (req.xhr || req.query.ajax) {
+            return res.json({
+                success: true,
+                transactions,
+                hasMore
+            });
+        }
+
+        res.render('user/profile/wallet', {
+            user,
+            transactions: sortedHistory.slice(0, 5), // Initial load
+            hasMore: sortedHistory.length > 5
+        });
+    } catch (error) {
+        console.error("Wallet error:", error);
+        req.flash("error", "Error loading wallet");
+        res.redirect("/profile/details");
+    }
+};

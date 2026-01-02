@@ -4,156 +4,171 @@
         <!-- Sidebar -->
         <%- include("../../partials/user-sidebar.ejs") %>
 
-        <!-- Main Content -->
-                <main class="flex-1 p-6 sm:p-8 md:p-12">
-                    <div class="max-w-3xl mx-auto">
-                        <div class="flex flex-col items-start text-left">
-                            <h1
-                                class="text-[#141414] text-3xl sm:text-4xl font-black leading-tight tracking-[-0.033em]"
-                            >
-                                My Wallet
-                            </h1>
-                            <p
-                                class="mt-2 text-[#757575] text-base font-normal leading-normal"
-                            >
-                                Manage your payment methods and view your
-                                balance.
-                            </p>
+            <!-- Main Content -->
+            <main class="flex-1 p-6 sm:p-8 md:p-12">
+                <div class="max-w-3xl mx-auto">
+                    <div class="flex flex-col items-start text-left">
+                        <h1 class="text-[#141414] text-3xl sm:text-4xl font-black leading-tight tracking-[-0.033em]">
+                            My Wallet
+                        </h1>
+                        <p class="mt-2 text-[#757575] text-base font-normal leading-normal">
+                            Manage your payment methods and view your
+                            balance.
+                        </p>
+                    </div>
+                    <div class="mt-10 space-y-8">
+                        <div class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <h2 class="text-sm font-medium text-[#757575]">
+                                        Wallet Balance
+                                    </h2>
+                                    <p class="text-3xl font-bold text-[#141414] mt-1">
+                                        ₹<%= user.wallet.toLocaleString('en-IN') %>
+                                    </p>
+                                </div>
+                                <button
+                                    class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-black text-white text-base font-bold leading-normal w-full sm:w-auto hover:bg-opacity-90"
+                                    type="button">
+                                    <span class="truncate">Add Funds</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="mt-10 space-y-8">
-                            <div
-                                class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8"
-                            >
-                                <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-                                >
-                                    <div>
-                                        <h2
-                                            class="text-sm font-medium text-[#757575]"
-                                        >
-                                            Wallet Balance
-                                        </h2>
-                                        <p
-                                            class="text-3xl font-bold text-[#141414] mt-1"
-                                        >
-                                            $250.00
-                                        </p>
-                                    </div>
-                                    <button
-                                        class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal w-full sm:w-auto hover:bg-opacity-90"
-                                        type="button"
-                                    >
-                                        <span class="truncate">Add Funds</span>
+                        <div class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-xl font-bold text-[#141414]">
+                                    Transaction history
+                                </h2>
+                            </div>
+                            <div class="mt-8 space-y-6" id="transaction-list">
+                                <% if (transactions && transactions.length> 0) { %>
+                                    <% transactions.forEach(transaction=> { %>
+                                        <div
+                                            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-background-light border border-gray-100">
+                                            <div class="flex items-center gap-4">
+                                                <div
+                                                    class="w-10 h-10 rounded-full flex items-center justify-center <%= transaction.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' %>">
+                                                    <i
+                                                        class="ph-bold ph-<%= transaction.type==='credit' ? 'plus' : 'x' %>"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="font-medium text-[#141414]">
+                                                        <%= transaction.reason || (transaction.type==='Credit'
+                                                            ? 'Wallet Deposit' : 'Wallet Payment' ) %>
+                                                    </p>
+                                                    <p class="text-sm text-[#757575]">
+                                                        <%= new Date(transaction.date).toLocaleDateString('en-IN', {
+                                                            year: 'numeric' , month: 'short' , day: 'numeric' ,
+                                                            hour: '2-digit' , minute: '2-digit' }) %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-end">
+                                                <span
+                                                    class="font-bold <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                    <%= transaction.type==='credit' ? '+' : '-' %>₹<%=
+                                                            transaction.amount.toLocaleString('en-IN') %>
+                                                </span>
+                                                <span class="text-xs text-[#757575] uppercase tracking-wide">
+                                                    <%= transaction.type %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <div class="text-center py-8 text-gray-500">
+                                                    <i class="ph-bold ph-wallet"></i>
+                                                    <p>No transactions found in your wallet history.</p>
+                                                </div>
+                                                <% } %>
+                            </div>
+
+                            <!-- Pagination Button -->
+                            <% if (typeof hasMore !=='undefined' && hasMore) { %>
+                                <div id="pagination-container" class="mt-8 text-center">
+                                    <button id="load-more-btn"
+                                        class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full font-medium transition-colors text-sm"
+                                        data-page="1">
+                                        See More Transactions
                                     </button>
                                 </div>
-                            </div>
-                            <div
-                                class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8"
-                            >
-                                <div class="flex justify-between items-center">
-                                    <h2
-                                        class="text-xl font-bold text-[#141414]"
-                                    >
-                                        Transaction history
-                                    </h2>
-                                </div>
-                                <div class="mt-8 space-y-6">
-                                    <div
-                                        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-background-light"
-                                    >
-                                        <div class="flex items-center gap-4">
-                                            <img
-                                                alt="Visa card icon"
-                                                class="w-10 h-auto"
-                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXJgHFU56P8e4hEEvshjgT-bNE02m9OEmIrIsfaVw2dH9YuIMHwtzemopsKmQPJc381DEZ3-3F7plYpT9NnADSXTrf1rv7amxnpauTtUyDOi-QVYkDEu9NgN-kSkJfP1EV_PxpNaSC1nqOPWccsGpcg-Od_Wmxow5Jh_kJwblbSJG6rMzsPIYBkgwW0fhfgFvtnxZ_C44zhr3SfyWDPN2Exo4COhu4zU86ZCK5STQ3sN0SW0yXb9OowY3vWCxkB1V5a61Ev5_4y28"
-                                            />
-                                            <div>
-                                                <p
-                                                    class="font-medium text-[#141414]"
-                                                >
-                                                    Visa ending in 1234
-                                                </p>
-                                                <p
-                                                    class="text-sm text-[#757575]"
-                                                >
-                                                    Expires 08/26
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="flex gap-2 self-end sm:self-center"
-                                        >
-                                            <button
-                                                aria-label="Edit card"
-                                                class="p-2 rounded-md hover:bg-gray-200"
-                                            >
-                                                <span
-                                                    class="material-symbols-outlined text-base"
-                                                    >edit</span
-                                                >
-                                            </button>
-                                            <button
-                                                aria-label="Remove card"
-                                                class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-white/10"
-                                            >
-                                                <span
-                                                    class="material-symbols-outlined text-base text-red-600"
-                                                    >delete</span
-                                                >
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-background-light"
-                                    >
-                                        <div class="flex items-center gap-4">
-                                            <img
-                                                alt="Mastercard icon"
-                                                class="w-10 h-auto"
-                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBitV9P2D285Su0-DNb1idjnHANZUzUbp2wHq2l-UFKfKsnBC_1vei1ENHrG2ABt1AXLyaeTMBddZtJoHLpUJ7HLmFML8Mxcc1vqrkzBLVexWGj5Qi9_vtgXNvq73A5PdR3rkM2y1tKjym2ZIOaDdoO_dm2CNf7fyDW4ylaZVfT8CuyXvLAsM3NkgEhTYqUNfA6_s6E-gYChn3--EQKn8dFGiEE2tRRg6BplCGsAS9oDA7mhY04N706EC6-C7lpYEDYhfw3PBITbJs"
-                                            />
-                                            <div>
-                                                <p
-                                                    class="font-medium text-[#141414]"
-                                                >
-                                                    Mastercard ending in 5678
-                                                </p>
-                                                <p
-                                                    class="text-sm text-[#757575]"
-                                                >
-                                                    Expires 11/25
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="flex gap-2 self-end sm:self-center"
-                                        >
-                                            <button
-                                                aria-label="Edit card"
-                                                class="p-2 rounded-md hover:bg-gray-200"
-                                            >
-                                                <span
-                                                    class="material-symbols-outlined text-base"
-                                                    >edit</span
-                                                >
-                                            </button>
-                                            <button
-                                                aria-label="Remove card"
-                                                class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-white/10"
-                                            >
-                                                <span
-                                                    class="material-symbols-outlined text-base text-red-600"
-                                                    >delete</span
-                                                >
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                <% } %>
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', () => {
+                                            const loadMoreBtn = document.getElementById('load-more-btn');
+                                            const container = document.getElementById('transaction-list');
+                                            const paginationContainer = document.getElementById('pagination-container');
+
+                                            if (loadMoreBtn) {
+                                                loadMoreBtn.addEventListener('click', async () => {
+                                                    const originalText = loadMoreBtn.innerText;
+                                                    loadMoreBtn.innerText = "Loading...";
+                                                    loadMoreBtn.disabled = true;
+
+                                                    const nextPage = parseInt(loadMoreBtn.dataset.page) + 1;
+
+                                                    try {
+                                                        const response = await fetch(`/profile/wallet?page=${nextPage}&limit=5&ajax=true`);
+                                                        const data = await response.json();
+
+                                                        if (data.success && data.transactions.length > 0) {
+                                                            data.transactions.forEach(transaction => {
+                                                                const isCredit = transaction.type === 'credit';
+                                                                const date = new Date(transaction.date).toLocaleDateString('en-IN', {
+                                                                    year: 'numeric', month: 'short', day: 'numeric',
+                                                                    hour: '2-digit', minute: '2-digit'
+                                                                });
+                                                                const amount = transaction.amount.toLocaleString('en-IN');
+                                                                const reason = transaction.reason || (isCredit ? 'Wallet Deposit' : 'Wallet Payment');
+
+                                                                const html = `
+                                                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-background-light border border-gray-100 animate-fade-in">
+                                                                <div class="flex items-center gap-4">
+                                                                    <div class="w-10 h-10 rounded-full flex items-center justify-center ${isCredit ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                                                                        <i class="ph-bold ph-${isCredit ? 'plus' : 'x'}"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p class="font-medium text-[#141414]">${reason}</p>
+                                                                        <p class="text-sm text-[#757575]">${date}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex flex-col items-end">
+                                                                    <span class="font-bold ${isCredit ? 'text-green-600' : 'text-red-600'}">
+                                                                        ${isCredit ? '+' : '-'}₹${amount}
+                                                                    </span>
+                                                                    <span class="text-xs text-[#757575] uppercase tracking-wide">
+                                                                        ${transaction.type}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                                                                container.insertAdjacentHTML('beforeend', html);
+                                                            });
+
+                                                            loadMoreBtn.dataset.page = nextPage;
+
+                                                            if (!data.hasMore) {
+                                                                paginationContainer.style.display = 'none';
+                                                            }
+                                                        } else {
+                                                            paginationContainer.style.display = 'none';
+                                                        }
+                                                    } catch (err) {
+                                                        console.error('Error loading transactions:', err);
+                                                    } finally {
+                                                        loadMoreBtn.innerText = originalText;
+                                                        loadMoreBtn.disabled = false;
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    </script>
                         </div>
                     </div>
-                </main>
-            </div>
-        </div>
+            </main>
+    </div>
+    </div>
     </body>
-</html>
+
+    </html>

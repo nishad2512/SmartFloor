@@ -11,12 +11,12 @@ const productSchema = new mongoose.Schema(
             required: true,
         },
         specifications: {
-            type: [String],
-            default: ["There are no specifications available."],
+            type: String,
+            default: "There are no specifications available.",
         },
         highlights: {
-            type: [String],
-            default: ["There are no highlights available."],
+            type: String,
+            default: "There are no highlights available.",
         },
         category: {
             type: mongoose.Schema.Types.ObjectId,

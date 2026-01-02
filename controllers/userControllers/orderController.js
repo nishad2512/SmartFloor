@@ -2,12 +2,14 @@ import Order from "../../models/orderModel.js";
 import Return from "../../models/returnModel.js";
 import Product from "../../models/productModel.js";
 import generateInvoice from "../../utils/invoice.js";
+import refund from "../../utils/refund.js";
+import User from "../../models/userModel.js";
 
 export const orderConfirmation = async (req, res) => {
     try {
         const orderId = req.params.orderId;
         const userId = req.userId;
-        const order = await Order.findOne({ orderId: orderId, user: userId }).populate('items.product').populate('address').populate('user');
+        const order = await Order.findOne({ _id: orderId, user: userId }).populate('items.product').populate('address').populate('user');
 
         if (!order) {
             req.flash("error", "Order not found");
@@ -106,7 +108,7 @@ export const orders = async (req, res) => {
     } catch (error) {
         console.error(error);
         req.flash("error", "Something went wrong.");
-        res.redirect('/profile/orders');
+        res.redirect('/profile/details');
     }
 }
 
@@ -146,6 +148,18 @@ export const cancelOrder = async (req, res) => {
         if (!order) {
             return res.json({ success: false, message: "Invalid Order" })
         }
+
+        // user wallet
+        const user = await User.findById(userId);
+        user.wallet += Math.round(order.totalAmount);
+    
+        user.walletHistory.push({
+            amount: Math.round(order.totalAmount),
+            type: "credit",
+            reason: `Refund for order ${order.orderId}`,
+            date: new Date
+        });
+        // --
 
         order.cancelReason = reason;
         order.status = 'Cancelled';
@@ -188,6 +202,8 @@ export const cancelOrderItem = async (req, res) => {
         if (!item) {
             return res.json({ success: false, message: "Item not found" })
         }
+
+        await refund(order, item);
 
         item.status = 'Cancelled';
         item.cancelReason = reason;
@@ -326,12 +342,20 @@ export const returnDetails = async (req, res) => {
             return res.redirect('/profile/orders');
         }
 
-        // Since itemId is a sub-document ID in the Order, we find the specific item details
         const order = returnDoc.orderId;
         const item = order.items.id(itemId);
 
-        // Manually find the variant from the populated product
-        // We assume the order.items.product was populated or we fetch it here
+        // Calculation from refund
+        const totalOrderSubtotal = order.subTotal;
+
+        const totalDiscountGiven = order.coupenDiscount || 0;
+        const itemDiscountShare = (item.subTotal / totalOrderSubtotal) * totalDiscountGiven;
+
+        const totalTax = order.tax || 0;
+        const itemTaxShare = (item.subTotal / totalOrderSubtotal) * totalTax;
+
+        const finalRefund = (item.subTotal - itemDiscountShare) + itemTaxShare;
+
         await order.populate('items.product');
         const variant = item.product.variants.id(item.variant);
 
@@ -339,7 +363,10 @@ export const returnDetails = async (req, res) => {
             returnDoc,
             order,
             item,
-            variant
+            variant,
+            itemTaxShare,
+            itemDiscountShare,
+            finalRefund
         });
 
     } catch (error) {

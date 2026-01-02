@@ -18,8 +18,10 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongoose": "^9.0.0",
@@ -30,7 +32,13 @@
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "pdfkit": "^0.17.2",
+    "razorpay": "^2.9.6",
     "twilio": "^5.10.7"
+  },
+  "overrides": {
+    "multer-storage-cloudinary": {
+      "cloudinary": "$cloudinary"
+    }
   },
   "devDependencies": {
     "nodemon": "^3.1.11",

@@ -7,6 +7,7 @@ import * as cartController from "../controllers/userControllers/cartController.j
 import * as wishlistController from "../controllers/userControllers/wishlistController.js";
 import * as checkoutController from "../controllers/userControllers/checkoutController.js";
 import * as orderController from "../controllers/userControllers/orderController.js";
+import * as paymentController from "../controllers/userControllers/paymentController.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -14,6 +15,7 @@ import {
 } from "../middlewares/authMiddleware.js";
 import nocache from "nocache";
 import upload from "../utils/cloudinary.js";
+import User from "../models/userModel.js";
 
 const router = express.Router();
 
@@ -119,12 +121,16 @@ router.delete('/cart/delete/:cartItemId', requireAuth, cartController.removeFrom
 // wishlist routes
 
 router.get('/wishlist', requireAuth, wishlistController.wishlist);
+router.post('/wishlist/add', requireAuth, wishlistController.addToWishlist);
+router.delete('/wishlist/remove', requireAuth, wishlistController.removeFromWishlist);
 
 // checkout routes
 
 router.get('/checkout', requireAuth, checkoutController.checkout);
 
 router.post('/checkout/place-order', requireAuth, checkoutController.placeOrder);
+
+router.post('/checkout/apply-coupen', requireAuth, checkoutController.applyCoupen);
 
 // orders routes
 
@@ -148,8 +154,18 @@ router.get('/profile/orders/returnDetails/:orderId/:itemId', requireAuth, orderC
 
 // wallet routes
 
-router.get('/profile/wallet', requireAuth, (req, res) => {
-    res.render('user/profile/wallet');
-})
+router.get('/profile/wallet', requireAuth, profileController.wallet)
+
+// payment routes
+
+router.get('/payment/:orderId', requireAuth, paymentController.payment);
+
+router.get('/payment/failed/:orderId', requireAuth, paymentController.failedPage);
+
+router.post('/payment/create-order', requireAuth, paymentController.createOrder);
+
+router.post('/payment/verify-payment', requireAuth, paymentController.verifyPayment);
+
+router.post('/payment/place-order', requireAuth, paymentController.placeOrder);
 
 export default router;

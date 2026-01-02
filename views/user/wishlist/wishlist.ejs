@@ -1,109 +1,78 @@
 <%- include('../../partials/header') %>
+
     <body class="font-display">
         <div
-            class="relative flex h-auto min-h-[90vh] w-full flex-col bg-background-light group/design-root overflow-x-hidden"
-        >
+            class="relative flex h-auto min-h-[90vh] w-full flex-col bg-background-light group/design-root overflow-x-hidden">
             <div class="layout-container flex h-full grow flex-col">
-                <div
-                    class="px-4 sm:px-10 md:px-20 lg:px-40 flex flex-1 justify-center py-5"
-                >
-                    <div
-                        class="layout-content-container flex flex-col max-w-[960px] flex-1"
-                    >
+                <div class="px-4 sm:px-10 md:px-20 lg:px-40 flex flex-1 justify-center py-5">
+                    <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
                         <!-- PageHeading and Share Button -->
-                        <div
-                            class="flex flex-wrap justify-between gap-3 p-4 items-center"
-                        >
-                            <p
-                                class="text-[#141414] text-4xl font-black leading-tight tracking-[-0.033em] min-w-72"
-                            >
+                        <div class="flex flex-wrap justify-between gap-3 p-4 items-center">
+                            <p class="text-[#141414] text-4xl font-black leading-tight tracking-[-0.033em] min-w-72">
                                 My Wishlist
                             </p>
-                            <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-bold leading-normal tracking-[0.015em]"
-                            >
-                                <span class="truncate">Share Wishlist</span>
-                            </button>
                         </div>
                         <!-- Breadcrumbs -->
                         <div class="flex flex-wrap gap-2 px-4 pb-4">
-                            <a
-                                class="text-[#757575] text-base font-medium leading-normal"
-                                href="#"
-                                >Home</a
-                            >
-                            <span
-                                class="text-[#757575] text-base font-medium leading-normal"
-                                >/</span
-                            >
-                            <span
-                                class="text-[#141414] text-base font-medium leading-normal"
-                                >My Wishlist</span
-                            >
+                            <a class="text-[#757575] text-base font-medium leading-normal" href="/">Home</a>
+                            <span class="text-[#757575] text-base font-medium leading-normal">/</span>
+                            <span class="text-[#141414] text-base font-medium leading-normal">My Wishlist</span>
                         </div>
                         <!-- Wishlist with items -->
-                        <div
-                            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-                        >
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                             <!-- Product Card 1 -->
-                             <% wishlistItems.forEach((item, index) => { %>
-                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
-    
-                                <!-- Image section -->
-                                <div class="w-full aspect-square overflow-hidden">
-                                    <img
-                                        src="<%= item.product.productImages[0] %>"
-                                        alt="<%= item.product.name %>"
-                                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                                    />
-                                </div>
+                            <% wishlistItems.forEach((item, index)=> { %>
+                                <div
+                                    class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
 
-                                <!-- Content section -->
-                                <div class="p-4 flex flex-col gap-2">
-                                    <p class="text-lg font-bold text-[#141414] line-clamp-2">
-                                        <%= item.product.name %>
-                                    </p>
-
-                                    <p class="text-sm text-gray-600">
-                                        Size: <%= variants[index].size %>
-                                    </p>
-
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <% if (variants[index].offerPrice) { %>
-                                            <span class="text-lg font-bold text-green-600">
-                                                ₹<%= variants[index].offerPrice %>
-                                            </span>
-                                            <span class="text-sm line-through text-gray-400">
-                                                ₹<%= variants[index].price %>
-                                            </span>
-                                        <% } else { %>
-                                            <span class="text-lg font-bold">
-                                                ₹<%= variants[index].price %>
-                                            </span>
-                                        <% } %>
+                                    <!-- Image section -->
+                                    <div class="w-full aspect-square overflow-hidden">
+                                        <img src="<%= item.product.productImages[0] %>" alt="<%= item.product.name %>"
+                                            class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
                                     </div>
 
-                                    <!-- Actions -->
-                                    <div class="mt-3 flex flex-col gap-2">
-                                        <form action="/cart/add" method="post">
-                                            <input type="hidden" name="productId" value="<%= item.product._id %>">
-                                            <input type="hidden" name="variantId" value="<%= variants[index]._id %>">
-                                            <input type="hidden" name="quantity" value="1">
+                                    <!-- Content section -->
+                                    <div class="p-4 flex flex-col gap-2">
+                                        <p class="text-lg font-bold text-[#141414] line-clamp-2">
+                                            <%= item.product.name %>
+                                        </p>
 
-                                            <button type="submit"
+                                        <p class="text-sm text-gray-600">
+                                            Size: <%= variants[index].size %>
+                                        </p>
+
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <% if (variants[index].offerPrice) { %>
+                                                <span class="text-lg font-bold text-green-600">
+                                                    ₹<%= variants[index].offerPrice %>
+                                                </span>
+                                                <span class="text-sm line-through text-gray-400">
+                                                    ₹<%= variants[index].price %>
+                                                </span>
+                                                <% } else { %>
+                                                    <span class="text-lg font-bold">
+                                                        ₹<%= variants[index].price %>
+                                                    </span>
+                                                    <% } %>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="mt-3 flex flex-col gap-2">
+                                            <button
+                                                onclick="addToCartFromWishlist('<%= item.product._id %>', '<%= variants[index]._id %>', '<%= item._id %>')"
                                                 class="w-full h-10 rounded-lg bg-black text-white font-semibold hover:bg-gray-900">
                                                 Add to Cart
                                             </button>
-                                        </form>
-                                        <button class="h-10 rounded-lg border font-semibold hover:bg-gray-100">
-                                            Remove
-                                        </button>
+                                            <button type="button" onclick="removeFromWishlist('<%= item._id %>')"
+                                                class="h-10 rounded-lg border font-semibold hover:bg-gray-100">
+                                                Remove
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Product Card 2 -->
-                            <% }) %>
+                                <!-- Product Card 2 -->
+                                <% }) %>
                         </div>
                     </div>
                 </div>
@@ -111,26 +80,116 @@
         </div>
         </div>
         <%- include('../../partials/footer') %>
+            <script>
+
+                function addToCartFromWishlist(productId, variantId, itemId) {
+                    // 1. Add to Cart
+                    fetch('/cart/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            productId: productId,
+                            variantId: variantId,
+                            quantity: 1
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // 2. Remove from Wishlist
+                                fetch('/wishlist/remove', {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ itemId: itemId })
+                                })
+                                    .then(res => res.json())
+                                    .then(removeData => {
+                                        if (removeData.success) {
+                                            // 3. Reload Page
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Added to Cart',
+                                                text: 'Product moved to cart successfully',
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                            }).then(() => {
+                                                location.reload();
+                                            });
+                                        } else {
+                                            console.error("Failed to remove from wishlist:", removeData.message);
+                                            location.reload(); // Still reload if added to cart but failed to remove
+                                        }
+                                    });
+                            } else {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Info',
+                                    text: data.message
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred.'
+                            });
+                        });
+                }
+
+                function removeFromWishlist(itemId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#000000',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, remove it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/wishlist/remove', {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ itemId: itemId })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire(
+                                            'Removed!',
+                                            data.message,
+                                            'success'
+                                        ).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            data.message,
+                                            'error'
+                                        );
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred while removing the item.',
+                                        'error'
+                                    );
+                                });
+                        }
+                    })
+                }
+            </script>
     </body>
-</html>
 
-
-                        <!-- Empty State (Example - uncomment to view) -->
-                        <!-- 
-                <div class="flex flex-col px-4 py-20">
-                    <div class="flex flex-col items-center gap-6 text-center">
-                        <div class="flex items-center justify-center text-gray-400">
-                             <span class="material-symbols-outlined !text-8xl">favorite</span>
-                        </div>
-                        <div class="flex max-w-[480px] flex-col items-center gap-2">
-                            <p class="text-[#141414] text-xl font-bold leading-tight tracking-[-0.015em]">Your Wishlist is Empty</p>
-                            <p class="text-gray-600 text-base font-normal leading-normal">
-                                You haven't saved any items yet. Start exploring our flooring options to find your perfect match.
-                            </p>
-                        </div>
-                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em]">
-                            <span class="truncate">Explore Flooring</span>
-                        </button>
-                    </div>
-                </div>
-                -->
+    </html>

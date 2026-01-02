@@ -249,7 +249,7 @@
                                                         class="text-md font-semibold text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-md border border-yellow-200">Return Details</a>
                                                 <% } else { %>
                                                     <% if (order.status==='Pending' ||
-                                                        order.status==='Processing' ) { %>
+                                                        order.status==='Processing' || order.status==='Shipped' ) { %>
                                                         <button
                                                             onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')"
                                                             class="text-sm font-medium text-red-600 hover:text-red-800 transition-colors bg-red-50 px-3 py-1.5 rounded-md border border-red-100">
@@ -292,7 +292,7 @@
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
                                         <span>Discount</span>
-                                        <span class="font-medium text-black">-$0.00</span>
+                                        <span class="font-medium text-green-600">-₹<%= order.coupenDiscount %></span>
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
                                         <span>Shipping</span>
@@ -372,6 +372,7 @@
                                     <p class="font-medium text-lg">
                                         <%= order.paymentMethod=='cod' ? 'Cash on Delivery' : order.paymentMethod %>
                                     </p>
+                                    <%= order.paymentStatus %>
                                 </div>
                             </div>
                         </div>

@@ -5,6 +5,8 @@ import * as users from "../controllers/adminControllers/userManagement.js";
 import * as products from "../controllers/adminControllers/productManagement.js";
 import * as orders from "../controllers/adminControllers/orderManagement.js";
 import * as offers from "../controllers/adminControllers/offerManagement.js";
+import * as coupens from "../controllers/adminControllers/coupenManagement.js";
+import * as sales from "../controllers/adminControllers/salesManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
 import upload from "../utils/cloudinary.js";
 import nocache from "nocache";
@@ -90,7 +92,31 @@ router.route('/offers/edit/:id')
     .get(offers.editOfferPage)
     .patch(offers.editOffer)
 
-router.patch('/offers/block/:id', offers.blockOrUnblock)
+router.patch('/offers/block/:id', offers.blockOrUnblock);
+
+// coupen routes
+
+router.get('/coupens', coupens.coupens);
+
+router.route('/coupens/create')
+    .get(coupens.createPage)
+    .post(coupens.create)
+
+router.route('/coupens/edit/:id')
+    .get(coupens.editPage)
+    .patch(coupens.edit)
+
+router.patch('/coupens/block/:id', coupens.block);
+
+// sales routes
+
+router.get('/sales', sales.sales);
+
+router.get('/sales/download/pdf', sales.downloadSalesPDF);
+
+router.get('/sales/download/excel', sales.downloadSalesExcel);
+
+
 
 // logout
 

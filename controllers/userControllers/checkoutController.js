@@ -1,9 +1,10 @@
 import Cart from "../../models/cartModel.js";
-import { Address } from "../../models/userModel.js";
+import User, { Address } from "../../models/userModel.js";
 import Order from "../../models/orderModel.js";
 import Product from "../../models/productModel.js";
 import applyOffer from "../../utils/offerFetch.js";
 import Offer from "../../models/offerModel.js";
+import Coupen from "../../models/coupenModel.js";
 
 export const checkout = async (req, res) => {
     try {
@@ -15,9 +16,15 @@ export const checkout = async (req, res) => {
         let total = 0;
         const addresses = await Address.find({ user: userId });
         const now = new Date();
+        const coupens = await Coupen.find();
+        const user = await User.findById(userId);
 
         if (productId && variantId && quantity) {
             const product = await Product.findById(productId);
+            if (!product.isActive) {
+                req.flash("error", "Product not found")
+                return res.redirect('/products')
+            }
             const variant = product.variants.id(variantId);
 
             const productObj = product.toObject();
@@ -52,7 +59,7 @@ export const checkout = async (req, res) => {
                 product,
                 variant,
                 quantity: parseInt(quantity),
-                total,
+                totalAmount,
                 offerId: productWithOffer.offer
                     ? productWithOffer.offer._id
                     : null,
@@ -66,30 +73,45 @@ export const checkout = async (req, res) => {
                 tax,
                 total,
                 quantity,
+                coupens,
+                user
             });
         }
 
         const cartItems = await Cart.find({ user: userId }).populate("product");
+        if (cartItems.some(item => !item.product.isActive)) {
+            req.flash("error", "There are Unavailable products")
+            return res.redirect('/cart')
+        }
         totalAmount = cartItems.reduce((sum, item) => sum + item.total, 0);
 
-        for (const item of cartItems) {
-            const product = await Product.findById(item.product);
+        const offerPromises = cartItems.map(async (item) => {
 
-            const offers = await Offer.find({
+            const product = await Product.findById(item.product);
+        
+            if (!product) return { hasOffer: false };
+
+            const offer = await Offer.findOne({
                 isActive: true,
                 start: { $lte: now },
                 end: { $gte: now },
+                type: "shipping",
                 $or: [
                     { products: product._id },
                     { category: product.category },
                     { scope: "all" },
                 ],
-                type: "shipping",
             });
-            if (!offers || totalAmount > 5000) {
-                shipping = 200;
-                break;
-            }
+
+            return { hasOffer: !!offer };
+        });
+
+        const results = await Promise.all(offerPromises);
+
+        const anyItemsHaveOffers = results.some(res => res.hasOffer);
+
+        if (!anyItemsHaveOffers || totalAmount < 5000) {
+            shipping = 200
         }
 
         tax = (totalAmount * 18) / 100;
@@ -107,6 +129,8 @@ export const checkout = async (req, res) => {
             shipping,
             tax,
             total,
+            coupens,
+            user
         });
     } catch (error) {
         console.error(error);
@@ -117,17 +141,17 @@ export const checkout = async (req, res) => {
 
 export const placeOrder = async (req, res) => {
     try {
-        const { addressId, paymentMethod, totalAmount } = req.body;
+        const { addressId, coupenCode, totalAmount } = req.body;
         const userId = req.userId;
         let shipping = 200;
         let tax = (totalAmount * 18) / 100;
         let qualifiesForFreeShipping = false;
         const now = new Date();
+        let coupenDiscount = 0;
 
         const newOrder = new Order({
             user: userId,
             address: addressId,
-            paymentMethod: paymentMethod,
             subTotal: totalAmount,
             tax,
         });
@@ -155,7 +179,7 @@ export const placeOrder = async (req, res) => {
                 product: item.product._id,
                 variant: item.variant,
                 quantity: item.quantity,
-                subTotal: item.total,
+                subTotal: item.totalAmount,
                 offerId: item.offerId,
                 offerPrice: item.offerPrice,
             });
@@ -200,14 +224,23 @@ export const placeOrder = async (req, res) => {
             await Cart.deleteMany({ user: userId });
         }
 
-        const total = totalAmount + shipping + tax;
-
         if (qualifiesForFreeShipping || totalAmount > 5000) {
             shipping = 0;
         }
 
+        const coupen = await Coupen.findOne({code: coupenCode, isActive: true, expirationDate: {$gte: new Date}});
+        if (coupen && coupen.discountType == "percentage") {
+            coupenDiscount = (totalAmount * coupen.discountValue) / 100;
+        } else if (coupen && coupen.discountType == "fixed") {
+            coupenDiscount = coupen.discountValue;
+        }
+
+        const total = (totalAmount + shipping + tax) - coupenDiscount;
+
         newOrder.shipping = shipping;
         newOrder.tax = tax;
+        newOrder.coupenDiscount = coupenDiscount;
+        newOrder.coupenCode = coupenCode;
         newOrder.totalAmount = total;
 
         await newOrder.save();
@@ -219,3 +252,48 @@ export const placeOrder = async (req, res) => {
         res.redirect("/checkout");
     }
 };
+
+export const applyCoupen = async (req, res) => {
+    try {
+
+        const { code, currentTotal } = req.body;
+
+        const coupen = await Coupen.findOne({ 
+            code, 
+            isActive: true,
+            expirationDate: { $gte: new Date() } 
+        });
+
+        if (!coupen) {
+            return res.json({ success: false, message: "Invalid or expired coupon" });
+        }
+
+        if (coupen.minPurchaseAmount > currentTotal) {
+            res.json({success: false, message: "minimum purchase amount is not covered"})
+        }
+
+        let discountAmount = 0;
+
+        // 3. Calculate Discount
+        if (coupen.discountType === "percentage") {
+            discountAmount = (currentTotal * coupen.discountValue) / 100;
+            // Optional: You might want to cap percentage discounts (e.g., max ₹500)
+        } else {
+            discountAmount = coupen.discountValue;
+        }
+
+        // Ensure discount doesn't exceed the total
+        if (discountAmount > currentTotal) discountAmount = currentTotal;
+
+        const newTotal = currentTotal - discountAmount;
+
+        res.json({ 
+            success: true, 
+            newTotal: Math.round(newTotal), 
+            discountAmount: Math.round(discountAmount) 
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
+}
