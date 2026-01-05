@@ -14,8 +14,7 @@ import {
     checkUser,
 } from "../middlewares/authMiddleware.js";
 import nocache from "nocache";
-import upload from "../utils/cloudinary.js";
-import User from "../models/userModel.js";
+import {upload} from "../utils/cloudinary.js";
 
 const router = express.Router();
 

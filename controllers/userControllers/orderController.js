@@ -150,7 +150,7 @@ export const cancelOrder = async (req, res) => {
         }
 
         // user wallet
-        const user = await User.findById(userId);
+        const user = await User.findById(order.user);
         user.wallet += Math.round(order.totalAmount);
     
         user.walletHistory.push({
@@ -159,6 +159,8 @@ export const cancelOrder = async (req, res) => {
             reason: `Refund for order ${order.orderId}`,
             date: new Date
         });
+
+        await user.save();
         // --
 
         order.cancelReason = reason;

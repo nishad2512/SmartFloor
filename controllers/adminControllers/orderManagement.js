@@ -106,7 +106,7 @@ export const returns = async (req, res) => {
         const page = req.query.page || 1;
         const limit = 5;
         const skip = (page - 1) * limit;
-        const totalPages = totalCount / limit
+        const totalPages = Math.ceil(totalCount / limit);
 
         const returns = await Return.find().skip(skip).limit(limit).sort({ createdAt: -1 }).populate('userId').populate({
             path: 'orderId',

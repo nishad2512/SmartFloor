@@ -29,7 +29,7 @@
                                 </div>
                                 <button
                                     class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-black text-white text-base font-bold leading-normal w-full sm:w-auto hover:bg-opacity-90"
-                                    type="button">
+                                    type="button" onclick="addMoneyToWallet()">
                                     <span class="truncate">Add Funds</span>
                                 </button>
                             </div>
@@ -93,7 +93,8 @@
                                     </button>
                                 </div>
                                 <% } %>
-
+                                
+                                    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                                     <script>
                                         document.addEventListener('DOMContentLoaded', () => {
                                             const loadMoreBtn = document.getElementById('load-more-btn');
@@ -163,6 +164,178 @@
                                                 });
                                             }
                                         });
+
+                                        function addMoneyToWallet() {
+                                            Swal.fire({
+                                                title: 'Add Money to Wallet',
+                                                html: `
+                                                    <div style="text-align:left; font-family: 'Inter', -apple-system, sans-serif; padding: 10px 5px;">
+                                                        <label style="font-weight:500; color:#374151; margin-bottom:8px; display:block; font-size:14px;">
+                                                            Enter Amount
+                                                        </label>
+
+                                                        <div style="
+                                                            display:flex;
+                                                            align-items:center;
+                                                            border:2px solid #f3f4f6;
+                                                            border-radius:12px;
+                                                            padding:12px 16px;
+                                                            margin-bottom:20px;
+                                                            background: #f9fafb;
+                                                            transition: border-color 0.2s;
+                                                            " id="amountWrapper">
+                                                            <span style="font-size:20px; font-weight:600; color:#111827; margin-right:10px">₹</span>
+                                                            <input 
+                                                                id="walletAmount"
+                                                                type="number"
+                                                                placeholder="0.00"
+                                                                min="1"
+                                                                style="
+                                                                border:none;
+                                                                background:transparent;
+                                                                outline:none;
+                                                                width:100%;
+                                                                font-size:20px;
+                                                                font-weight:600;
+                                                                color:#111827;
+                                                                "
+                                                            />
+                                                        </div>
+
+                                                        <div style="display:flex; gap:10px; margin-bottom:20px">
+                                                            <button class="quick-amount" data-amount="100">₹100</button>
+                                                            <button class="quick-amount" data-amount="500">₹500</button>
+                                                            <button class="quick-amount" data-amount="1000">₹1000</button>
+                                                        </div>
+
+                                                        <div style="display:flex; align-items:center; gap:8px; color:#6b7280; background:#f3f4f6; padding:10px; border-radius:8px;">
+                                                            <span style="font-size:16px;">⚡</span>
+                                                            <p style="font-size:12px; margin:0;">Funds will be available in your balance immediately.</p>
+                                                        </div>
+                                                    </div>
+                                                `,
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Proceed to Pay',
+                                                cancelButtonText: 'Maybe Later',
+                                                confirmButtonColor: 'black',
+                                                customClass: {
+                                                    popup: 'wallet-popup-custom',
+                                                    confirmButton: 'wallet-confirm-btn',
+                                                    cancelButton: 'wallet-cancel-btn',
+                                                    title: 'wallet-title-custom'
+                                                },
+                                                didOpen: () => {
+                                                    const input = document.getElementById('walletAmount');
+                                                    const wrapper = document.getElementById('amountWrapper');
+                                                    
+                                                    // Focus effect
+                                                    input.addEventListener('focus', () => wrapper.style.borderColor = '#3b82f6');
+                                                    input.addEventListener('blur', () => wrapper.style.borderColor = '#f3f4f6');
+
+                                                    document.querySelectorAll('.quick-amount').forEach(btn => {
+                                                        btn.style.cssText = `
+                                                            flex:1;
+                                                            padding:10px 5px;
+                                                            border-radius:10px;
+                                                            border:1px solid #e5e7eb;
+                                                            background:#fff;
+                                                            cursor:pointer;
+                                                            font-weight:500;
+                                                            color:#4b5563;
+                                                            transition: all 0.2s;
+                                                            font-size: 14px;
+                                                        `;
+
+                                                        btn.addEventListener('mouseenter', () => {
+                                                            btn.style.background = '#f9fafb';
+                                                            btn.style.borderColor = '#d1d5db';
+                                                        });
+
+                                                        btn.addEventListener('mouseleave', () => {
+                                                            btn.style.background = '#fff';
+                                                            btn.style.borderColor = '#e5e7eb';
+                                                        });
+
+                                                        btn.addEventListener('click', () => {
+                                                            input.value = btn.dataset.amount;
+                                                            // Flash effect on input
+                                                            wrapper.style.backgroundColor = '#eff6ff';
+                                                            setTimeout(() => wrapper.style.backgroundColor = '#f9fafb', 200);
+                                                        });
+                                                    });
+                                                },
+                                                preConfirm: () => {
+                                                    const amount = document.getElementById('walletAmount').value;
+                                                    if (!amount || amount <= 0) {
+                                                        Swal.showValidationMessage('Please enter a valid amount');
+                                                    }
+                                                    return amount;
+                                                }
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    processWalletTopUp(result.value);
+                                                }
+                                            });
+                                        }
+
+                                        async function processWalletTopUp(amount) {
+                                            try {
+                                                const res = await fetch("/payment/create-order", {
+                                                    method: "POST",
+                                                    headers: { "Content-Type": "application/json" },
+                                                    body: JSON.stringify({ amount })
+                                                });
+
+                                                const data = await res.json();
+
+                                                const options = {
+                                                    key: "rzp_test_RysFjKh7FeeVsH", // PUBLIC key
+                                                    amount: data.order.amount,
+                                                    currency: "INR",
+                                                    name: "SmartFloor",
+                                                    description: "Wallet TopUp",
+                                                    order_id: data.order.id,
+
+                                                    prefill: {
+                                                        name: "<%= user.name %>",
+                                                        email: "<%= user.email %>",
+                                                        contact: "9999999999"
+                                                    },
+                                                    retry: {
+                                                        enabled: false
+                                                    },
+
+                                                    handler: async function (response) {
+                                                        response.amount = amount;
+                                                        const res = await fetch("/payment/verify-payment", {
+                                                            method: "POST",
+                                                            headers: { "Content-Type": "application/json" },
+                                                            body: JSON.stringify(response)
+                                                        });
+                                                        const data = await res.json();
+                                                        if (data.success) {
+                                                            location.reload();
+                                                        }
+                                                    },
+
+                                                    theme: {
+                                                        color: "#000000",
+                                                    },
+                                                };
+
+                                                console.log("Razorpay Options:", options);
+
+                                                const rzp = new Razorpay(options);
+                                                rzp.open();
+                                            } catch (error) {
+                                                Swal.fire({
+                                                icon: 'error',
+                                                title: 'Failed',
+                                                text: error.message || 'Something went wrong'
+                                                });
+                                            }
+                                        }
+
                                     </script>
                         </div>
                     </div>

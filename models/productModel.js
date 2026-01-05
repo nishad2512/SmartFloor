@@ -33,6 +33,9 @@ const productSchema = new mongoose.Schema(
                 message: "You must upload at least 3 images.",
             },
         },
+        arModelPath: {
+            type: String,
+        },
         variants: [
             {
                 size: { type: String, required: true },

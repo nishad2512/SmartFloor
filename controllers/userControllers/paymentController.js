@@ -15,6 +15,11 @@ export const payment = async (req, res) => {
         }).populate("items.product");
         const user = await User.findById(req.userId);
 
+        if (order.paymentStatus == 'paid' || order.paymentMethod == 'cod') {
+            req.flash('error', 'Order already placed');
+            return res.redirect('/profile/orders')
+        }
+
         res.render("user/payment/payment", {
             order,
             user,
@@ -72,18 +77,23 @@ const razorpay = new Razorpay({
 
 export const createOrder = async (req, res) => {
     try {
-        const { orderId } = req.body;
 
-        const orderData = await Order.findById(orderId);
+        let amount = req.body?.amount;
 
-        if (!orderData) {
-            return res.status(404).json({ success: false, message: "Order not found" });
-        }
+        if (req.body.orderId) {
+            
+            const orderData = await Order.findById(req.body.orderId);
 
-        const amount = orderData.totalAmount;
+            if (!orderData) {
+                return res.status(404).json({ success: false, message: "Order not found" });
+            }
 
-        if (amount < 1) {
-            return res.status(400).json({ success: false, message: "Amount must be at least 1 INR" });
+            amount = orderData.totalAmount;
+
+            if (amount < 1) {
+                return res.status(400).json({ success: false, message: "Amount must be at least 1 INR" });
+            }
+
         }
 
         const options = {
@@ -112,12 +122,9 @@ export const verifyPayment = async (req, res) => {
             razorpay_order_id,
             razorpay_payment_id,
             razorpay_signature,
-            orderId,
         } = req.body;
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
-
-        const order = await Order.findById(orderId);
 
         const expectedSignature = crypto
             .createHmac("sha256", "8rI3WgnoM97JOj8mJ6vX7xTq")
@@ -128,20 +135,43 @@ export const verifyPayment = async (req, res) => {
             // ✅ Payment verified
             // Update order status in DB
 
-            order.paymentStatus = "paid";
-            order.paymentMethod = "razorpay";
+            if (req.body.orderId) {
+                const order = await Order.findById(req.body.orderId);
 
-            await order.save();
+                order.paymentStatus = "paid";
+                order.paymentMethod = "razorpay";
+
+                await order.save();
+            } else {
+                const user = await User.findById(req.userId);
+
+                user.wallet += Number(req.body.amount);
+                user.walletHistory.push({
+                    amount: req.body.amount,
+                    type: 'credit',
+                    reason: `Added ${req.body.amount} to wallet.`,
+                    date: new Date
+                });
+
+                await user.save();
+            }
 
             return res.json({ success: true });
         } else {
-            order.paymentStatus = "failed";
-            order.paymentMethod = "razorpay";
-            order.status = "Cancelled";
-            order.items.forEach((item) => (item.status = "Cancelled"));
-            order.cancelReason = "Payment failed";
+            if (req.body.orderId) {
+                const order = await Order.findById(req.body.orderId).populate('items.product')
+                order.paymentStatus = "failed";
+                order.paymentMethod = "razorpay";
+                // order.status = "Cancelled";
+                // order.items.forEach(async (item) => {
+                //     item.status = "Cancelled"
+                //     const variant = await item.product.variants.id(item.variant);
+                //     variant.stock += item.quantity;
+                // });
+                // order.cancelReason = "Payment failed";
 
-            await order.save();
+                await order.save();
+            }
 
             return res.json({ success: false });
         }

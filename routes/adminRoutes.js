@@ -8,7 +8,7 @@ import * as offers from "../controllers/adminControllers/offerManagement.js";
 import * as coupens from "../controllers/adminControllers/coupenManagement.js";
 import * as sales from "../controllers/adminControllers/salesManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
-import upload from "../utils/cloudinary.js";
+import {upload} from "../utils/cloudinary.js";
 import nocache from "nocache";
 
 const router = express.Router();
@@ -56,7 +56,10 @@ router.get("/products", products.products)
 
 router.route("/products/create")
     .get(products.createProductPage)
-    .post(upload.array('images', 5), products.createProduct);
+    .post(upload.array('images', 5), (err, req, res, next) => {
+        console.log(err);
+        next()
+    }, products.createProduct);
 
 router.route("/products/edit/:id")
     .get(products.editProductPage)

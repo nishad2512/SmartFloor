@@ -264,7 +264,7 @@
                         if (start < today) {
                             isValid = false;
                             errorMessage = 'Start date cannot be in the past';
-                        } else if (end < start) {
+                        } else if (end <= start) {
                             isValid = false;
                             errorMessage = 'End date cannot be before start date';
                         }

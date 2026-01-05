@@ -139,15 +139,14 @@
                     class="w-full bg-black hover:bg-black/80 text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-200/50 group"
                     href="/payment/<%= order.orderId %>"
                 >
+                    <i class="ph ph-bold ph-arrow-left text-xl"></i>
                     <span>Retry payment</span>
-                    <i class="ph ph-bold ph-arrow-right text-xl"></i>
                 </a>
                 <a
                     class="w-full bg-transparent hover:bg-gray-100 text-gray-600 hover:text-black border border-gray-400 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
                     href="/profile/order/details/<%= order.orderId %>"
                 >
                     <span>Order details</span>
-                    <i class="ph ph-bold ph-download-simple"></i>
                 </a>
             </div>
             <a

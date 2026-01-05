@@ -16,7 +16,14 @@ export const checkout = async (req, res) => {
         let total = 0;
         const addresses = await Address.find({ user: userId });
         const now = new Date();
-        const coupens = await Coupen.find();
+        const coupens = await Coupen.find({
+            isActive: true,
+            expirationDate: { $gte: new Date() },
+            $or: [
+                { usageLimit: null },
+                { $expr: { $lt: ["$usedCount", "$usageLimit"] } }
+            ]
+        });
         const user = await User.findById(userId);
 
         if (productId && variantId && quantity) {
@@ -88,7 +95,7 @@ export const checkout = async (req, res) => {
         const offerPromises = cartItems.map(async (item) => {
 
             const product = await Product.findById(item.product);
-        
+
             if (!product) return { hasOffer: false };
 
             const offer = await Offer.findOne({
@@ -149,6 +156,20 @@ export const placeOrder = async (req, res) => {
         const now = new Date();
         let coupenDiscount = 0;
 
+        const cartItems = await Cart.find({ user: userId }).populate("product");
+        const item = req.session.item;
+
+        const recentOrder = await Order.findOne({
+            user: userId,
+            status: 'Pending',
+            createdAt: { $gte: new Date(Date.now() - 60 * 1000) }
+        }).sort({ createdAt: -1 }).lean();
+
+        if (!item && cartItems.length === 0) {
+            if (recentOrder) return res.json({ success: true, orderId: recentOrder.orderId });
+            return res.json({ success: false, message: "Cart is empty" });
+        }
+
         const newOrder = new Order({
             user: userId,
             address: addressId,
@@ -156,23 +177,23 @@ export const placeOrder = async (req, res) => {
             tax,
         });
 
-        if (req.session.item) {
-            const item = req.session.item;
+        // 2. Handle Direct Purchase (Single Item)
+        if (item) {
             let product = await Product.findById(item.product._id);
             let variant = product.variants.id(item.variant);
 
-            const shippingOffer = await Offer.findOne({
-                isActive: true,
-                start: { $lte: now },
-                end: { $gte: now },
-                type: "shipping",
-                $or: [
-                    { products: product._id },
-                    { category: product.category },
-                    { scope: "all" },
-                ],
-            });
+            if (!variant || variant.stock < item.quantity) {
+                return res.json({ success: false, message: "Product out of stock" });
+            }
 
+            if (recentOrder && recentOrder.items[0]?.product.toString() === item.product._id.toString()) {
+                return res.json({ success: true, orderId: recentOrder.orderId });
+            }
+
+            const shippingOffer = await Offer.findOne({
+                isActive: true, start: { $lte: now }, end: { $gte: now }, type: "shipping",
+                $or: [{ products: product._id }, { category: product.category }, { scope: "all" }],
+            }).lean();
             if (shippingOffer) qualifiesForFreeShipping = true;
 
             newOrder.items.push({
@@ -183,73 +204,76 @@ export const placeOrder = async (req, res) => {
                 offerId: item.offerId,
                 offerPrice: item.offerPrice,
             });
-            variant.stock = variant.stock - item.quantity;
+
+            variant.stock -= item.quantity;
             await product.save();
-
             req.session.item = null;
+
         } else {
-            const cartItems = await Cart.find({ user: userId }).populate(
-                "product"
-            );
+            // 3. Handle Cart Purchase (Bulk)
+            const productIds = cartItems.map(i => i.product._id);
+            const categories = cartItems.map(i => i.product.category);
 
-            for (const item of cartItems) {
-                let product = await Product.findById(item.product._id);
-                let variant = product.variants.id(item.variant);
-                const shippingOffer = await Offer.findOne({
-                    isActive: true,
-                    start: { $lte: now },
-                    end: { $gte: now },
-                    type: "shipping",
-                    $or: [
-                        { products: product._id },
-                        { category: product.category },
-                        { scope: "all" },
-                    ],
-                });
+            const shippingOffers = await Offer.find({
+                isActive: true, type: "shipping", start: { $lte: now }, end: { $gte: now },
+                $or: [{ products: { $in: productIds } }, { category: { $in: categories } }, { scope: "all" }]
+            }).lean();
+            if (shippingOffers.length > 0) qualifiesForFreeShipping = true;
 
-                if (shippingOffer) qualifiesForFreeShipping = true;
+            const bulkOps = [];
+            for (const cartItem of cartItems) {
+
+                const variant = cartItem.product.variants.id(cartItem.variant);
+                if (!variant || variant.stock < cartItem.quantity) {
+                    return res.json({ success: false, message: `${cartItem.product.name} is out of stock.` });
+                }
 
                 newOrder.items.push({
-                    product: item.product._id,
-                    variant: item.variant,
-                    quantity: item.quantity,
-                    subTotal: item.total,
-                    offerId: item.offerId,
-                    offerPrice: item.offerPrice,
+                    product: cartItem.product._id,
+                    variant: cartItem.variant,
+                    quantity: cartItem.quantity,
+                    subTotal: cartItem.total,
+                    offerId: cartItem.offerId,
+                    offerPrice: cartItem.offerPrice,
                 });
-                variant.stock = variant.stock - item.quantity;
-                await product.save();
+
+                bulkOps.push({
+                    updateOne: {
+                        filter: { 
+                            _id: cartItem.product._id, 
+                            "variants._id": cartItem.variant,
+                            "variants.stock": { $gte: cartItem.quantity }
+                        },
+                        update: { $inc: { "variants.$.stock": -cartItem.quantity } }
+                    }
+                });
             }
 
+            if (bulkOps.length > 0) await Product.bulkWrite(bulkOps);
             await Cart.deleteMany({ user: userId });
         }
 
-        if (qualifiesForFreeShipping || totalAmount > 5000) {
-            shipping = 0;
-        }
+        if (qualifiesForFreeShipping || totalAmount > 5000) shipping = 0;
 
-        const coupen = await Coupen.findOne({code: coupenCode, isActive: true, expirationDate: {$gte: new Date}});
-        if (coupen && coupen.discountType == "percentage") {
-            coupenDiscount = (totalAmount * coupen.discountValue) / 100;
-        } else if (coupen && coupen.discountType == "fixed") {
-            coupenDiscount = coupen.discountValue;
+        const coupen = await Coupen.findOne({ code: coupenCode, isActive: true, expirationDate: { $gte: new Date() } }).lean();
+        if (coupen) {
+            coupenDiscount = coupen.discountType === "percentage" 
+                ? ((totalAmount + shipping + tax) * coupen.discountValue) / 100 
+                : coupen.discountValue;
         }
-
-        const total = (totalAmount + shipping + tax) - coupenDiscount;
 
         newOrder.shipping = shipping;
         newOrder.tax = tax;
         newOrder.coupenDiscount = coupenDiscount;
         newOrder.coupenCode = coupenCode;
-        newOrder.totalAmount = total;
+        newOrder.totalAmount = (totalAmount + shipping + tax - coupenDiscount).toFixed(2);
 
         await newOrder.save();
-
         res.json({ success: true, orderId: newOrder.orderId });
+
     } catch (error) {
-        console.error(error);
-        req.flash("error", "Something went wrong");
-        res.redirect("/checkout");
+        console.error("Order Placement Error:", error);
+        res.status(500).json({ success: false, message: "Something went wrong" });
     }
 };
 
@@ -258,10 +282,14 @@ export const applyCoupen = async (req, res) => {
 
         const { code, currentTotal } = req.body;
 
-        const coupen = await Coupen.findOne({ 
-            code, 
+        const coupen = await Coupen.findOne({
+            code,
             isActive: true,
-            expirationDate: { $gte: new Date() } 
+            expirationDate: { $gte: new Date() },
+            $or: [
+                { usageLimit: null },
+                { $expr: { $lt: ["$usedCount", "$usageLimit"] } }
+            ]
         });
 
         if (!coupen) {
@@ -269,7 +297,7 @@ export const applyCoupen = async (req, res) => {
         }
 
         if (coupen.minPurchaseAmount > currentTotal) {
-            res.json({success: false, message: "minimum purchase amount is not covered"})
+            res.json({ success: false, message: "minimum purchase amount is not covered" })
         }
 
         let discountAmount = 0;
@@ -282,15 +310,19 @@ export const applyCoupen = async (req, res) => {
             discountAmount = coupen.discountValue;
         }
 
+        coupen.usedCount++;
+
+        await coupen.save();
+
         // Ensure discount doesn't exceed the total
         if (discountAmount > currentTotal) discountAmount = currentTotal;
 
         const newTotal = currentTotal - discountAmount;
 
-        res.json({ 
-            success: true, 
-            newTotal: Math.round(newTotal), 
-            discountAmount: Math.round(discountAmount) 
+        res.json({
+            success: true,
+            newTotal: Math.round(newTotal),
+            discountAmount: Math.round(discountAmount)
         });
 
     } catch (error) {

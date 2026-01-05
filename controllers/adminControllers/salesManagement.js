@@ -31,7 +31,7 @@ const getSalesData = async (query) => {
         };
     }
 
-    const orders = await Order.find(filter).populate('user');
+    const orders = await Order.find(filter).sort({createdAt: -1}).populate('user');
 
     // Calculate Stats
     const overallOrderAmount = orders.reduce((val, acc) => val + acc.totalAmount, 0);

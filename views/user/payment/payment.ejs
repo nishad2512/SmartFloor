@@ -187,8 +187,14 @@
                                 <span>₹<%= order.subTotal.toFixed(2) %></span>
                             </div>
                             <div class="flex justify-between text-sm text-[#757575]">
-                                <span>Shipping</span>
+                                <span>Discount</span>
                                 <span class="text-green-600 font-medium">
+                                    -₹<%= order.coupenDiscount %>
+                                </span>
+                            </div>
+                            <div class="flex justify-between text-sm text-[#757575]">
+                                <span>Shipping</span>
+                                <span class="text-<%= order.shipping == 0 ? 'green-600' : 'black' %> font-medium">
                                     <%= order.shipping==0 ? 'Free' : '₹' + order.shipping %>
                                 </span>
                             </div>

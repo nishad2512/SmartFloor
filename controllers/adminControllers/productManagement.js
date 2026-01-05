@@ -1,6 +1,7 @@
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
 import productSchema from "../../validators/productSchema.js";
+import { imageToGLB } from "../../utils/generateArModel.js";
 
 export const products = async (req, res) => {
     try {
@@ -43,6 +44,16 @@ export const createProduct = async (req, res) => {
             throw new Error("At least 3 product images are required.");
         }
         const images = req.files.map((file) => file.path);
+
+        let arModelData = null;
+
+        try {
+            const glbUrl = await imageToGLB(images[0]); // first image
+            arModelData = glbUrl;
+        } catch (err) {
+            console.error("AR generation failed:", err.message);
+            // IMPORTANT: Product creation should NOT fail
+        }
 
         // 2. Prepare Data for Validation
         // Normalizing variants logic (same as before)
@@ -101,6 +112,7 @@ export const createProduct = async (req, res) => {
             category: value.category,
             variants: value.variants,
             productImages: images,
+            arModelPath: arModelData
         });
 
         console.log("===== PRODUCT CREATING (JOI VALIDATED) =====");
@@ -125,7 +137,7 @@ export const deleteProduct = async (req, res) => {
         const product = await Product.findById({ _id: req.params.id });
         product.isActive = false;
         await product.save();
-        req.flash("success", "Product deleted successfully");
+        req.flash("success", "Product blocked successfully");
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);

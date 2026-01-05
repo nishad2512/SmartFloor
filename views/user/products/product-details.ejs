@@ -1,4 +1,6 @@
 <%- include('../../partials/header.ejs') %>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+    </script>
 
     <main class="w-full max-w-[1680px] mx-auto px-6 2xl:px-0 mt-8 mb-20">
         <div class="container mx-auto px-4 mt-8 mb-4">
@@ -125,14 +127,18 @@
                 </div>
 
                 <div class="flex gap-4 mb-4">
-                    <button id="viewInYourPlaceBtn"
-                        class="flex-1 py-4 rounded-full border border-black font-bold text-[#1A1A1A] hover:bg-gray-50 transition">
-                        View in Your Place
-                    </button>
-                    <button id="addToCartBtn"
-                        class="flex-1 py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition flex items-center justify-center gap-2">
-                        Add to Cart
-                    </button>
+
+                    <% if (product.arModelPath) { %>
+                        <button id="viewInYourPlaceBtn"
+                            class="flex-1 py-4 rounded-full border border-black font-bold text-[#1A1A1A] hover:bg-gray-50 transition">
+                            View in Your Place
+                        </button>
+                        <% } %>
+
+                            <button id="addToCartBtn"
+                                class="flex-1 py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition flex items-center justify-center gap-2">
+                                Add to Cart
+                            </button>
                 </div>
                 <button id="buyNowBtn"
                     class="w-full py-4 rounded-full bg-[#1A1A1A] text-white font-bold hover:bg-black transition mb-12">
@@ -247,6 +253,30 @@
     </div>
 
     <%- include('../../partials/footer.ejs') %>
+    <% if (product.arModelPath) { %>
+<div id="arOverlay"
+     class="fixed inset-0 bg-black z-[9999] hidden">
+
+  <button id="closeAR"
+          class="absolute top-4 right-4 z-50 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow">
+    ✕
+  </button>
+
+  <model-viewer
+    id="arModelViewer"
+    src="<%= product.arModelPath %>"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    ar-placement="floor"
+    style="width:100%; height:100%; background:#000;"
+    exposure="1"
+    shadow-intensity="1">
+  </model-viewer>
+
+</div>
+<% } %>
+
 
         </body>
 
@@ -259,6 +289,28 @@
 
             // Wishlist Variant IDs passed from controller
             const wishlistVariantIds = JSON.parse('<%- JSON.stringify(wishlistVariantIds || []) %>');
+
+            const arB = document.getElementById('viewInYourPlaceBtn');
+            const arOverlay = document.getElementById('arOverlay');
+            const closeAR = document.getElementById('closeAR');
+            const modelView = document.getElementById('arModelViewer');
+
+            if (arB && arOverlay && modelView) {
+                arB.addEventListener('click', () => {
+                    arOverlay.classList.remove('hidden');
+
+                    // Small delay ensures viewer is rendered
+                    setTimeout(() => {
+                    modelView.activateAR();
+                    }, 300);
+                });
+            }
+
+            if (closeAR) {
+                closeAR.addEventListener('click', () => {
+                    arOverlay.classList.add('hidden');
+                });
+            }
 
             // Initialize
             document.addEventListener('DOMContentLoaded', () => {
@@ -453,13 +505,23 @@
                     stockInfo.className = 'mt-2 text-sm font-bold text-green-600';
                     addToCartBtn.style.display = 'flex';
                     buyNowBtn.style.display = 'block';
-                    viewInYourPlaceBtn.style.display = 'block';
+                    if (viewInYourPlaceBtn) viewInYourPlaceBtn.style.display = 'block';
                 } else {
                     stockInfo.innerText = "Out of Stock";
                     stockInfo.className = 'mt-2 text-sm font-bold text-red-600';
                     addToCartBtn.style.display = 'none';
                     buyNowBtn.style.display = 'none';
+                    if (viewInYourPlaceBtn) viewInYourPlaceBtn.style.display = 'none';
                 }
+            }
+
+            const arBtn = document.getElementById('viewInYourPlaceBtn');
+            const modelViewer = document.getElementById('arModelViewer');
+
+            if (arBtn && modelViewer) {
+                arBtn.addEventListener('click', () => {
+                    modelViewer.activateAR();
+                });
             }
 
             // --- QUANTITY LOGIC ---
@@ -473,7 +535,13 @@
 
             function calculateTotal() {
                 const qty = parseInt(document.getElementById('quantityInput').value);
-                const total = (currentPrice * qty).toFixed(2);
+                let total = 0;
+                if (qty < 1) {
+                    document.getElementById('quantityInput').value = 1;
+                    total = (currentPrice * 1).toFixed(2);
+                } else {
+                    total = (currentPrice * qty).toFixed(2);
+                }
 
                 // Format with commas for thousands
                 const formatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(total);
