@@ -1,61 +1,6 @@
-import Order from "../../models/orderModel.js";
+import getSalesData from "../../utils/salesData.js";
 import PDFDocument from "pdfkit";
 import ExcelJS from "exceljs";
-
-const getSalesData = async (query) => {
-    const { period, startDate, endDate } = query;
-
-    let filter = {}; // Only count successful sales
-
-    // 1. Handle Date Logic
-    let start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    if (period === 'daily') {
-        filter.createdAt = { $gte: start };
-    } else if (period === 'weekly') {
-        const day = start.getDay();
-        const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
-        start.setDate(diff);
-        filter.createdAt = { $gte: start };
-    } else if (period === 'monthly') {
-        start.setDate(1);
-        filter.createdAt = { $gte: start };
-    } else if (period === 'yearly') {
-        start.setMonth(0, 1);
-        filter.createdAt = { $gte: start };
-    } else if (period === 'custom' && startDate && endDate) {
-        filter.createdAt = {
-            $gte: new Date(startDate),
-            $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
-        };
-    }
-
-    const orders = await Order.find(filter).sort({createdAt: -1}).populate('user');
-
-    // Calculate Stats
-    const overallOrderAmount = orders.reduce((val, acc) => val + acc.totalAmount, 0);
-    const salesAggregation = await Order.aggregate([
-        { $match: { ...filter, status: "Delivered" } },
-        { $group: { _id: null, revenue: { $sum: "$totalAmount" }, count: { $sum: { $sum: '$items.quantity' } } } }
-    ]);
-
-    const overallSalesCount = salesAggregation.length > 0 ? salesAggregation[0].count : 0;
-    const totalRevenue = salesAggregation.length > 0 ? salesAggregation[0].revenue : 0;
-    const overallDiscount = orders.reduce((val, acc) => val + (acc.coupenDiscount || 0), 0);
-
-    return {
-        orders,
-        overallOrderAmount,
-        overallSalesCount,
-        totalRevenue,
-        overallDiscount,
-        period,
-        startDate,
-        endDate,
-        orders
-    };
-};
 
 export const sales = async (req, res) => {
     try {
@@ -90,9 +35,6 @@ export const downloadSalesPDF = async (req, res) => {
 
         doc.pipe(res);
 
-        /* =========================
-           HEADER
-        ========================= */
         doc
             .fontSize(22)
             .font("Helvetica-Bold")
@@ -111,9 +53,6 @@ export const downloadSalesPDF = async (req, res) => {
         doc.moveDown(2);
         doc.fillColor("black");
 
-        /* =========================
-           SUMMARY CARDS
-        ========================= */
         const cardY = doc.y;
         const cardWidth = 120;
         const cardHeight = 70;
@@ -148,27 +87,6 @@ export const downloadSalesPDF = async (req, res) => {
         doc.moveDown(6);
         doc.fillColor("black");
 
-        /* =========================
-           FILTER INFO
-        ========================= */
-        // doc
-        //     .fontSize(11)
-        //     .font("Helvetica-Bold")
-        //     .text("Report Filters");
-
-        // doc
-        //     .moveDown(0.5)
-        //     .font("Helvetica")
-        //     .fontSize(10)
-        //     .text(`Period: ${period || "All"}`)
-        //     .text(`From: ${startDate || "-"}`)
-        //     .text(`To: ${endDate || "-"}`);
-
-        // doc.moveDown(1.5);
-
-        /* =========================
-           TABLE HEADER
-        ========================= */
         let y = doc.y;
 
         const drawTableHeader = () => {
@@ -195,9 +113,6 @@ export const downloadSalesPDF = async (req, res) => {
 
         drawTableHeader();
 
-        /* =========================
-           TABLE ROWS
-        ========================= */
         orders.forEach((order, index) => {
             if (y > 760) {
                 doc.addPage();
@@ -205,7 +120,6 @@ export const downloadSalesPDF = async (req, res) => {
                 drawTableHeader();
             }
 
-            // Row background (zebra style)
             if (index % 2 === 0) {
                 doc
                     .rect(30, y, 550, 22)
@@ -230,9 +144,6 @@ export const downloadSalesPDF = async (req, res) => {
             y += 22;
         });
 
-        /* =========================
-           FOOTER
-        ========================= */
         doc
             .fontSize(9)
             .fillColor("gray")

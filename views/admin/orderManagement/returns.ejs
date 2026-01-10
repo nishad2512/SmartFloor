@@ -129,18 +129,18 @@
                                         <div
                                             class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
                                             <p class="text-[#757575] dark:text-gray-400">
-                                                Showing <%= page %> to <%= totalPages %> of <%= totalCount %> orders
+                                                Showing <%= skip + 1 %> to <%= Math.min(skip + limit, totalCount) %> of
+                                                        <%= totalCount %> returns
                                             </p>
                                             <div class="flex gap-2 items-center">
-                                                <button
-                                                    class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50"
-                                                    disabled="">
+                                                <a href="/admin/returns?page=<%= page - 1 %>"
+                                                    class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50 <%= page === 1 ? 'pointer-events-none opacity-50' : '' %>">
                                                     Previous
-                                                </button>
-                                                <button
-                                                    class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30">
+                                                </a>
+                                                <a href="/admin/returns?page=<%= page + 1 %>"
+                                                    class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= page === totalPages ? 'pointer-events-none opacity-50' : '' %>">
                                                     Next
-                                                </button>
+                                                </a>
                                             </div>
                                         </div>
                                     <% } else { %>

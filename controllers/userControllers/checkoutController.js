@@ -264,7 +264,7 @@ export const placeOrder = async (req, res) => {
 
         newOrder.shipping = shipping;
         newOrder.tax = tax;
-        newOrder.coupenDiscount = coupenDiscount;
+        newOrder.coupenDiscount = coupenDiscount.toFixed(2);
         newOrder.coupenCode = coupenCode;
         newOrder.totalAmount = (totalAmount + shipping + tax - coupenDiscount).toFixed(2);
 
@@ -302,10 +302,8 @@ export const applyCoupen = async (req, res) => {
 
         let discountAmount = 0;
 
-        // 3. Calculate Discount
         if (coupen.discountType === "percentage") {
             discountAmount = (currentTotal * coupen.discountValue) / 100;
-            // Optional: You might want to cap percentage discounts (e.g., max ₹500)
         } else {
             discountAmount = coupen.discountValue;
         }
@@ -314,7 +312,6 @@ export const applyCoupen = async (req, res) => {
 
         await coupen.save();
 
-        // Ensure discount doesn't exceed the total
         if (discountAmount > currentTotal) discountAmount = currentTotal;
 
         const newTotal = currentTotal - discountAmount;

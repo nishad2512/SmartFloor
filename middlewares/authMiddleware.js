@@ -16,6 +16,7 @@ export const requireAuth = (req, res, next) => {
             }
         });
     } else {
+        req.flash('error', 'You need to login for using that feature.')
         res.redirect("/login");
     }
 };

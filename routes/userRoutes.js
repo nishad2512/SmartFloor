@@ -120,7 +120,9 @@ router.delete('/cart/delete/:cartItemId', requireAuth, cartController.removeFrom
 // wishlist routes
 
 router.get('/wishlist', requireAuth, wishlistController.wishlist);
+
 router.post('/wishlist/add', requireAuth, wishlistController.addToWishlist);
+
 router.delete('/wishlist/remove', requireAuth, wishlistController.removeFromWishlist);
 
 // checkout routes
@@ -150,6 +152,10 @@ router.patch('/profile/orders/item/cancel/:orderId/:itemId', requireAuth, orderC
 router.patch('/profile/orders/item/return/:orderId/:itemId', requireAuth, orderController.returnOrderItem);
 
 router.get('/profile/orders/returnDetails/:orderId/:itemId', requireAuth, orderController.returnDetails);
+
+router.get('/profile/orders/review/:productId', requireAuth, orderController.reviewPage);
+
+router.post('/profile/orders/review/:productId', requireAuth, orderController.addReview);
 
 // wallet routes
 

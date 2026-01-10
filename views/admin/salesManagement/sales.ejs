@@ -19,31 +19,27 @@
                                 <div class="flex items-center gap-3">
                                     <details class="relative">
                                         <summary
-                                            class="list-none flex items-center gap-2 cursor-pointer rounded-lg bg-white dark:bg-[#1f1f1f] border border-[#e0e0e0] dark:border-primary/20 text-[#141414] dark:text-white px-4 py-2.5 font-medium hover:bg-gray-50 dark:hover:bg-primary/30 transition-colors h-[46px]"
-                                        >
+                                            class="list-none flex items-center gap-2 cursor-pointer rounded-lg bg-white dark:bg-[#1f1f1f] border border-[#e0e0e0] dark:border-primary/20 text-[#141414] dark:text-white px-4 py-2.5 font-medium hover:bg-gray-50 dark:hover:bg-primary/30 transition-colors h-[46px]">
                                             <span class="material-symbols-outlined text-xl">download</span>
                                             <span>Download Report</span>
                                             <span class="material-symbols-outlined text-lg ml-auto">expand_more</span>
                                         </summary>
 
                                         <div
-                                            class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1f1f1f] rounded-lg shadow-lg border border-[#e0e0e0] dark:border-primary/20 z-10 p-1"
-                                        >
-                                            <a
-                                                class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-primary/30 rounded text-sm"
+                                            class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1f1f1f] rounded-lg shadow-lg border border-[#e0e0e0] dark:border-primary/20 z-10 p-1">
+                                            <a class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-primary/30 rounded text-sm"
                                                 href="#"
-                                                onclick="this.href='/admin/sales/download/pdf' + window.location.search"
-                                            >
-                                                <span class="material-symbols-outlined text-lg text-red-500">picture_as_pdf</span>
+                                                onclick="this.href='/admin/sales/download/pdf' + window.location.search">
+                                                <span
+                                                    class="material-symbols-outlined text-lg text-red-500">picture_as_pdf</span>
                                                 PDF
                                             </a>
 
-                                            <a
-                                                class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-primary/30 rounded text-sm"
+                                            <a class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-primary/30 rounded text-sm"
                                                 href="#"
-                                                onclick="this.href='/admin/sales/download/excel' + window.location.search"
-                                            >
-                                                <span class="material-symbols-outlined text-lg text-green-600">table_view</span>
+                                                onclick="this.href='/admin/sales/download/excel' + window.location.search">
+                                                <span
+                                                    class="material-symbols-outlined text-lg text-green-600">table_view</span>
                                                 Excel
                                             </a>
                                         </div>
@@ -61,11 +57,60 @@
                                             <select name="period"
                                                 class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 pl-4 pr-10 py-2.5 text-base font-normal text-[#141414] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right"
                                                 id="period-select" onchange="this.form.submit()">
-                                                <option value="daily" <%=typeof period !=='undefined' && period==='daily' ? 'selected' : '' %>>Daily</option>
-                                                <option value="weekly" <%=typeof period !=='undefined' && period==='weekly' ? 'selected' : '' %>>Weekly</option>
-                                                <option value="monthly" <%=typeof period !=='undefined' && period==='monthly' ? 'selected' : '' %>>Monthly</option>
-                                                <option value="yearly" <%=typeof period !=='undefined' && period==='yearly' ? 'selected' : '' %>>Yearly</option>
-                                                <option value="custom" <%=typeof period !=='undefined' && period==='custom' ? 'selected' : '' %>>Custom Date</option>
+                                                <option value="daily" <%=typeof period !=='undefined' &&
+                                                    period==='daily' ? 'selected' : '' %>>Daily</option>
+                                                <option value="weekly" <%=typeof period !=='undefined' &&
+                                                    period==='weekly' ? 'selected' : '' %>>Weekly</option>
+                                                <option value="monthly" <%=typeof period !=='undefined' &&
+                                                    period==='monthly' ? 'selected' : '' %>>Monthly</option>
+                                                <option value="yearly" <%=typeof period !=='undefined' &&
+                                                    period==='yearly' ? 'selected' : '' %>>Yearly</option>
+                                                <option value="custom" <%=typeof period !=='undefined' &&
+                                                    period==='custom' ? 'selected' : '' %>>Custom Date</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex-1 lg:max-w-[180px]">
+                                        <label class="text-[#141414] dark:text-white text-sm font-medium"
+                                            for="status-select">Status</label>
+                                        <div class="relative mt-2">
+                                            <select name="status"
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 pl-4 pr-10 py-2.5 text-base font-normal text-[#141414] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right"
+                                                id="status-select" onchange="this.form.submit()">
+                                                <option value="" <%=typeof status==='undefined' || status===''
+                                                    ? 'selected' : '' %>>All Status</option>
+                                                <option value="Pending" <%=typeof status !=='undefined' &&
+                                                    status==='Pending' ? 'selected' : '' %>>Pending</option>
+                                                <option value="Processing" <%=typeof status !=='undefined' &&
+                                                    status==='Processing' ? 'selected' : '' %>>Processing</option>
+                                                <option value="Shipped" <%=typeof status !=='undefined' &&
+                                                    status==='Shipped' ? 'selected' : '' %>>Shipped</option>
+                                                <option value="Delivered" <%=typeof status !=='undefined' &&
+                                                    status==='Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                <option value="Cancelled" <%=typeof status !=='undefined' &&
+                                                    status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                <option value="Returned" <%=typeof status !=='undefined' &&
+                                                    status==='Returned' ? 'selected' : '' %>>Returned</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex-1 lg:max-w-[180px]">
+                                        <label class="text-[#141414] dark:text-white text-sm font-medium"
+                                            for="payment-select">Payment Method</label>
+                                        <div class="relative mt-2">
+                                            <select name="paymentMethod"
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 pl-4 pr-10 py-2.5 text-base font-normal text-[#141414] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right"
+                                                id="payment-select" onchange="this.form.submit()">
+                                                <option value="" <%=typeof paymentMethod==='undefined' ||
+                                                    paymentMethod==='' ? 'selected' : '' %>>All Payments</option>
+                                                <option value="cod" <%=typeof paymentMethod !=='undefined' &&
+                                                    paymentMethod==='cod' ? 'selected' : '' %>>COD</option>
+                                                <option value="razorpay" <%=typeof paymentMethod !=='undefined' &&
+                                                    paymentMethod==='razorpay' ? 'selected' : '' %>>Razorpay</option>
+                                                <option value="wallet" <%=typeof paymentMethod !=='undefined' &&
+                                                    paymentMethod==='wallet' ? 'selected' : '' %>>Wallet</option>
                                             </select>
                                         </div>
                                     </div>
@@ -114,7 +159,8 @@
                                         <p class="text-sm font-medium text-[#757575] dark:text-gray-400">Overall Order
                                             Amount</p>
                                         <p class="text-3xl font-bold text-[#141414] dark:text-white mt-2">
-                                            <%= typeof overallOrderAmount !=='undefined' ? '₹' + overallOrderAmount.toFixed(2) : '₹0.00' %>
+                                            <%= typeof overallOrderAmount !=='undefined' ? '₹' +
+                                                overallOrderAmount.toFixed(2) : '₹0.00' %>
                                         </p>
                                         <p class="text-sm text-[#757575] mt-1">Gross sales</p>
                                     </div>
@@ -123,7 +169,8 @@
                                         <p class="text-sm font-medium text-[#757575] dark:text-gray-400">Overall
                                             Discount</p>
                                         <p class="text-3xl font-bold text-red-500 mt-2">
-                                            -<%= typeof overallDiscount !=='undefined' ? '₹' + overallDiscount.toFixed(2) : '₹0.00' %>
+                                            -<%= typeof overallDiscount !=='undefined' ? '₹' +
+                                                overallDiscount.toFixed(2) : '₹0.00' %>
                                         </p>
                                         <p class="text-sm text-[#757575] mt-1">Total deductions</p>
                                     </div>
@@ -132,7 +179,8 @@
                                         <p class="text-sm font-medium text-[#757575] dark:text-gray-400">Total Revenue
                                         </p>
                                         <p class="text-3xl font-bold text-green-700 dark:text-white mt-2">
-                                            <%= typeof totalRevenue !=='undefined' ? '₹' + totalRevenue.toFixed(2) : '₹0.00' %>
+                                            <%= typeof totalRevenue !=='undefined' ? '₹' + totalRevenue.toFixed(2)
+                                                : '₹0.00' %>
                                         </p>
                                         <p class="text-sm text-green-500 mt-1">Net revenue</p>
                                     </div>
@@ -156,7 +204,9 @@
                                         <tbody class="divide-y divide-[#e0e0e0] dark:divide-primary/20">
                                             <% orders.forEach(order=> { %>
                                                 <tr class="hover:bg-white dark:hover:bg-white transition-colors">
-                                                    <td class="px-6 py-4 font-medium">ORD-<%= order.orderId.split('-')[2] %></td>
+                                                    <td class="px-6 py-4 font-medium">ORD-<%=
+                                                            order.orderId.split('-')[2] %>
+                                                    </td>
                                                     <td class="px-6 py-4">
                                                         <%= order.user.name %>
                                                     </td>
@@ -167,46 +217,35 @@
                                                         <%= order.paymentMethod %>
                                                     </td>
                                                     <td class="px-6 py-4">
-                                                        <%
-                                                        let statusClass = "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
-
-                                                        switch (order.status) {
-                                                            case "Cancelled":
-                                                            case "Returned":
-                                                                statusClass = "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-                                                                break;
-
-                                                            case "Processing":
-                                                            case "Shipped":
-                                                                statusClass = "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-                                                                break;
-
-                                                            case "Pending":
-                                                                statusClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
-                                                                break;
-
-                                                            case "Return Request":
-                                                                statusClass = "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400";
-                                                                break;
-                                                            
-                                                            case "Delivered":
-                                                                statusClass = "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-                                                                break;
-                                                        }
-                                                        %>
-                                                        <span
-                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= statusClass %>">
-                                                            <%= order.status %>
-                                                        </span>
+                                                        <% let
+                                                            statusClass="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                                                            ; switch (order.status) { case "Cancelled" : case "Returned"
+                                                            :
+                                                            statusClass="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                                                            ; break; case "Processing" : case "Shipped" :
+                                                            statusClass="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                                                            ; break; case "Pending" :
+                                                            statusClass="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                                            ; break; case "Return Request" :
+                                                            statusClass="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
+                                                            ; break; case "Delivered" :
+                                                            statusClass="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                                            ; break; } %>
+                                                            <span
+                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= statusClass %>">
+                                                                <%= order.status %>
+                                                            </span>
                                                     </td>
-                                                    <td class="px-6 py-4 text-center"><%= order.coupenCode ? order.coupenCode : '-' %>
+                                                    <td class="px-6 py-4 text-center">
+                                                        <%= order.coupenCode ? order.coupenCode : '-' %>
                                                     </td>
-                                                    <td class="px-6 py-4 text-center text-green-700">-₹<%= order.coupenDiscount ? order.coupenDiscount : 0 %>
+                                                    <td class="px-6 py-4 text-center text-green-700">-₹<%=
+                                                            order.coupenDiscount ? order.coupenDiscount : 0 %>
                                                     </td>
                                                     <td class="px-6 py-4 text-right">₹<%= order.totalAmount %>
                                                     </td>
                                                 </tr>
-                                            <% }) %>
+                                                <% }) %>
                                         </tbody>
                                     </table>
                                 </div>

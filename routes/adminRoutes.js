@@ -7,6 +7,7 @@ import * as orders from "../controllers/adminControllers/orderManagement.js";
 import * as offers from "../controllers/adminControllers/offerManagement.js";
 import * as coupens from "../controllers/adminControllers/coupenManagement.js";
 import * as sales from "../controllers/adminControllers/salesManagement.js";
+import dashboard from "../controllers/adminControllers/dashboardManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
 import {upload} from "../utils/cloudinary.js";
 import nocache from "nocache";
@@ -16,9 +17,7 @@ const router = express.Router();
 router.use(checkAdmin);
 router.use(nocache());
 
-router.get("/dashboard", (req, res) => {
-    res.render("admin/dashboard");
-});
+router.get("/dashboard", dashboard);
 
 router.route("/login")
     .get(redirectIfLoggedIn, (req, res) => {

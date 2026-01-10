@@ -8,6 +8,8 @@ export const categories = async (req, res) => {
         const filter = search ? { name: { $regex: search, $options: "i" } } : {}
         const limit = 5;
         const skip = (page - 1) * limit;
+        const totalCount = await Category.countDocuments(filter);
+        const totalPages = Math.ceil(totalCount / limit);
 
         // find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit)
 
@@ -31,7 +33,7 @@ export const categories = async (req, res) => {
             { $limit: limit },
         ]);
 
-        res.render("admin/categoryManagement/categories", { categories, page, search });
+        res.render("admin/categoryManagement/categories", { categories, page, search, totalPages });
     } catch (error) {
         console.error(error);
         req.flash("error", "Error fetching categories");

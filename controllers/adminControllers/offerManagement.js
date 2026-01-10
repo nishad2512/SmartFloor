@@ -4,10 +4,22 @@ import Category from "../../models/categoryModel.js";
 
 export const offers = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const skip = (page - 1) * limit;
 
-        const offers = await Offer.find().sort({ createdAt: -1 });
+        const totalOffers = await Offer.countDocuments();
+        const offers = await Offer.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const totalPages = Math.ceil(totalOffers / limit);
 
-        res.render('admin/offerManagement/offers', { offers });
+        res.render('admin/offerManagement/offers', {
+            offers,
+            currentPage: page,
+            totalPages,
+            totalOffers,
+            skip,
+            limit
+        });
 
     } catch (error) {
         console.error(error);
@@ -82,11 +94,11 @@ export const blockOrUnblock = async (req, res) => {
         await offer.save();
 
         req.flash("success", "Offer blocked / unblocked successfully")
-        res.json({success: true});
+        res.json({ success: true });
 
     } catch (error) {
         req.flash("error", "Something went wrong");
-        res.json({success: false})
+        res.json({ success: false })
     }
 }
 
@@ -113,18 +125,18 @@ export const editOffer = async (req, res) => {
 
         const updatedOffer = await Offer.findByIdAndUpdate(offerId, data, { new: true, runValidators: true });
 
-        if(!updatedOffer) {
+        if (!updatedOffer) {
             req.flash("error", "Invalid offer");
-            return res.json({success: false, message: "Invalid offer"});
+            return res.json({ success: false, message: "Invalid offer" });
         }
 
         req.flash("success", "Offer edited successfully")
-        res.json({success: true});
+        res.json({ success: true });
 
     } catch (error) {
         req.flash("error", "Something went wrong");
         console.error(error)
-        res.json({success: false, message: "Invalid offer"})
+        res.json({ success: false, message: "Invalid offer" })
     }
 }
 
@@ -136,10 +148,10 @@ export const editOfferPage = async (req, res) => {
         const products = await Product.find();
         console.log(offer)
 
-        res.render('admin/offerManagement/editOffer', {offer, categories, products})
+        res.render('admin/offerManagement/editOffer', { offer, categories, products })
 
     } catch (error) {
         req.flash("error", "Something went wrong");
-        res.json({success: false})
+        res.json({ success: false })
     }
 }

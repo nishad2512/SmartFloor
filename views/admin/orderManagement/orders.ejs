@@ -32,17 +32,58 @@
                                             </p>
                                         </div>
                                         <div class="flex gap-4 items-center">
-                                        <form method="GET" action="/admin/orders" class="w-full md:w-auto">
-                                            <div class="relative">
-                                                <input type="text" name="search"
-                                                    value="<%= typeof search !== 'undefined' ? search : '' %>"
-                                                    placeholder="Search Order ID..."
-                                                    class="pl-10 pr-4 py-2 border border-[#e0e0e0] dark:border-primary/20 rounded-lg bg-white dark:bg-[#2f2f2f] text-sm focus:outline-none focus:ring-2 focus:ring-black/50 w-full md:w-64">
-                                                <span
-                                                    class="material-symbols-outlined absolute left-3 top-1.5 text-gray-400 text-lg">search</span>
-                                            </div>
-                                        </form>
-                                        <a href="/admin/orders" class="px-4 py-1.5 border border-gray-300 rounded-lg">clear</a>
+                                            <form method="GET" action="/admin/orders"
+                                                class="w-full md:w-auto flex flex-col md:flex-row gap-2">
+                                                <div class="relative">
+                                                    <select name="status" onchange="this.form.submit()"
+                                                        class="pl-3 pr-8 py-2 border border-[#e0e0e0] dark:border-primary/20 rounded-lg bg-white dark:bg-[#2f2f2f] text-sm focus:outline-none focus:ring-2 focus:ring-black/50 w-full md:w-40 appearance-none">
+                                                        <option value="">All Statuses</option>
+                                                        <option value="Pending" <%=typeof status !=='undefined' &&
+                                                            status==='Pending' ? 'selected' : '' %>>Pending</option>
+                                                        <option value="Processing" <%=typeof status !=='undefined' &&
+                                                            status==='Processing' ? 'selected' : '' %>>Processing
+                                                        </option>
+                                                        <option value="Shipped" <%=typeof status !=='undefined' &&
+                                                            status==='Shipped' ? 'selected' : '' %>>Shipped</option>
+                                                        <option value="Delivered" <%=typeof status !=='undefined' &&
+                                                            status==='Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                        <option value="Cancelled" <%=typeof status !=='undefined' &&
+                                                            status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                        <option value="Returned" <%=typeof status !=='undefined' &&
+                                                            status==='Returned' ? 'selected' : '' %>>Returned</option>
+                                                        <option value="Return Request" <%=typeof status !=='undefined'
+                                                            && status==='Return Request' ? 'selected' : '' %>>Return
+                                                            Request</option>
+                                                    </select>
+                                                </div>
+                                                <div class="relative">
+                                                    <select name="sort" onchange="this.form.submit()"
+                                                        class="pl-3 pr-8 py-2 border border-[#e0e0e0] dark:border-primary/20 rounded-lg bg-white dark:bg-[#2f2f2f] text-sm focus:outline-none focus:ring-2 focus:ring-black/50 w-full md:w-48 appearance-none">
+                                                        <option value="newest" <%=typeof sort !=='undefined' &&
+                                                            sort==='newest' ? 'selected' : '' %>>Date: Newest First
+                                                        </option>
+                                                        <option value="oldest" <%=typeof sort !=='undefined' &&
+                                                            sort==='oldest' ? 'selected' : '' %>>Date: Oldest First
+                                                        </option>
+                                                        <option value="amount_desc" <%=typeof sort !=='undefined' &&
+                                                            sort==='amount_desc' ? 'selected' : '' %>>Amount: High to
+                                                            Low</option>
+                                                        <option value="amount_asc" <%=typeof sort !=='undefined' &&
+                                                            sort==='amount_asc' ? 'selected' : '' %>>Amount: Low to High
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div class="relative">
+                                                    <input type="text" name="search"
+                                                        value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                                        placeholder="Search Order ID..."
+                                                        class="pl-10 pr-4 py-2 border border-[#e0e0e0] dark:border-primary/20 rounded-lg bg-white dark:bg-[#2f2f2f] text-sm focus:outline-none focus:ring-2 focus:ring-black/50 w-full md:w-64">
+                                                    <span
+                                                        class="material-symbols-outlined absolute left-3 top-1.5 text-gray-400 text-lg">search</span>
+                                                </div>
+                                            </form>
+                                            <a href="/admin/orders"
+                                                class="px-4 py-1.5 border border-gray-300 rounded-lg">clear</a>
                                         </div>
                                     </div>
                                     <div class="overflow-x-auto">
@@ -133,13 +174,13 @@
                                                         <%= totalOrders %> orders
                                             </p>
                                             <div class="flex gap-2 items-center">
-                                                <a href="/admin/orders?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %>"
+                                                <a href="/admin/orders?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %><%= typeof status !== 'undefined' && status ? '&status=' + status : '' %><%= typeof sort !== 'undefined' && sort ? '&sort=' + sort : '' %>"
                                                     class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= currentPage === 1 ? 'pointer-events-none opacity-50' : '' %>">
                                                     Previous
                                                 </a>
                                                 <span class="px-2 text-gray-600 dark:text-gray-400">Page <%= currentPage
                                                         %> of <%= totalPages %></span>
-                                                <a href="/admin/orders?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %>"
+                                                <a href="/admin/orders?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %><%= typeof status !== 'undefined' && status ? '&status=' + status : '' %><%= typeof sort !== 'undefined' && sort ? '&sort=' + sort : '' %>"
                                                     class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= currentPage === totalPages ? 'pointer-events-none opacity-50' : '' %>">
                                                     Next
                                                 </a>

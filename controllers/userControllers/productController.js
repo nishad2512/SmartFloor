@@ -31,9 +31,9 @@ export const filterByCategory = async (req, res) => {
 }
 
 export const productDetails = async (req, res) => {
-    const productId = req.params.id;
+    const productSlug = req.params.id;
     try {
-        const product = await Product.findById(productId).populate("category").lean();
+        const product = await Product.findOne({slug: productSlug}).populate("category").lean();
 
         if (!product || !product.isActive) {
             req.flash('error', 'Product not found');
@@ -50,12 +50,15 @@ export const productDetails = async (req, res) => {
 
         let wishlistVariantIds = [];
         if (res.locals.user) {
-            const wishlistItems = await Wishlist.find({ user: res.locals.user._id, product: productId });
+            const wishlistItems = await Wishlist.find({ user: res.locals.user._id, product: product._id });
             wishlistVariantIds = wishlistItems.map(item => item.variant.toString());
         }
 
+        const ratings = product.reviews?.reduce((acc, i) => acc + i.rating, 0)
+        const avgRating = Math.ceil(ratings / product.reviews?.length);
+
         const relatedProducts = await Product.find({ category: product.category._id, _id: { $ne: product._id } }).limit(3);
-        res.render("user/products/product-details", { product: offerApplied, relatedProducts, outOfStockVariants, wishlistVariantIds });
+        res.render("user/products/product-details", { product: offerApplied, relatedProducts, outOfStockVariants, wishlistVariantIds, avgRating });
     } catch (error) {
         console.error(error);
         req.flash('error', 'An error occurred while fetching the product details');

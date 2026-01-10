@@ -8,6 +8,9 @@ import session from "express-session";
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
+import scheduleCron from "./utils/cron.js";
+
+scheduleCron();
 
 dotenv.config();
 

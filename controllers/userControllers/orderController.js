@@ -2,7 +2,7 @@ import Order from "../../models/orderModel.js";
 import Return from "../../models/returnModel.js";
 import Product from "../../models/productModel.js";
 import generateInvoice from "../../utils/invoice.js";
-import refund from "../../utils/refund.js";
+import refund, { calculateRefundAmount } from "../../utils/refund.js";
 import User from "../../models/userModel.js";
 
 export const orderConfirmation = async (req, res) => {
@@ -30,7 +30,7 @@ export const orderConfirmation = async (req, res) => {
 export const downloadInvoice = async (req, res) => {
     try {
         const { orderId } = req.params;
-        
+
         // Fetch order and populate product details
         const order = await Order.findOne({ orderId }).populate('items.product').populate('address').populate('user');
 
@@ -149,33 +149,55 @@ export const cancelOrder = async (req, res) => {
             return res.json({ success: false, message: "Invalid Order" })
         }
 
-        // user wallet
-        const user = await User.findById(order.user);
-        user.wallet += Math.round(order.totalAmount);
-    
-        user.walletHistory.push({
-            amount: Math.round(order.totalAmount),
-            type: "credit",
-            reason: `Refund for order ${order.orderId}`,
-            date: new Date
-        });
+        let shouldRefund = true;
+        if (order.paymentMethod === 'cod' && order.paymentStatus !== 'paid') {
+            shouldRefund = false;
+        }
 
-        await user.save();
-        // --
+        let totalRefundAmount = 0;
+
+        for (const item of order.items) {
+            if (item.status !== 'Cancelled' && item.status !== 'Returned' && item.status !== 'Return Request') {
+
+                item.status = 'Cancelled';
+                item.cancelReason = reason;
+
+                const product = await Product.findById(item.product);
+                if (product) {
+                    const variant = product.variants.id(item.variant);
+                    if (variant) {
+                        variant.stock = variant.stock + item.quantity;
+                        await product.save();
+                    }
+                }
+
+                if (shouldRefund) {
+                    totalRefundAmount += calculateRefundAmount(order, item);
+                }
+            }
+        }
+
+        if (shouldRefund && order.shipping > 0) {
+            totalRefundAmount += order.shipping;
+        }
 
         order.cancelReason = reason;
         order.status = 'Cancelled';
-
-        order.items.forEach(async item => {
-            item.status = 'Cancelled';
-            
-            const product = await Product.findById(item.product);
-            const variant = product.variants.id(item.variant);
-            variant.stock = variant.stock + item.quantity;
-            await product.save();
-        })
-
         await order.save();
+
+        if (shouldRefund && totalRefundAmount > 0) {
+            const user = await User.findById(order.user);
+            const finalRefund = Math.round(totalRefundAmount);
+            user.wallet += finalRefund;
+
+            user.walletHistory.push({
+                amount: finalRefund,
+                type: "credit",
+                reason: `Refund for order #${order.orderId.split('-')[2]} - Order Cancellation`,
+                date: new Date()
+            });
+            await user.save();
+        }
 
         res.json({ success: true });
 
@@ -205,7 +227,34 @@ export const cancelOrderItem = async (req, res) => {
             return res.json({ success: false, message: "Item not found" })
         }
 
-        await refund(order, item);
+        let shouldRefund = true;
+        if (order.paymentMethod === 'cod' && order.paymentStatus !== 'paid') {
+            shouldRefund = false;
+        }
+
+        if (shouldRefund) {
+
+            const activeItems = order.items.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
+            const isLastItem = activeItems.length === 1 && activeItems[0]._id.toString() === itemId.toString();
+
+            let refundAmount = calculateRefundAmount(order, item);
+
+            if (isLastItem && order.shipping > 0) {
+                refundAmount += order.shipping;
+            }
+
+            const finalRefund = Math.round(refundAmount);
+
+            const user = await User.findById(order.user);
+            user.wallet += finalRefund;
+            user.walletHistory.push({
+                amount: finalRefund,
+                type: "credit",
+                reason: `Refund for order #${order.orderId.split('-')[2]} - Item Cancellation`,
+                date: new Date()
+            });
+            await user.save();
+        }
 
         item.status = 'Cancelled';
         item.cancelReason = reason;
@@ -244,18 +293,19 @@ export const returnOrder = async (req, res) => {
             return res.json({ success: false, message: "Invalid Order" })
         }
 
-        // Create return requests for all items
         for (const item of order.items) {
-            if (item.status === 'Delivered') { // Only return delivered items
+            if (item.status === 'Delivered') {
                 const existingReturn = await Return.findOne({ orderId: order._id, itemId: item._id });
                 if (!existingReturn) {
+                    const refundAmt = calculateRefundAmount(order, item);
+
                     await new Return({
                         orderId: order._id,
                         userId,
                         itemId: item._id,
                         reason,
                         status: 'Return Request',
-                        refundAmount: item.subTotal
+                        refundAmount: refundAmt
                     }).save();
 
                     item.status = 'Return Request';
@@ -300,19 +350,20 @@ export const returnOrderItem = async (req, res) => {
             return res.json({ success: false, message: "Return request already exists for this item" });
         }
 
+        const refundAmt = calculateRefundAmount(order, item);
+
         await new Return({
             orderId: order._id,
             userId: req.userId,
             itemId: item._id,
             reason,
             status: 'Return Request',
-            refundAmount: item.subTotal
+            refundAmount: refundAmt
         }).save();
 
         item.status = 'Return Request';
         item.returnReason = reason;
 
-        // Check if all items are now returned/requested
         const allReturned = order.items.every(i => i.status === 'Return Request' || i.status === 'Returned');
         if (allReturned) {
             order.status = 'Return Request';
@@ -332,11 +383,10 @@ export const returnDetails = async (req, res) => {
         const { orderId, itemId } = req.params;
         const userId = req.userId;
 
-        // Find the specific return document and populate everything needed
         const returnDoc = await Return.findOne({ orderId, itemId, userId })
             .populate({
                 path: 'orderId',
-                populate: { path: 'address' } // Get address from the order
+                populate: { path: 'address' }
             })
 
         if (!returnDoc) {
@@ -347,7 +397,6 @@ export const returnDetails = async (req, res) => {
         const order = returnDoc.orderId;
         const item = order.items.id(itemId);
 
-        // Calculation from refund
         const totalOrderSubtotal = order.subTotal;
 
         const totalDiscountGiven = order.coupenDiscount || 0;
@@ -375,5 +424,41 @@ export const returnDetails = async (req, res) => {
         console.error("Return Details Error:", error);
         req.flash("error", "Something went wrong while fetching return details");
         res.redirect('/profile/orders');
+    }
+}
+
+export const reviewPage = async (req, res) => {
+    try {
+
+        const product = await Product.findById(req.params.productId);
+        const order = await Order.findOne({ orderId: req.query.orderId });
+
+        res.render('user/products/review', { product, order });
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const addReview = async (req, res) => {
+    try {
+
+        const product = await Product.findById(req.params.productId);
+        const user = await User.findById(req.userId).lean();
+
+        product.reviews.push({
+            title: req.body.title,
+            review: req.body.review,
+            author: user.name,
+            date: new Date,
+            rating: req.body.rating
+        });
+
+        await product.save();
+
+        res.redirect('/profile/orders');
+
+    } catch (error) {
+        console.error(error);
     }
 }

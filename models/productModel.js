@@ -1,10 +1,18 @@
 import mongoose from "mongoose";
+import slugUpdater from "mongoose-slug-updater"; // Changed this
+
+mongoose.plugin(slugUpdater); // Use the updater instead
 
 const productSchema = new mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
+        },
+        slug: { 
+            type: String, 
+            slug: "name",
+            unique: true
         },
         description: {
             type: String,
@@ -47,6 +55,15 @@ const productSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        reviews: [
+            {
+                rating: Number,
+                title: String,
+                review: String,
+                author: String,
+                date: Date
+            }
+        ]
     },
     { timestamps: true }
 );

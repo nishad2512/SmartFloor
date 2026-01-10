@@ -110,7 +110,7 @@ export const addToCart = async (req, res) => {
             cartItem.offerPrice = offerPrice;
             await cartItem.save();
 
-            req.flash("success", `Product quantity increased by ${quantity} in cart`);
+            req.flash("success", `${cartItem.quantity} sq.ft of product in cart`);
             return res.json({ success: true });
 
         } else if (!cartItem && quantity <= 500) {
@@ -213,7 +213,7 @@ export const removeFromCart = async (req, res) => {
         }
 
         await Cart.deleteOne({ _id: cartItemId });
-        req.flash("success", "Item deleted successfully");
+        req.flash("success", "Item removed from cart successfully");
         res.json({ success: true });
 
     } catch (error) {

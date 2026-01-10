@@ -106,36 +106,39 @@
                                     </div>
                                 </div>
                             </label>
-                            <% } %>
-                                <!-- COD Option (Inactive) -->
-                                <label
-                                    class="group relative flex cursor-pointer flex-col gap-4 rounded-xl border p-6 transition-all border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm has-[:checked]:border-black has-[:checked]:bg-white has-[:checked]:shadow-lg has-[:checked]:ring-1 has-[:checked]:ring-black">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex gap-4 items-center">
-                                            <div
-                                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white text-[#757575] border border-gray-100 shadow-sm">
-                                                <i class="ph-bold ph-truck text-2xl"></i>
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <p class="text-base font-semibold text-black">
-                                                    Cash on Delivery
-                                                </p>
-                                                <p class="text-sm text-[#757575] mt-1">
-                                                    Pay upon arrival of your order.
-                                                </p>
-                                                <p class="text-xs text-orange-600 mt-1 font-medium">
-                                                    <!-- Additional $5 handling fee applies -->
-                                                </p>
-                                            </div>
-                                        </div>
+                        <% } %>
+                        <!-- COD Option (Inactive) -->
+                        <% if (order.totalAmount < 1000) { %>
+                            <label
+                                class="group relative flex cursor-pointer flex-col gap-4 rounded-xl border p-6 transition-all border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm has-[:checked]:border-black has-[:checked]:bg-white has-[:checked]:shadow-lg has-[:checked]:ring-1 has-[:checked]:ring-black">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex gap-4 items-center">
                                         <div
-                                            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white dark:bg-transparent ring-offset-2 group-has-[:checked]:border-black group-has-[:checked]:bg-black">
-                                            <input class="h-0 w-0 opacity-0" name="payment_method" type="radio"
-                                                value="cod" />
-                                            <i class="ph-bold ph-check text-white"></i>
+                                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white text-[#757575] border border-gray-100 shadow-sm">
+                                            <i class="ph-bold ph-truck text-2xl"></i>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <p class="text-base font-semibold text-black">
+                                                Cash on Delivery
+                                            </p>
+                                            <p class="text-sm text-[#757575] mt-1">
+                                                Pay upon arrival of your order.
+                                            </p>
+                                            <p class="text-xs text-orange-600 mt-1 font-medium">
+                                                <!-- Additional $5 handling fee applies -->
+                                            </p>
                                         </div>
                                     </div>
-                                </label>
+                                    <div
+                                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white dark:bg-transparent ring-offset-2 group-has-[:checked]:border-black group-has-[:checked]:bg-black">
+                                        <input class="h-0 w-0 opacity-0" name="payment_method" type="radio"
+                                            value="cod" />
+                                        <i class="ph-bold ph-check text-white"></i>
+                                    </div>
+                                </div>
+                            </label>
+                        <% } %>
+                                
                     </div>
                     <!-- Security Note -->
                     <div class="mt-6 flex items-center justify-center gap-2 text-xs text-[#757575]">
@@ -306,7 +309,9 @@
                                 });
                                 const data = await res.json();
                                 if (data.success) {
-                                    window.location.href = `/order/confirmation/${orderId}`;
+                                    setTimeout(() => {
+                                        window.location.href = `/order/confirmation/${orderId}`;
+                                    }, 800);
                                 }
                             },
 
@@ -341,9 +346,14 @@
                         const data = await res.json();
 
                         if (data.success) {
+                            swal.fire({
+                                icon: 'success',
+                                title: 'Payment Successful',
+                                text: 'Your payment has been processed successfully.',
+                            });
                             setTimeout(() => {
                                 window.location.href = `/order/confirmation/${orderId}`;
-                            });
+                            }, 2000);
                         } else {
                             swal.fire({
                                 icon: 'error',

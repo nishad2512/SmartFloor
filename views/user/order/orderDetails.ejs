@@ -270,6 +270,16 @@
                                                     <% } %>
                                                 <% } %>
                                             </div>
+                                            <% if (item.status === 'Delivered') { %>
+                                                <div class="mt-4 flex items-center gap-1 text-yellow-500 text-sm cursor-pointer"
+                                                    onclick="window.location.href='/profile/orders/review/<%= item.product._id %>?orderId=<%= order.orderId %>'">
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                </div>
+                                            <% } %>
                                         </div>
                                     </div>
                                 <% }); %>

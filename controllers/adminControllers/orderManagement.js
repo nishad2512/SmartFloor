@@ -5,7 +5,7 @@ import refund from "../../utils/refund.js";
 
 export const orders = async (req, res) => {
     try {
-        const { search, page = 1 } = req.query;
+        const { search, status, sort, page = 1 } = req.query;
         const limit = 5;
         const skip = (page - 1) * limit;
 
@@ -17,9 +17,22 @@ export const orders = async (req, res) => {
             ];
         }
 
+        if (status) {
+            query.status = status;
+        }
+
+        let sortQuery = { createdAt: -1 };
+        if (sort === 'oldest') {
+            sortQuery = { createdAt: 1 };
+        } else if (sort === 'amount_desc') {
+            sortQuery = { totalAmount: -1 };
+        } else if (sort === 'amount_asc') {
+            sortQuery = { totalAmount: 1 };
+        }
+
         const totalOrders = await Order.countDocuments(query);
         const orders = await Order.find(query)
-            .sort({ createdAt: -1 })
+            .sort(sortQuery)
             .populate('user')
             .skip(skip)
             .limit(limit);
@@ -31,6 +44,8 @@ export const orders = async (req, res) => {
             currentPage: parseInt(page),
             totalPages,
             search,
+            status,
+            sort,
             totalOrders,
             limit,
             skip
@@ -115,7 +130,7 @@ export const returns = async (req, res) => {
             }
         });
 
-        res.render('admin/orderManagement/returns', { returns, page, totalCount, totalPages });
+        res.render('admin/orderManagement/returns', { returns, page, totalCount, totalPages, skip, limit });
 
     } catch (error) {
         console.error(error);
@@ -173,7 +188,7 @@ export const updateReturnStatus = async (req, res) => {
         const item = order.items.id(returnRequest.itemId);
 
         if (item.status == "Return Request" && status == "Approved") {
-            await refund(order, item)
+            await refund(order, item);
         }
 
         returnRequest.status = status;
@@ -187,7 +202,7 @@ export const updateReturnStatus = async (req, res) => {
                 variant.stock = variant.stock + item.quantity;
                 await product.save();
             }
-            if (order.items.every(i => i.status == 'Returned')) {
+            if (order.items.every(i => i.status == 'Returned' || i.status == 'Cancelled')) {
                 order.status = 'Returned';
             }
             await order.save();
