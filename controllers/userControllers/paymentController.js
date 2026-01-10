@@ -23,7 +23,7 @@ export const payment = async (req, res) => {
         res.render("user/payment/payment", {
             order,
             user,
-            razorpayKeyId: "rzp_test_RysFjKh7FeeVsH"
+            razorpayKeyId: process.env.RAZORPAY_KEY_ID
         });
     } catch (error) {
         console.error(error);
@@ -71,8 +71,8 @@ export const placeOrder = async (req, res) => {
 // razorpay
 
 const razorpay = new Razorpay({
-    key_id: "rzp_test_RysFjKh7FeeVsH",
-    key_secret: "8rI3WgnoM97JOj8mJ6vX7xTq",
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 export const createOrder = async (req, res) => {
@@ -81,7 +81,7 @@ export const createOrder = async (req, res) => {
         let amount = req.body?.amount;
 
         if (req.body.orderId) {
-            
+
             const orderData = await Order.findById(req.body.orderId);
 
             if (!orderData) {
@@ -127,13 +127,11 @@ export const verifyPayment = async (req, res) => {
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
         const expectedSignature = crypto
-            .createHmac("sha256", "8rI3WgnoM97JOj8mJ6vX7xTq")
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
             .update(body)
             .digest("hex");
 
         if (expectedSignature === razorpay_signature) {
-            // ✅ Payment verified
-            // Update order status in DB
 
             if (req.body.orderId) {
                 const order = await Order.findById(req.body.orderId);
@@ -162,13 +160,6 @@ export const verifyPayment = async (req, res) => {
                 const order = await Order.findById(req.body.orderId).populate('items.product')
                 order.paymentStatus = "failed";
                 order.paymentMethod = "razorpay";
-                // order.status = "Cancelled";
-                // order.items.forEach(async (item) => {
-                //     item.status = "Cancelled"
-                //     const variant = await item.product.variants.id(item.variant);
-                //     variant.stock += item.quantity;
-                // });
-                // order.cancelReason = "Payment failed";
 
                 await order.save();
             }
@@ -199,5 +190,7 @@ export const failedPage = async (req, res) => {
 
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to load payment failed page.");
+        res.redirect('/profile/orders');
     }
 }

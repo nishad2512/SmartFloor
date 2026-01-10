@@ -7,25 +7,25 @@ import { buildProductQuery } from "../../utils/productQuery.js";
 export const products = async (req, res) => {
     try {
 
-        const data = await buildProductQuery({req});
+        const data = await buildProductQuery({ req });
 
         res.render("user/products/products", data);
     } catch (error) {
         console.error(error);
-        req.flash('error', 'Error loading products');
+        req.flash('error', 'Failed to load products. Please try again.');
         res.redirect('/');
     }
 }
 
 export const filterByCategory = async (req, res) => {
     try {
-        
+
         const data = await buildProductQuery({ req, categoryName: req.params.category })
 
         res.render("user/products/products", data);
     } catch (error) {
         console.error(error);
-        req.flash('error', 'Error filtering products');
+        req.flash('error', 'Failed to filter products.');
         res.redirect('/products');
     }
 }
@@ -33,7 +33,7 @@ export const filterByCategory = async (req, res) => {
 export const productDetails = async (req, res) => {
     const productSlug = req.params.id;
     try {
-        const product = await Product.findOne({slug: productSlug}).populate("category").lean();
+        const product = await Product.findOne({ slug: productSlug }).populate("category").lean();
 
         if (!product || !product.isActive) {
             req.flash('error', 'Product not found');
@@ -61,7 +61,7 @@ export const productDetails = async (req, res) => {
         res.render("user/products/product-details", { product: offerApplied, relatedProducts, outOfStockVariants, wishlistVariantIds, avgRating });
     } catch (error) {
         console.error(error);
-        req.flash('error', 'An error occurred while fetching the product details');
+        req.flash('error', 'Failed to load product details.');
         res.redirect('/products');
     }
 }

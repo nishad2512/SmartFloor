@@ -33,7 +33,7 @@ export const cart = async (req, res) => {
         res.render("user/cart/cart", { formattedCart, totalAmount: totalAmount.toLocaleString('en-IN') });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error loading cart");
+        req.flash("error", "Failed to load your cart. Please try again.");
         res.redirect("/");
     }
 };

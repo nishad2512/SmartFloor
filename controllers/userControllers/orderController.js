@@ -437,6 +437,8 @@ export const reviewPage = async (req, res) => {
 
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to load review page.");
+        res.redirect('/profile/orders');
     }
 }
 
@@ -456,9 +458,12 @@ export const addReview = async (req, res) => {
 
         await product.save();
 
+        req.flash("success", "Review added successfully");
         res.redirect('/profile/orders');
 
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to add review.");
+        res.redirect('/profile/orders');
     }
 }

@@ -24,7 +24,7 @@ export const users = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error fetching users");
+        req.flash("error", "Failed to fetch users.");
         res.redirect("/admin/dashboard");
     }
 };
@@ -39,7 +39,7 @@ export const blockUser = async (req, res) => {
         res.redirect("/admin/customers");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error updating user");
+        req.flash("error", "Failed to update user status.");
         res.redirect("/admin/customers");
     }
 };

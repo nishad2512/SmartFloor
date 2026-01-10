@@ -19,7 +19,7 @@ export const products = async (req, res) => {
         res.render("admin/productManagement/products", { products, page, search, totalPages });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error fetching products");
+        req.flash("error", "Failed to fetch products. Please try again.");
         res.redirect("/admin/dashboard");
     }
 };
@@ -30,7 +30,7 @@ export const createProductPage = async (req, res) => {
         res.render("admin/productManagement/createProduct", { categories });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error loading create product page");
+        req.flash("error", "Failed to load product creation page.");
         res.redirect("/admin/products");
     }
 };
@@ -131,7 +131,7 @@ export const deleteProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error deleting product");
+        req.flash("error", "Failed to block product.");
         res.redirect("/admin/products");
     }
 };
@@ -145,7 +145,7 @@ export const unblockProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error unblocking product");
+        req.flash("error", "Failed to unblock product.");
         res.redirect("/admin/products");
     }
 };
@@ -239,7 +239,7 @@ export const editProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error updating product");
+        req.flash("error", "Failed to update product details.");
         res.redirect("/admin/products");
     }
 };

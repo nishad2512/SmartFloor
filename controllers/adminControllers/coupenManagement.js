@@ -25,7 +25,7 @@ export const coupens = async (req, res) => {
     } catch (error) {
 
         console.error(error);
-        req.flash('error', 'Something went wrong');
+        req.flash('error', 'An error occurred while fetching coupens. Please try again.');
         res.redirect('/admin/dashboard');
 
     }
@@ -38,9 +38,9 @@ export const createPage = async (req, res) => {
 
     } catch (error) {
 
-        consol.error(error);
-        req.flash('error', 'Something went wrong');
-        res.redirect('/admin/dashboard');
+        console.error(error);
+        req.flash('error', 'Failed to load coupon creation page.');
+        res.redirect('/admin/coupens');
 
     }
 }
@@ -51,19 +51,19 @@ export const create = async (req, res) => {
         const data = { ...req.body };
 
         if (!data) {
-            return res.status(404).json({ success: false, message: "Not having proper fields" });
+            return res.status(404).json({ success: false, message: "Missing required fields." });
         }
 
         const newCoupen = new Coupen(data);
         await newCoupen.save();
 
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, message: "Coupon created successfully." });
 
     } catch (error) {
 
-        consol.error(error);
-        req.flash('error', 'Something went wrong');
-        res.redirect('/admin/dashboard');
+        console.error(error);
+        req.flash('error', 'Failed to create coupon.');
+        res.status(500).json({ success: false, message: "Internal server error." });
 
     }
 }
@@ -77,9 +77,9 @@ export const editPage = async (req, res) => {
 
     } catch (error) {
 
-        consol.error(error);
-        req.flash('error', 'Something went wrong');
-        res.redirect('/admin/dashboard');
+        console.error(error);
+        req.flash('error', 'Failed to load coupon edit page.');
+        res.redirect('/admin/coupens');
 
     }
 }
@@ -91,19 +91,19 @@ export const edit = async (req, res) => {
         const coupenId = req.params.id;
 
         if (!data) {
-            return res.status(404).json({ success: false, message: "Not having proper fields" });
+            return res.status(404).json({ success: false, message: "Missing required fields." });
         }
 
         const updated = await Coupen.findByIdAndUpdate(coupenId, data, { new: true, runValidators: true });
         console.log(updated)
 
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, message: "Coupon updated successfully." });
 
     } catch (error) {
 
-        consol.error(error);
-        req.flash('error', 'Something went wrong');
-        res.redirect('/admin/dashboard');
+        console.error(error);
+        req.flash('error', 'Failed to update coupon.');
+        res.status(500).json({ success: false, message: "Internal server error." });
 
     }
 }
@@ -118,14 +118,14 @@ export const block = async (req, res) => {
 
         await coupen.save();
 
-        req.flash("success", "Done successfully")
+        req.flash("success", `Coupon ${coupen.isActive ? 'activated' : 'deactivated'} successfully.`)
         res.status(200).json({ success: true });
 
     } catch (error) {
 
         console.error(error);
-        req.flash('error', 'Something went wrong');
-        res.redirect('/admin/dashboard');
+        req.flash('error', 'Failed to update coupon status.');
+        res.status(500).json({ success: false, message: "Internal server error." });
 
     }
 }

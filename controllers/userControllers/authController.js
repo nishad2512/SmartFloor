@@ -31,7 +31,7 @@ export const login = async (req, res) => {
         res.redirect("/login");
     } catch (err) {
         console.error(err);
-        req.flash('error', 'An error occurred during login');
+        req.flash('error', 'An unexpected error occurred during login. Please try again.');
         res.redirect("/login");
     }
 };

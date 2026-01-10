@@ -14,7 +14,8 @@ const wishlist = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching wishlist:", error);
-        res.status(500).send("Internal Server Error");
+        req.flash("error", "Failed to load wishlist.");
+        res.redirect("/");
     }
 };
 

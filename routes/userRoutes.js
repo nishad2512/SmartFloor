@@ -73,104 +73,106 @@ router.get('/products/product/:id', productController.productDetails);
 
 // profile -----------------
 
+router.use(requireAuth);
+
 // profile auth routes
 
-router.get('/profile/details', requireAuth, profileController.profile);
+router.get('/profile/details', profileController.profile);
 
-router.get('/profile/details/edit', requireAuth, (req, res) => {
+router.get('/profile/details/edit', (req, res) => {
     res.render("user/profile/editDetails")
 });
 
-router.patch('/profile/details/edit', requireAuth, upload.single("image"), profileController.editDetails);
+router.patch('/profile/details/edit', upload.single("image"), profileController.editDetails);
 
 router.post('/profile/send-otp', profileController.sendVerify);
 
-router.post('/profile/verify-otp', requireAuth, profileController.verifyOtp);
+router.post('/profile/verify-otp', profileController.verifyOtp);
 
-router.get('/profile/change-mail', requireAuth, profileController.changeMail);
+router.get('/profile/change-mail', profileController.changeMail);
 
-router.get('/profile/new-mail', requireAuth, profileController.newMailPage);
+router.get('/profile/new-mail', profileController.newMailPage);
 
-router.patch('/profile/new-mail', requireAuth, profileController.newMail);
+router.patch('/profile/new-mail', profileController.newMail);
 
 // profile address routes
 
-router.get('/profile/addresses', requireAuth, addressController.addresses);
+router.get('/profile/addresses', addressController.addresses);
 
-router.get('/profile/addresses/add', requireAuth, addressController.addAddressPage);
+router.get('/profile/addresses/add', addressController.addAddressPage);
 
-router.post('/profile/addresses/add', requireAuth, addressController.addAddress);
+router.post('/profile/addresses/add', addressController.addAddress);
 
-router.delete('/profile/addresses/delete/:id', requireAuth, addressController.deleteAddress);
+router.delete('/profile/addresses/delete/:id', addressController.deleteAddress);
 
-router.get('/profile/addresses/edit/:id', requireAuth, addressController.editAddressPage);
+router.get('/profile/addresses/edit/:id', addressController.editAddressPage);
 
-router.patch('/profile/addresses/edit/:id', requireAuth, addressController.editAddress);
+router.patch('/profile/addresses/edit/:id', addressController.editAddress);
 
 // cart routes
 
-router.get('/cart', requireAuth, cartController.cart);
+router.get('/cart', cartController.cart);
 
-router.post('/cart/add', requireAuth, cartController.addToCart);
+router.post('/cart/add', cartController.addToCart);
 
-router.patch('/cart/update/:cartItemId', requireAuth, cartController.updateCartQuantity);
+router.patch('/cart/update/:cartItemId', cartController.updateCartQuantity);
 
-router.delete('/cart/delete/:cartItemId', requireAuth, cartController.removeFromCart);
+router.delete('/cart/delete/:cartItemId', cartController.removeFromCart);
 
 // wishlist routes
 
-router.get('/wishlist', requireAuth, wishlistController.wishlist);
+router.get('/wishlist', wishlistController.wishlist);
 
-router.post('/wishlist/add', requireAuth, wishlistController.addToWishlist);
+router.post('/wishlist/add', wishlistController.addToWishlist);
 
-router.delete('/wishlist/remove', requireAuth, wishlistController.removeFromWishlist);
+router.delete('/wishlist/remove', wishlistController.removeFromWishlist);
 
 // checkout routes
 
-router.get('/checkout', requireAuth, checkoutController.checkout);
+router.get('/checkout', checkoutController.checkout);
 
-router.post('/checkout/place-order', requireAuth, checkoutController.placeOrder);
+router.post('/checkout/place-order', checkoutController.placeOrder);
 
-router.post('/checkout/apply-coupen', requireAuth, checkoutController.applyCoupen);
+router.post('/checkout/apply-coupen', checkoutController.applyCoupen);
 
 // orders routes
 
-router.get('/profile/orders', requireAuth, orderController.orders)
+router.get('/profile/orders', orderController.orders)
 
-router.get('/order/confirmation/:orderId', requireAuth, orderController.orderConfirmation);
+router.get('/order/confirmation/:orderId', orderController.orderConfirmation);
 
-router.get('/order/invoice/:orderId', requireAuth, orderController.downloadInvoice);
+router.get('/order/invoice/:orderId', orderController.downloadInvoice);
 
-router.get('/profile/order/details/:orderId', requireAuth, orderController.orderDetails);
+router.get('/profile/order/details/:orderId', orderController.orderDetails);
 
-router.patch('/profile/orders/cancel/:orderId', requireAuth, orderController.cancelOrder);
+router.patch('/profile/orders/cancel/:orderId', orderController.cancelOrder);
 
-router.patch('/profile/orders/return/:orderId', requireAuth, orderController.returnOrder);
+router.patch('/profile/orders/return/:orderId', orderController.returnOrder);
 
-router.patch('/profile/orders/item/cancel/:orderId/:itemId', requireAuth, orderController.cancelOrderItem);
+router.patch('/profile/orders/item/cancel/:orderId/:itemId', orderController.cancelOrderItem);
 
-router.patch('/profile/orders/item/return/:orderId/:itemId', requireAuth, orderController.returnOrderItem);
+router.patch('/profile/orders/item/return/:orderId/:itemId', orderController.returnOrderItem);
 
-router.get('/profile/orders/returnDetails/:orderId/:itemId', requireAuth, orderController.returnDetails);
+router.get('/profile/orders/returnDetails/:orderId/:itemId', orderController.returnDetails);
 
-router.get('/profile/orders/review/:productId', requireAuth, orderController.reviewPage);
+router.get('/profile/orders/review/:productId', orderController.reviewPage);
 
-router.post('/profile/orders/review/:productId', requireAuth, orderController.addReview);
+router.post('/profile/orders/review/:productId', orderController.addReview);
 
 // wallet routes
 
-router.get('/profile/wallet', requireAuth, profileController.wallet)
+router.get('/profile/wallet', profileController.wallet)
 
 // payment routes
 
-router.get('/payment/:orderId', requireAuth, paymentController.payment);
+router.get('/payment/:orderId', paymentController.payment);
 
-router.get('/payment/failed/:orderId', requireAuth, paymentController.failedPage);
+router.get('/payment/failed/:orderId', paymentController.failedPage);
 
-router.post('/payment/create-order', requireAuth, paymentController.createOrder);
+router.post('/payment/create-order', paymentController.createOrder);
 
-router.post('/payment/verify-payment', requireAuth, paymentController.verifyPayment);
+router.post('/payment/verify-payment', paymentController.verifyPayment);
 
-router.post('/payment/place-order', requireAuth, paymentController.placeOrder);
+router.post('/payment/place-order', paymentController.placeOrder);
 
 export default router;

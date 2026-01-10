@@ -8,7 +8,8 @@ export const sales = async (req, res) => {
         res.render('admin/salesManagement/sales', data);
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error");
+        req.flash("error", "Failed to load sales report.");
+        res.redirect('/admin/dashboard');
     }
 }
 
@@ -157,7 +158,7 @@ export const downloadSalesPDF = async (req, res) => {
         doc.end();
     } catch (error) {
         console.error("Error generating PDF:", error);
-        res.status(500).send("Error generating PDF");
+        res.status(500).send("Unable to generate PDF report. Please try again.");
     }
 };
 
@@ -200,6 +201,6 @@ export const downloadSalesExcel = async (req, res) => {
 
     } catch (error) {
         console.error("Error generating Excel:", error);
-        res.status(500).send("Error generating Excel");
+        res.status(500).send("Unable to generate Excel report. Please try again.");
     }
 };

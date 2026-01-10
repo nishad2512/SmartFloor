@@ -36,7 +36,7 @@ export const categories = async (req, res) => {
         res.render("admin/categoryManagement/categories", { categories, page, search, totalPages });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error fetching categories");
+        req.flash("error", "Failed to load categories. Please try again.");
         res.redirect("/admin/dashboard");
     }
 }

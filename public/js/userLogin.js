@@ -22,7 +22,7 @@ function validateEmail(email) {
 }
 
 function validatePassword(password) {
-    return password.length >= 6;
+    return password.length >= 8;
 }
 
 function clearErrors() {
@@ -64,7 +64,7 @@ loginForm.addEventListener("submit", (e) => {
         showError(
             passwordInput,
             passwordError,
-            "Password must be at least 6 characters"
+            "Password must be at least 8 characters"
         );
         isValid = false;
     }
@@ -92,7 +92,7 @@ passwordInput.addEventListener("blur", () => {
         showError(
             passwordInput,
             passwordError,
-            "Password must be at least 6 characters"
+            "Password must be at least 8 characters"
         );
     } else {
         passwordError.classList.remove("show");

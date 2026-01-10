@@ -6,7 +6,7 @@ async function scheduleCron() {
     cron.schedule("* * * * *", async () => {
         try {
             const orders = await Order.find({
-                createdAt: { $lte: new Date(Date.now() - 5 * 60 * 1000) },
+                createdAt: { $lte: new Date(Date.now() - 10 * 60 * 1000) },
                 paymentStatus: "pending",
                 paymentMethod: { $ne: "cod" },
                 status: { $ne: "Cancelled" }

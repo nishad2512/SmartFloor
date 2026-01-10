@@ -18,23 +18,6 @@ const productSchema = Joi.object({
     specifications: Joi.string().allow('').optional(),
     highlights: Joi.string().allow('').optional(),
 
-    // Allow single values or arrays for size, price, stock, then transform/validate in controller?
-    // OR try to validate the processed variants array if we construct it first?
-    // It's cleaner to validate the raw inputs if possible, but form-data makes arrays tricky (single item vs array).
-    // Strategy: We will validate the 'variants' array which we construct in the controller, 
-    // OR we validate the raw fields allowing single or array.
-
-    // Initial approach: Validate the fields loosely here, but we will rely on a processed object validation 
-    // or just use Joi for the main fields and keeping the variant logic we just fixed in the controller, 
-    // OR better: Move the variant construction logic BEFORE validation, then validate the whole object.
-
-    // Let's define the schema for a PRE-PROCESSED product object (easier).
-    // But typically we validate req.body. 
-
-    // Let's stick to validating the common fields first. The variant complexity (array vs string) 
-    // is best handled by the normalization logic I wrote. 
-    // So I will Validate the NORMALIZED variants array.
-
     variants: Joi.array().items(
         Joi.object({
             size: Joi.string().trim().required(),

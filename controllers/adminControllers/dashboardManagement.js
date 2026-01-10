@@ -47,9 +47,9 @@ const dashboard = async (req, res) => {
 
             Product.find().lean(),
 
-            User.countDocuments({ 
-                isBlocked: false, 
-                createdAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } 
+            User.countDocuments({
+                isBlocked: false,
+                createdAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }
             })
         ]);
 
@@ -69,9 +69,21 @@ const dashboard = async (req, res) => {
 
         const salesRecords = await getSalesData({ period: type === '$year' ? 'yearly' : 'monthly' });
 
-        res.render('admin/dashboard', {formattedData, topCategories, topProducts, recentOrders, stockAlerts, salesRecords, inventoryStock, customers, type});
+        res.render('admin/dashboard', { formattedData, topCategories, topProducts, recentOrders, stockAlerts, salesRecords, inventoryStock, customers, type });
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to load dashboard data.");
+        res.render('admin/dashboard', {
+            formattedData: [],
+            topCategories: [],
+            topProducts: [],
+            recentOrders: [],
+            stockAlerts: [],
+            salesRecords: {},
+            inventoryStock: 0,
+            customers: 0,
+            type: req.query.type || 'monthly'
+        });
     }
 }
 

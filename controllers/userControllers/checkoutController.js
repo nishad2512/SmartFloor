@@ -141,7 +141,7 @@ export const checkout = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Something went wrong.");
+        req.flash("error", "An error occurred while processing checkout. Please try again.");
         res.redirect("/cart");
     }
 };
@@ -239,8 +239,8 @@ export const placeOrder = async (req, res) => {
 
                 bulkOps.push({
                     updateOne: {
-                        filter: { 
-                            _id: cartItem.product._id, 
+                        filter: {
+                            _id: cartItem.product._id,
                             "variants._id": cartItem.variant,
                             "variants.stock": { $gte: cartItem.quantity }
                         },
@@ -257,8 +257,8 @@ export const placeOrder = async (req, res) => {
 
         const coupen = await Coupen.findOne({ code: coupenCode, isActive: true, expirationDate: { $gte: new Date() } }).lean();
         if (coupen) {
-            coupenDiscount = coupen.discountType === "percentage" 
-                ? ((totalAmount + shipping + tax) * coupen.discountValue) / 100 
+            coupenDiscount = coupen.discountType === "percentage"
+                ? ((totalAmount + shipping + tax) * coupen.discountValue) / 100
                 : coupen.discountValue;
         }
 

@@ -23,7 +23,7 @@ export const offers = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        req.flash('error', "Something went wrong");
+        req.flash('error', "Failed to load offers. Please try again.");
         res.redirect('/admin/dashboard')
     }
 }
@@ -35,8 +35,8 @@ export const createOfferPage = async (req, res) => {
         res.render('admin/offerManagement/createOffer', { products, categories });
     } catch (error) {
         console.error(error);
-        req.flash('error', "Something went wrong");
-        res.redirect('/admin/dashboard')
+        req.flash('error', "Failed to load offer creation page.");
+        res.redirect('/admin/offers')
     }
 }
 
@@ -79,8 +79,8 @@ export const createOffer = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        req.flash('error', "Something went wrong");
-        res.redirect('/admin/dashboard')
+        req.flash('error', "Failed to create offer. Please try again.");
+        res.redirect('/admin/offers')
     }
 }
 
@@ -93,11 +93,12 @@ export const blockOrUnblock = async (req, res) => {
         offer.isActive = !isActive;
         await offer.save();
 
-        req.flash("success", "Offer blocked / unblocked successfully")
+        req.flash("success", `Offer ${isActive ? 'blocked' : 'unblocked'} successfully.`)
         res.json({ success: true });
 
     } catch (error) {
-        req.flash("error", "Something went wrong");
+        console.error(error);
+        req.flash("error", "Failed to update offer status.");
         res.json({ success: false })
     }
 }
@@ -130,13 +131,13 @@ export const editOffer = async (req, res) => {
             return res.json({ success: false, message: "Invalid offer" });
         }
 
-        req.flash("success", "Offer edited successfully")
+        req.flash("success", "Offer updated successfully")
         res.json({ success: true });
 
     } catch (error) {
-        req.flash("error", "Something went wrong");
+        req.flash("error", "Failed to update offer.");
         console.error(error)
-        res.json({ success: false, message: "Invalid offer" })
+        res.json({ success: false, message: "Internal server error." })
     }
 }
 
@@ -146,12 +147,13 @@ export const editOfferPage = async (req, res) => {
         const offer = await Offer.findById(req.params.id)
         const categories = await Category.find();
         const products = await Product.find();
-        console.log(offer)
+        // console.log(offer)
 
         res.render('admin/offerManagement/editOffer', { offer, categories, products })
 
     } catch (error) {
-        req.flash("error", "Something went wrong");
-        res.json({ success: false })
+        console.error(error);
+        req.flash("error", "Failed to load offer edit page.");
+        res.redirect('/admin/offers');
     }
 }

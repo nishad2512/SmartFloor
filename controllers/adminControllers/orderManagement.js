@@ -53,6 +53,7 @@ export const orders = async (req, res) => {
 
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to fetch orders.");
         res.redirect('/admin/dashboard');
     }
 }
@@ -75,7 +76,8 @@ export const orderDetails = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.redirect('/admin/dashboard');
+        req.flash("error", "Failed to load order details.");
+        res.redirect('/admin/orders');
     }
 }
 
@@ -110,7 +112,8 @@ export const updateStatus = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.redirect('/admin/dashboard');
+        req.flash("error", "Failed to update status.");
+        res.status(500).json({ success: false });
     }
 }
 
@@ -134,6 +137,7 @@ export const returns = async (req, res) => {
 
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to load returns.");
         res.redirect('/admin/dashboard');
     }
 }
@@ -152,6 +156,7 @@ export const returnDetails = async (req, res) => {
             });
 
         if (!returnRequest) {
+            req.flash("error", "Return request not found.");
             return res.redirect('/admin/returns');
         }
 
@@ -170,7 +175,8 @@ export const returnDetails = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.redirect('/admin/dashboard');
+        req.flash("error", "Failed to load return details.");
+        res.redirect('/admin/returns');
     }
 }
 
@@ -212,6 +218,7 @@ export const updateReturnStatus = async (req, res) => {
 
     } catch (error) {
         console.error(error);
+        req.flash("error", "Failed to update return status.");
         res.status(500).json({ success: false });
     }
 }

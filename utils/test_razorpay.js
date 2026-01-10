@@ -1,7 +1,7 @@
 import Razorpay from "razorpay";
 
-const key_id = "rzp_test_RysFjKh7FeeVsH";
-const key_secret = "8rI3WgnoM97JOj8mJ6vX7xTq";
+const key_id = process.env.RAZORPAY_KEY_ID;
+const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
 console.log("Testing Razorpay with keys:", { key_id, key_secret });
 

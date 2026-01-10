@@ -17,7 +17,7 @@ export const profile = async (req, res) => {
         res.render("user/profile/details", { user, isGoogle });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error loading profile");
+        req.flash("error", "Failed to load profile. Please try again.");
         res.redirect("/");
     }
 };
@@ -44,7 +44,7 @@ export const editDetails = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error editing user details");
+        req.flash("error", "Failed to update profile details.");
         res.redirect("/profile/details");
     }
 };
@@ -60,7 +60,7 @@ export const sendVerify = async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error sending OTP to user");
+        req.flash("error", "Failed to send OTP.");
         res.json({ success: false, message: "Failed to send OTP" });
     }
 };
@@ -94,7 +94,7 @@ export const verifyOtp = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error editing user details");
+        req.flash("error", "Verification failed.");
         res.json({ success: false, message: "Verification failed" });
     }
 };
@@ -119,7 +119,7 @@ export const changeMail = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error with Email changing");
+        req.flash("error", "Failed to initiate email change.");
         res.redirect("/profile/details");
     }
 }
@@ -130,7 +130,7 @@ export const newMailPage = async (req, res) => {
         res.render("user/profile/editEmail");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error with Email changing");
+        req.flash("error", "Failed to load email change page.");
         res.redirect("/profile/details");
     }
 }
@@ -172,7 +172,7 @@ export const newMail = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error with Email changing");
+        req.flash("error", "Failed to process email change.");
         res.redirect("/profile/details");
     }
 }
@@ -208,7 +208,7 @@ export const wallet = async (req, res) => {
         });
     } catch (error) {
         console.error("Wallet error:", error);
-        req.flash("error", "Error loading wallet");
+        req.flash("error", "Failed to load wallet.");
         res.redirect("/profile/details");
     }
 };
