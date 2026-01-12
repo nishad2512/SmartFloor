@@ -21,8 +21,10 @@ const router = express.Router();
 router.use(checkUser);
 router.use(nocache());
 
-router.get("/", (req, res) => {
-    res.render("user/index");
+router.get("/", async (req, res) => {
+    const products = await productController.getFeaturedProducts();
+    console.log(products);
+    res.render("user/index", { products });
 });
 
 router.get("/about", (req, res) => {

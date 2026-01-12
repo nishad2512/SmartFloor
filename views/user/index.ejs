@@ -78,17 +78,20 @@
                 </h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mb-20">
-            
-            <div class="group cursor-pointer">
+            <% products.forEach(product => { %>
+            <div class="group cursor-pointer" onclick="window.location.href='/products/product/<%= product.slug %>'">
                 <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="https://images.unsplash.com/photo-1618219944342-824e40a13285?auto=format&fit=crop&q=80&w=1000" 
+                    <img src="<%= product.productImages[0] %>" 
                          class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
                 </div>
                 
                 <div class="flex items-center gap-3">
                     <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
+                        <span class="font-bold text-base text-[#1A1A1A]"><%= product.name %></span>
+                        <div>
+                            <span class="font-bold text-base text-[#1A1A1A]">$<%= product.variants[0].offerPrice %></span>
+                            <span class="font-bold line-through text-base text-gray-500">$<%= product.variants[0].price %></span>
+                        </div>
                     </div>
                     
                     <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
@@ -96,86 +99,7 @@
                     </button>
                 </div>
             </div>
-            
-            <div class="group cursor-pointer">
-                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&q=80&w=1000" 
-                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
-                    </div>
-                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
-                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="group cursor-pointer">
-                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1000" 
-                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
-                    </div>
-                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
-                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="group cursor-pointer">
-                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000" 
-                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
-                    </div>
-                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
-                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="group cursor-pointer">
-                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=1000" 
-                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
-                    </div>
-                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
-                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="group cursor-pointer">
-                <div class="h-[400px] rounded-[2rem] overflow-hidden mb-4 relative bg-gray-50">
-                    <img src="https://picsum.photos/id/1062/1000/600" 
-                         class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
-                        <span class="font-bold text-base text-[#1A1A1A]">African Gaz</span>
-                        <span class="font-bold text-base text-[#1A1A1A]">$128.00</span>
-                    </div>
-                    <button class="w-14 h-14 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition group-hover:rotate-45 duration-300 flex-shrink-0">
-                        <i class="ph-bold ph-arrow-up-right text-xl"></i>
-                    </button>
-                </div>
-            </div>
+            <% }); %>
         </div>
             </section>
 

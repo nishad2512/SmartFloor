@@ -65,3 +65,16 @@ export const productDetails = async (req, res) => {
         res.redirect('/products');
     }
 }
+
+export const getFeaturedProducts = async () => {
+    try {
+        const products = await Product.find({ isActive: true }).sort({ createdAt: -1 }).limit(6).lean();
+        const featuredProducts = await Promise.all(products.map(async (product) => {
+            return await applyOffer(product);
+        }));
+        return featuredProducts;
+    } catch (error) {
+        console.error("Error fetching featured products:", error);
+        return [];
+    }
+}
