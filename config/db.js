@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/smartfloor';
+dotenv.config();
+
+const dbURI = process.env.MONGODB_URI;
 
 const connectDB = async () => {
     try {

@@ -316,11 +316,11 @@
 
                     const name = nameInput && nameInput.value.trim();
                     const email = emailInput && emailInput.value.trim();
-                    const pw = passwordInput && passwordInput.value;
-                    const cpw = cpasswordInput && cpasswordInput.value;
+                    const pw = passwordInput && passwordInput.value.trim();
+                    const cpw = cpasswordInput && cpasswordInput.value.trim();
 
-                    if (!name || name.length < 2) {
-                        showError(nameInput, nameError, "Please enter your full name (2+ characters)");
+                    if (!name || name.length < 3 || !/^[a-zA-Z\s]+$/.test(name)) {
+                        showError(nameInput, nameError, "Please enter a valid full name (3+ characters)");
                         ok = false;
                     }
 
@@ -332,8 +332,8 @@
                         ok = false;
                     }
 
-                    if (!pw || pw.length < 8) {
-                        showError(passwordInput, passwordError, "Password must be at least 8 characters");
+                    if (!pw || pw.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(pw)) {
+                        showError(passwordInput, passwordError, "Password must be at least 8 characters and include UPPERCASE, lowercase, and a number12");
                         ok = false;
                     }
 
@@ -366,7 +366,7 @@
 
                 // Real-time blur validation
                 if (nameInput) nameInput.addEventListener("blur", () => {
-                    if (nameInput.value.trim().length < 2) showError(nameInput, nameError, "Please enter your full name (2+ characters)");
+                    if (nameInput.value.trim().length < 3 || !/^[a-zA-Z\s]+$/.test(nameInput.value.trim())) showError(nameInput, nameError, "Please enter a valid full name (3+ characters)");
                     else { nameError.classList.remove("show"); nameInput.classList.remove("input-error"); }
                 });
 

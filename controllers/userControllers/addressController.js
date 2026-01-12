@@ -2,16 +2,15 @@ import User from "../../models/userModel.js";
 import { Address } from "../../models/userModel.js";
 
 
-
 export const addresses = async (req, res) => {
     try {
         const userId = req.userId;
-        const user = await User.findById(userId); // Fetch user details
+        const user = await User.findById(userId);
         const addresses = await Address.find({ user: userId });
-        res.render("user/profile/address", { addresses, user }); // Pass user to view
+        res.render("user/profile/address", { addresses, user });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error loading addresses");
+        req.flash("error", "Failed to load addresses.");
         res.redirect("/profile/details");
     }
 };
@@ -23,7 +22,8 @@ export const addAddressPage = async (req, res) => {
         res.render("user/profile/addAddress", { formData, createAddr: true });
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error");
+        req.flash("error", "Failed to load address creation page.");
+        res.redirect("/profile/addresses");
     }
 };
 
@@ -32,7 +32,6 @@ export const addAddress = async (req, res) => {
         const userId = req.userId;
         const { name, email, phone, address1, address2, city, state, zip, type } = req.body;
 
-        // Validation
         if (!name || name.trim().length < 3) {
             req.flash("error", "Name must be at least 3 characters");
             req.flash("formData", req.body);
@@ -75,7 +74,7 @@ export const addAddress = async (req, res) => {
         res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error adding address");
+        req.flash("error", "Failed to add address.");
         res.redirect("/profile/addresses/add");
     }
 }
@@ -93,7 +92,7 @@ export const editAddressPage = async (req, res) => {
         res.render("user/profile/addAddress", { formData: address });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error loading address");
+        req.flash("error", "Failed to load address for editing.");
         res.redirect("/profile/addresses");
     }
 };
@@ -126,7 +125,7 @@ export const editAddress = async (req, res) => {
         res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error updating address");
+        req.flash("error", "Failed to update address.");
         res.redirect("/profile/addresses/edit/" + req.params.id);
     }
 };
@@ -140,7 +139,7 @@ export const deleteAddress = async (req, res) => {
         res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error deleting address");
+        req.flash("error", "Failed to delete address.");
         res.redirect("/profile/addresses");
     }
 };

@@ -4,8 +4,12 @@ import * as categories from "../controllers/adminControllers/categoryManagement.
 import * as users from "../controllers/adminControllers/userManagement.js";
 import * as products from "../controllers/adminControllers/productManagement.js";
 import * as orders from "../controllers/adminControllers/orderManagement.js";
+import * as offers from "../controllers/adminControllers/offerManagement.js";
+import * as coupens from "../controllers/adminControllers/coupenManagement.js";
+import * as sales from "../controllers/adminControllers/salesManagement.js";
+import dashboard from "../controllers/adminControllers/dashboardManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
-import upload from "../utils/cloudinary.js";
+import {upload} from "../utils/cloudinary.js";
 import nocache from "nocache";
 
 const router = express.Router();
@@ -13,9 +17,7 @@ const router = express.Router();
 router.use(checkAdmin);
 router.use(nocache());
 
-router.get("/dashboard", (req, res) => {
-    res.render("admin/dashboard");
-});
+router.get("/dashboard", dashboard);
 
 router.route("/login")
     .get(redirectIfLoggedIn, (req, res) => {
@@ -53,7 +55,10 @@ router.get("/products", products.products)
 
 router.route("/products/create")
     .get(products.createProductPage)
-    .post(upload.array('images', 5), products.createProduct);
+    .post(upload.array('images', 5), (err, req, res, next) => {
+        console.log(err);
+        next()
+    }, products.createProduct);
 
 router.route("/products/edit/:id")
     .get(products.editProductPage)
@@ -76,6 +81,44 @@ router.patch('/orders/update-status/:orderId', orders.updateStatus);
 router.get('/returns/details/:returnId', orders.returnDetails);
 
 router.patch('/returns/update-status/:returnId', orders.updateReturnStatus);
+
+// offer routes
+
+router.get('/offers', offers.offers);
+
+router.route('/offers/create')
+    .get(offers.createOfferPage)
+    .post(offers.createOffer)
+
+router.route('/offers/edit/:id')
+    .get(offers.editOfferPage)
+    .patch(offers.editOffer)
+
+router.patch('/offers/block/:id', offers.blockOrUnblock);
+
+// coupen routes
+
+router.get('/coupens', coupens.coupens);
+
+router.route('/coupens/create')
+    .get(coupens.createPage)
+    .post(coupens.create)
+
+router.route('/coupens/edit/:id')
+    .get(coupens.editPage)
+    .patch(coupens.edit)
+
+router.patch('/coupens/block/:id', coupens.block);
+
+// sales routes
+
+router.get('/sales', sales.sales);
+
+router.get('/sales/download/pdf', sales.downloadSalesPDF);
+
+router.get('/sales/download/excel', sales.downloadSalesExcel);
+
+
 
 // logout
 

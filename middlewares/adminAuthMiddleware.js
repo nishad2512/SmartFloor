@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import Admin from "../models/adminModel.js";
 
 export const checkAdmin = (req, res, next) => {
     if (req.path === "/login") {

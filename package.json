@@ -12,24 +12,43 @@
   "license": "ISC",
   "description": "This is an e-commerce application for flooring products.",
   "dependencies": {
+    "@gltf-transform/core": "^4.3.0",
+    "@gltf-transform/extensions": "^4.3.0",
+    "@gltf-transform/functions": "^4.3.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.8.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongoose": "^9.0.0",
+    "mongoose-slug-updater": "^3.3.0",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "nocache": "^4.0.0",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.11",
-    "or": "^0.2.0",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
+    "pdfkit": "^0.17.2",
+    "razorpay": "^2.9.6",
+    "sharp": "^0.34.5",
     "twilio": "^5.10.7"
+  },
+  "overrides": {
+    "multer-storage-cloudinary": {
+      "cloudinary": "$cloudinary"
+    }
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "or": "^0.2.0"
   }
 }

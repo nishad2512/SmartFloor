@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import slugUpdater from "mongoose-slug-updater"; // Changed this
+
+mongoose.plugin(slugUpdater); // Use the updater instead
 
 const productSchema = new mongoose.Schema(
     {
@@ -6,17 +9,22 @@ const productSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        slug: { 
+            type: String, 
+            slug: "name",
+            unique: true
+        },
         description: {
             type: String,
             required: true,
         },
         specifications: {
-            type: [String],
-            default: ["There are no specifications available."],
+            type: String,
+            default: "There are no specifications available.",
         },
         highlights: {
-            type: [String],
-            default: ["There are no highlights available."],
+            type: String,
+            default: "There are no highlights available.",
         },
         category: {
             type: mongoose.Schema.Types.ObjectId,
@@ -33,6 +41,9 @@ const productSchema = new mongoose.Schema(
                 message: "You must upload at least 3 images.",
             },
         },
+        arModelPath: {
+            type: String,
+        },
         variants: [
             {
                 size: { type: String, required: true },
@@ -44,6 +55,15 @@ const productSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        reviews: [
+            {
+                rating: Number,
+                title: String,
+                review: String,
+                author: String,
+                date: Date
+            }
+        ]
     },
     { timestamps: true }
 );

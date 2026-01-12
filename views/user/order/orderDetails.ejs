@@ -3,13 +3,24 @@
     <body
         class="bg-background-light text-black font-display antialiased min-h-screen flex flex-col selection:bg-black selection:text-white">
         <main class="flex-grow pb-24">
+            <div class="px-6 md:px-12 lg:px-20 mx-auto max-w-[1400px] py-8">
+                <div class="flex items-center gap-2 text-sm text-[#757575]">
+                    <a class="hover:text-primary transition-colors" href="/">Home</a>
+                    <i class="ph ph-caret-right"></i>
+                    <a class="hover:text-primary transition-colors" href="/profile/details">Profile</a>
+                    <i class="ph ph-caret-right"></i>
+                    <a class="hover:text-primary transition-colors" href="/profile/orders">Orders</a>
+                    <i class="ph ph-caret-right"></i>
+                    <span class="text-primary font-medium">Order #<%= order.orderId.split('-')[2] %></span>
+                </div>
+            </div>
             <div class="px-6 md:px-12 lg:px-20 mx-auto max-w-[1400px]">
                 <div
                     class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#f2f2f2] mb-10">
                     <div class="space-y-2">
                         <div class="flex items-center gap-4">
                             <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black">
-                                #<%= order.orderId %>
+                                #<%= order.orderId.split('-')[2] %>
                             </h1>
                         </div>
                         <p class="text-[#757575] text-sm md:text-base">
@@ -29,7 +40,7 @@
                                         Cancel Order
                                     <% } %>
                             </button>
-                            <button
+                            <button onclick="window.location.href='/order/invoice/<%= order.orderId %>'"
                                 class="flex items-center gap-2 px-5 py-2.5 bg-black text-white border border-black rounded-full text-sm font-medium hover:bg-black/90 transition-colors shadow-sm">
                                 <i class="ph ph-bold ph-download-simple"></i>
                                 Download Invoice
@@ -215,7 +226,7 @@
                                                         ₹<%= item.subTotal.toLocaleString('en-IN') %>
                                                     </p>
                                                     <p class="text-sm text-[#757575]">
-                                                        ₹<%= variants[index].price.toLocaleString('en-IN') %> / sq ft
+                                                        ₹<%= item.offerPrice || variants[index].price.toLocaleString('en-IN') %> / sq ft
                                                     </p>
                                                 </div>
                                             </div>
@@ -238,7 +249,7 @@
                                                         class="text-md font-semibold text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-md border border-yellow-200">Return Details</a>
                                                 <% } else { %>
                                                     <% if (order.status==='Pending' ||
-                                                        order.status==='Processing' ) { %>
+                                                        order.status==='Processing' || order.status==='Shipped' ) { %>
                                                         <button
                                                             onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')"
                                                             class="text-sm font-medium text-red-600 hover:text-red-800 transition-colors bg-red-50 px-3 py-1.5 rounded-md border border-red-100">
@@ -259,6 +270,16 @@
                                                     <% } %>
                                                 <% } %>
                                             </div>
+                                            <% if (item.status === 'Delivered') { %>
+                                                <div class="mt-4 flex items-center gap-1 text-yellow-500 text-sm cursor-pointer"
+                                                    onclick="window.location.href='/profile/orders/review/<%= item.product._id %>?orderId=<%= order.orderId %>'">
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                    <i class="ph ph-star"></i>
+                                                </div>
+                                            <% } %>
                                         </div>
                                     </div>
                                 <% }); %>
@@ -281,7 +302,7 @@
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
                                         <span>Discount</span>
-                                        <span class="font-medium text-black">-$0.00</span>
+                                        <span class="font-medium text-green-600">-₹<%= order.coupenDiscount %></span>
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
                                         <span>Shipping</span>
@@ -361,6 +382,7 @@
                                     <p class="font-medium text-lg">
                                         <%= order.paymentMethod=='cod' ? 'Cash on Delivery' : order.paymentMethod %>
                                     </p>
+                                    <%= order.paymentStatus %>
                                 </div>
                             </div>
                         </div>

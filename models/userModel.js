@@ -26,7 +26,19 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-    }
+    },
+    wallet: {
+        type: Number,
+        default: 0
+    },
+    walletHistory: [
+        {
+            amount: {type: Number},
+            type: {type: String},
+            reason: {type: String},
+            date: {type: Date}
+        }
+    ]
 }, { timestamps: true });
 
 const addressSchema = new mongoose.Schema({

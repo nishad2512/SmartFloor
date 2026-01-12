@@ -1,115 +1,40 @@
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
+import applyOffer from "../../utils/offerFetch.js"
+import Wishlist from "../../models/wishlistModel.js";
+import { buildProductQuery } from "../../utils/productQuery.js";
 
 export const products = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const search = req.query.search;
 
-        // Price filter
-        const minPrice = req.query.minPrice;
-        const maxPrice = req.query.maxPrice;
-        const priceFilter = {};
-        if (minPrice) priceFilter.$gte = parseFloat(minPrice);
-        if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
-        if (Object.keys(priceFilter).length === 0) {
-            priceFilter.$exists = true;
-        }
+        const data = await buildProductQuery({ req });
 
-        const filter = search ? { name: { $regex: search, $options: "i" }, "variants.price": priceFilter, isActive: true } : { "variants.price": priceFilter, isActive: true };
-
-        const limit = 6;
-        const skip = (page - 1) * limit;
-
-        const categories = await Category.find({ isActive: true });
-        const productCount = await Product.countDocuments(filter);
-
-        const totalPages = Math.ceil(productCount / limit);
-
-        const sortBy = req.query.sort;
-        let sortOption = { createdAt: -1 };
-        switch (sortBy) {
-            case "price-low-high":
-                sortOption = { "variants.price": 1 };
-                break;
-            case "price-high-low":
-                sortOption = { "variants.price": -1 };
-                break;
-            case "a-z":
-                sortOption = { name: 1 };
-                break;
-            case "z-a":
-                sortOption = { name: -1 };
-                break;
-        }
-
-        const products = await Product.find(filter).sort(sortOption).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit);
-        res.render("user/products/products", { products, page, search, categories, totalPages, query: req.query });
+        res.render("user/products/products", data);
     } catch (error) {
         console.error(error);
-        req.flash('error', 'Error loading products');
+        req.flash('error', 'Failed to load products. Please try again.');
         res.redirect('/');
     }
 }
 
 export const filterByCategory = async (req, res) => {
     try {
-        const category = req.params.category;
-        const page = parseInt(req.query.page) || 1;
-        const search = req.query.search;
 
-        // Price filter
-        const minPrice = req.query.minPrice;
-        const maxPrice = req.query.maxPrice;
-        const priceFilter = {};
-        if (minPrice) priceFilter.$gte = parseFloat(minPrice);
-        if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
-        if (Object.keys(priceFilter).length === 0) {
-            priceFilter.$exists = true;
-        }
+        const data = await buildProductQuery({ req, categoryName: req.params.category })
 
-        const limit = 6;
-        const skip = (page - 1) * limit;
-
-        const categories = await Category.find({ isActive: true });
-        const categoryData = await Category.findOne({ name: { $regex: `^${category}$`, $options: "i" } });
-        if (!categoryData) {
-            req.flash('error', 'Category not found');
-            return res.redirect('/products');
-        }
-        const filter = search ? { category: categoryData._id, name: { $regex: search, $options: "i" }, "variants.price": priceFilter, isActive: true } : { category: categoryData._id, "variants.price": priceFilter, isActive: true };
-        const productCount = await Product.countDocuments(filter);
-        const totalPages = Math.ceil(productCount / limit);
-        const sortBy = req.query.sort;
-        let sortOption = { createdAt: -1 };
-        switch (sortBy) {
-            case "price-low-high":
-                sortOption = { "variants.price": 1 };
-                break;
-            case "price-high-low":
-                sortOption = { "variants.price": -1 };
-                break;
-            case "a-z":
-                sortOption = { name: 1 };
-                break;
-            case "z-a":
-                sortOption = { name: -1 };
-                break;
-        }
-
-        const products = await Product.find(filter).sort(sortOption).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit);
-        res.render("user/products/products", { products, page, search, categories, totalPages, category, query: req.query });
+        res.render("user/products/products", data);
     } catch (error) {
         console.error(error);
-        req.flash('error', 'Error filtering products');
+        req.flash('error', 'Failed to filter products.');
         res.redirect('/products');
     }
 }
 
 export const productDetails = async (req, res) => {
-    const productId = req.params.id;
+    const productSlug = req.params.id;
     try {
-        const product = await Product.findById(productId).populate("category");
+        const product = await Product.findOne({ slug: productSlug }).populate("category").lean();
+
         if (!product || !product.isActive) {
             req.flash('error', 'Product not found');
             return res.redirect('/products');
@@ -120,11 +45,36 @@ export const productDetails = async (req, res) => {
                 outOfStockVariants.push(index);
             }
         });
+
+        let offerApplied = await applyOffer(product);
+
+        let wishlistVariantIds = [];
+        if (res.locals.user) {
+            const wishlistItems = await Wishlist.find({ user: res.locals.user._id, product: product._id });
+            wishlistVariantIds = wishlistItems.map(item => item.variant.toString());
+        }
+
+        const ratings = product.reviews?.reduce((acc, i) => acc + i.rating, 0)
+        const avgRating = Math.ceil(ratings / product.reviews?.length);
+
         const relatedProducts = await Product.find({ category: product.category._id, _id: { $ne: product._id } }).limit(3);
-        res.render("user/products/product-details", { product, relatedProducts, outOfStockVariants });
+        res.render("user/products/product-details", { product: offerApplied, relatedProducts, outOfStockVariants, wishlistVariantIds, avgRating });
     } catch (error) {
         console.error(error);
-        req.flash('error', 'An error occurred while fetching the product details');
+        req.flash('error', 'Failed to load product details.');
         res.redirect('/products');
+    }
+}
+
+export const getFeaturedProducts = async () => {
+    try {
+        const products = await Product.find({ isActive: true }).sort({ createdAt: -1 }).limit(6).lean();
+        const featuredProducts = await Promise.all(products.map(async (product) => {
+            return await applyOffer(product);
+        }));
+        return featuredProducts;
+    } catch (error) {
+        console.error("Error fetching featured products:", error);
+        return [];
     }
 }

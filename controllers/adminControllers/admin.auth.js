@@ -21,7 +21,7 @@ const adminLogin = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        req.flash("error", "An error occurred during login");
+        req.flash("error", "An unexpected error occurred during login. Please try again.");
         res.redirect("/admin/login");
     }
 }

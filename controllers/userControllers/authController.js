@@ -3,6 +3,7 @@ import { createToken, maxAge } from "../../utils/generateToken.js";
 import crypto from "crypto";
 import { sendOTPEmail, sendResetEmail } from "../../utils/email.js";
 import { createHash, compare } from "../../services/authServices.js";
+import generateCode from "../../utils/referral.js";
 
 function generateOtp() {
     return crypto.randomInt(100000, 999999).toString();
@@ -30,7 +31,7 @@ export const login = async (req, res) => {
         res.redirect("/login");
     } catch (err) {
         console.error(err);
-        req.flash('error', 'An error occurred during login');
+        req.flash('error', 'An unexpected error occurred during login. Please try again.');
         res.redirect("/login");
     }
 };
@@ -45,22 +46,40 @@ export const signup = async (req, res) => {
     }
 
     try {
-        let user = await User.findOne({ email: email });
+        const user = await User.findOne({ email: email });
         if (user) {
             req.flash('error', 'Email already registered. Please log in.');
             return res.redirect("/login");
         }
+
+        if (referral) {
+            const referredUser = await User.findOne({ referral });
+
+            if (!referredUser) {
+                req.flash('error', 'Invalid referral code');
+                return res.redirect("/signup");
+            }
+
+            // Save referrer ID for later reward (after OTP success)
+            req.session.referrerId = referredUser._id;
+        }
+
+        const referralCode = generateCode(name);
+        console.log(referralCode);
+
         const otp = generateOtp();
         sendOTPEmail(email, otp);
         console.log("Generated OTP:", otp);
+
         req.session.otp = otp;
         req.session.expires = Date.now() + 60 * 1000;
         req.session.user = {
             name: name,
             email: email,
             password: await createHash(password),
-            referral: referral,
+            referral: referralCode,
         };
+
         req.flash('success', 'OTP sent to your email');
         res.redirect("/otp");
     } catch (err) {
@@ -122,6 +141,31 @@ export const verify = async (req, res) => {
         } else if (enteredOTP == req.session.otp) {
 
             const newUser = new User(req.session.user);
+
+            if (req.session.referrerId) {
+                newUser.wallet += 500;
+                newUser.walletHistory.push({
+                    amount: 500,
+                    type: 'credit',
+                    reason: 'Refer and win.',
+                    date: new Date
+                });
+
+                const referrer = await User.findById(req.session.referrerId);
+
+                referrer.wallet += 1000;
+                referrer.walletHistory.push({
+                    amount: 1000,
+                    type: 'credit',
+                    reason: 'Refer and win.',
+                    date: new Date
+                });
+
+                await referrer.save();
+
+                req.session.referrefId = null;
+            }
+
             await newUser.save();
             const token = createToken(newUser._id);
 

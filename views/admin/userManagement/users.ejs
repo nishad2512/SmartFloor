@@ -166,13 +166,13 @@
                                 <span>Page <%= page %> of <%= totalPages %></span>
                                 <div class="flex gap-2 items-center">
                                     <a
-                                        class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50"
+                                        class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50  <%= page === 1 ? 'pointer-events-none opacity-50' : '' %>"
                                         href="/admin/customers?page=<%= page - 1 %>"
                                     >
                                         Previous
                                     </a>
                                     <a
-                                        class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30"
+                                        class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= page === totalPages ? 'pointer-events-none opacity-50' : '' %>"
                                         href="/admin/customers?page=<%= page + 1 %>"
                                     >
                                         Next

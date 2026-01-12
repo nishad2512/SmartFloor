@@ -21,7 +21,7 @@ const returnSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Return Request", "Approved", "Rejected", "Picked", "Returned"],
+        enum: ["Return Request", "Approved", "Rejected", "Picked", "Refunded"],
         default: "Return Request"
     },
     refundAmount: {

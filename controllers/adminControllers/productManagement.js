@@ -1,5 +1,7 @@
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
+import productSchema from "../../validators/productSchema.js";
+import { imageToGLB } from "../../utils/generateArModel.js";
 
 export const products = async (req, res) => {
     try {
@@ -17,7 +19,7 @@ export const products = async (req, res) => {
         res.render("admin/productManagement/products", { products, page, search, totalPages });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error fetching products");
+        req.flash("error", "Failed to fetch products. Please try again.");
         res.redirect("/admin/dashboard");
     }
 };
@@ -28,7 +30,7 @@ export const createProductPage = async (req, res) => {
         res.render("admin/productManagement/createProduct", { categories });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error loading create product page");
+        req.flash("error", "Failed to load product creation page.");
         res.redirect("/admin/products");
     }
 };
@@ -36,56 +38,87 @@ export const createProductPage = async (req, res) => {
 export const createProduct = async (req, res) => {
     try {
         const { name, description, category, stock, price, size, specifications, highlights } = req.body;
-        let variants = [];
 
-        const specificationsArray = specifications && specifications.split(',').map(item => item.trim())
-        const highlightsArray = highlights && highlights.split(',').map(item => item.trim())
+        if (!req.files || req.files.length < 3) {
+            throw new Error("At least 3 product images are required.");
+        }
+        const images = req.files.map((file) => file.path);
 
-        if (
-            Array.isArray(size) === false ||
-            Array.isArray(price) === false ||
-            Array.isArray(stock) === false
-        ) {
-            variants = [
-                {
-                    size: size,
-                    price: price,
-                    stock: stock,
-                },
-            ];
-        } else {
-            for (let i = 0; i < stock.length; i++) {
-                variants.push({
-                    size: size[i],
-                    stock: stock[i],
-                    price: price[i],
+        let arModelData = null;
+
+        try {
+            const glbUrl = await imageToGLB(images[0]);
+            arModelData = glbUrl;
+        } catch (err) {
+            console.error("AR generation failed:", err.message);
+        }
+
+        const sizes = size ? (Array.isArray(size) ? size : [size]) : [];
+        const prices = price ? (Array.isArray(price) ? price : [price]) : [];
+        const stocks = stock ? (Array.isArray(stock) ? stock : [stock]) : [];
+
+        const limitIterator = Math.min(sizes.length, prices.length, stocks.length);
+        let normalizedVariants = [];
+
+        for (let i = 0; i < limitIterator; i++) {
+            const vSize = sizes[i]?.trim();
+            const vPrice = Number(prices[i]);
+            const vStock = Number(stocks[i]);
+
+            if (vSize && !isNaN(vPrice) && !isNaN(vStock)) {
+                normalizedVariants.push({
+                    size: vSize,
+                    price: vPrice,
+                    stock: vStock,
                 });
             }
         }
 
-        const images = req.files.map((file) => file.path);
-        const categoryId = await Category.findOne({ name: category }).then(
-            (cat) => cat._id
-        );
-
-        const newProduct = new Product({
+        const productData = {
             name,
             description,
-            specifications: specificationsArray,
-            highlights: highlightsArray,
-            category: categoryId,
-            variants,
+            category,
+            specifications,
+            highlights,
+            variants: normalizedVariants
+        };
+
+        const { error, value } = productSchema.validate(productData, { abortEarly: false });
+
+        if (error) {
+            const errorMessages = error.details.map(detail => detail.message).join(" ");
+            throw new Error(errorMessages);
+        }
+
+        const categoryCheck = await Category.findById(value.category);
+        if (!categoryCheck) {
+            throw new Error("Invalid Category selected.");
+        }
+
+        const newProduct = new Product({
+            name: value.name,
+            description: value.description,
+            specifications: value.specifications,
+            highlights: value.highlights,
+            category: value.category,
+            variants: value.variants,
             productImages: images,
+            arModelPath: arModelData
         });
+
+        console.log("===== PRODUCT CREATING (JOI VALIDATED) =====");
 
         await newProduct.save();
 
         req.flash("success", "Product created successfully");
         res.redirect("/admin/products");
+
     } catch (error) {
-        console.error(error);
-        req.flash("error", "Error creating product");
-        res.redirect("/admin/products");
+        console.error("PRODUCT CREATION ERROR:", error);
+
+        const message = error.message || "An unexpected error occurred.";
+        req.flash("error", message);
+        res.redirect("/admin/products/create");
     }
 };
 
@@ -94,11 +127,11 @@ export const deleteProduct = async (req, res) => {
         const product = await Product.findById({ _id: req.params.id });
         product.isActive = false;
         await product.save();
-        req.flash("success", "Product deleted successfully");
+        req.flash("success", "Product blocked successfully");
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error deleting product");
+        req.flash("error", "Failed to block product.");
         res.redirect("/admin/products");
     }
 };
@@ -112,7 +145,7 @@ export const unblockProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error unblocking product");
+        req.flash("error", "Failed to unblock product.");
         res.redirect("/admin/products");
     }
 };
@@ -132,42 +165,57 @@ export const editProductPage = async (req, res) => {
 export const editProduct = async (req, res) => {
     try {
         const { name, description, category, stock, price, size, specifications, highlights } = req.body;
-        let variants = [];
-        if (
-            Array.isArray(size) === false ||
-            Array.isArray(price) === false ||
-            Array.isArray(stock) === false
-        ) {
-            variants = [
-                {
-                    size: size,
-                    price: price,
-                    stock: stock,
-                },
-            ];
-        } else {
-            for (let i = 0; i < stock.length; i++) {
-                variants.push({
-                    size: size[i],
-                    stock: stock[i],
-                    price: price[i],
-                });
-            }
-        }
         const product = await Product.findById({ _id: req.params.id });
+
         product.name = name;
         product.description = description;
-
-        const specificationsArray = specifications && specifications.split(',').map(item => item.trim())
-        const highlightsArray = highlights && highlights.split(',').map(item => item.trim())
-        product.specifications = specificationsArray;
-        product.highlights = highlightsArray;
-
-        // Category is sent as ID from editProduct.ejs
+        product.specifications = specifications;
+        product.highlights = highlights;
         product.category = category;
-        product.variants = variants;
 
-        // Handle Image Updates
+        let newSizes = Array.isArray(size) ? size : [size];
+        let newPrices = Array.isArray(price) ? price : [price];
+        let newStocks = Array.isArray(stock) ? stock : [stock];
+
+        let newIds = [];
+        if (req.body._id) {
+            newIds = Array.isArray(req.body._id) ? req.body._id : [req.body._id];
+        }
+
+        let finalVariants = [];
+        const maxVariants = Math.max(newSizes.length, newPrices.length, newStocks.length);
+
+        for (let i = 0; i < maxVariants; i++) {
+            const variantId = newIds[i];
+
+            if (variantId) {
+                const existingVariant = product.variants.id(variantId);
+
+                if (existingVariant) {
+                    existingVariant.size = newSizes[i];
+                    existingVariant.price = newPrices[i];
+                    existingVariant.stock = newStocks[i];
+                    finalVariants.push(existingVariant);
+                } else {
+                    finalVariants.push({
+                        size: newSizes[i],
+                        price: newPrices[i],
+                        stock: newStocks[i]
+                    });
+                }
+            } else {
+                if (newSizes[i] && newPrices[i]) {
+                    finalVariants.push({
+                        size: newSizes[i],
+                        price: newPrices[i],
+                        stock: newStocks[i]
+                    });
+                }
+            }
+        }
+
+        product.variants = finalVariants;
+
         let deletedImages = [];
         if (req.body.deletedImages) {
             try {
@@ -177,11 +225,8 @@ export const editProduct = async (req, res) => {
             }
         }
 
-        // Filter out deleted images from existing images
-        // We filter by index since we passed indices from frontend
         let currentImages = product.productImages.filter((_, index) => !deletedImages.includes(index));
 
-        // Add new images
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map((file) => file.path);
             currentImages = currentImages.concat(newImages);
@@ -194,7 +239,7 @@ export const editProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error updating product");
+        req.flash("error", "Failed to update product details.");
         res.redirect("/admin/products");
     }
 };

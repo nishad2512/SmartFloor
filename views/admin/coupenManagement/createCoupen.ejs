@@ -1,0 +1,210 @@
+<%- include('../../partials/admin-header.ejs') %>
+
+    <body class="bg-background-light dark:bg-background-dark font-display text-[#141414] dark:text-white">
+        <%- include('../../partials/flash.ejs') %>
+            <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+                <div class="flex min-h-screen">
+                    <%- include('../../partials/sidebar.ejs') %>
+                        <main class="flex-1 p-6 lg:p-10">
+                            <div class="layout-content-container flex flex-col w-full max-w-7xl mx-auto">
+                                <div class="flex flex-col gap-1 mb-6">
+                                    <p
+                                        class="text-[#141414] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                                        Create New Coupon
+                                    </p>
+                                    <p class="text-[#757575] dark:text-gray-400 text-base font-normal leading-normal">
+                                        Fill in the details below to create a new coupon.
+                                    </p>
+                                </div>
+                                <div
+                                    class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6 lg:p-8">
+                                    <form class="flex flex-col gap-6" action="#" method="POST" id="create-coupen-form">
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                for="coupen-code">Coupon Code</label>
+                                            <input
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 uppercase"
+                                                id="coupen-code" name="code" placeholder="e.g. SUMMER2024"
+                                                type="text" />
+                                        </div>
+
+                                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="discount-type">Discount Type</label>
+                                                <select
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right pr-8"
+                                                    id="discount-type" name="discountType">
+                                                    <option value="percentage">Percentage</option>
+                                                    <option value="fixed">Fixed Amount</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="discount-value">Discount Value</label>
+                                                <input
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                    id="discount-value" name="discountValue" placeholder="e.g. 20"
+                                                    type="number" min="0" step="0.01" />
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="min-purchase">Min Purchase Amount</label>
+                                                <input
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                    id="min-purchase" name="minPurchaseAmount" placeholder="e.g. 500"
+                                                    type="number" min="0" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                    for="usage-limit">Usage Limit (Optional)</label>
+                                                <input
+                                                    class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                    id="usage-limit" name="usageLimit" placeholder="e.g. 100"
+                                                    type="number" min="1" />
+                                            </div>
+                                        </div>
+
+                                        <div class="flex flex-col gap-2 md:w-1/2">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                for="expiration-date">Expiration Date</label>
+                                            <input
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                id="expiration-date" name="expirationDate" type="date"
+                                                onclick="this.showPicker()" />
+                                        </div>
+
+                                        <div
+                                            class="flex flex-col items-center justify-end gap-3 pt-4 mt-4 border-t border-[#e0e0e0] dark:border-primary/20 sm:flex-row">
+                                            <a href="/admin/coupens"
+                                                class="flex items-center justify-center gap-2 rounded-lg border border-primary/20 bg-transparent px-5 py-2.5 font-medium text-[#141414] dark:text-white hover:bg-primary/5 dark:hover:bg-primary/20 w-full sm:w-auto h-[46px]">
+                                                <span>Cancel</span>
+                                            </a>
+                                            <button
+                                                class="flex items-center justify-center gap-2 rounded-lg bg-primary text-white px-5 py-2.5 font-medium hover:opacity-90 w-full sm:w-auto h-[46px]">
+                                                <span class="material-symbols-outlined">add</span>
+                                                <span>Create Coupon</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </main>
+                </div>
+            </div>
+    </body>
+
+    </html>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('create-coupen-form');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const code = document.getElementById('coupen-code').value;
+                    const discountType = document.getElementById('discount-type').value;
+                    const discountValue = document.getElementById('discount-value').value;
+                    const minPurchase = document.getElementById('min-purchase').value;
+                    const usageLimit = document.getElementById('usage-limit').value;
+                    const expirationDate = document.getElementById('expiration-date').value;
+
+                    let isValid = true;
+                    let errorMessage = '';
+
+                    // Validate Code
+                    if (!code.trim()) {
+                        isValid = false;
+                        errorMessage = 'Coupon code is required';
+                    } else if (code.length < 3) {
+                        isValid = false;
+                        errorMessage = 'Code must be at least 3 characters long';
+                    }
+
+                    // Validate Discount Value
+                    else if (!discountValue || isNaN(discountValue) || parseFloat(discountValue) <= 0) {
+                        isValid = false;
+                        errorMessage = 'Please enter a valid discount value';
+                    }
+
+                    // Validate Percentage
+                    else if (discountType === 'percentage' && parseFloat(discountValue) > 100) {
+                        isValid = false;
+                        errorMessage = 'Percentage cannot exceed 100%';
+                    }
+
+                    // Validate Expiration Date
+                    else if (!expirationDate) {
+                        isValid = false;
+                        errorMessage = 'Expiration date is required';
+                    } else {
+                        const expDate = new Date(expirationDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        if (expDate <= today) {
+                            isValid = false;
+                            errorMessage = 'Expiration date cannot be in the past';
+                        }
+                    }
+
+                    if (!isValid) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Error',
+                                text: errorMessage,
+                                confirmButtonColor: '#141414'
+                            });
+                        } else {
+                            alert(errorMessage);
+                        }
+                    } else {
+                        // Gather form data
+                        const formData = new FormData(form);
+                        const data = Object.fromEntries(formData.entries());
+
+                        fetch('/admin/coupens/create', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success',
+                                        text: 'Coupon created successfully',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        window.location.href = '/admin/coupens';
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message || 'Something went wrong',
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Something went wrong',
+                                });
+                            });
+                    }
+                });
+            }
+        });
+    </script>

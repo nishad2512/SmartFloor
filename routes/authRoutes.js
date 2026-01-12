@@ -6,6 +6,7 @@ import User from "../models/userModel.js";
 import dotenv from "dotenv";
 import nocache from "nocache";
 import { redirectIfLoggedIn } from "../middlewares/authMiddleware.js";
+import generateCode from "../utils/referral.js";
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ passport.use(
                         email: profile.email,
                         password: "google",
                         name: profile.displayName,
+                        referral: generateCode(profile.displayName)
                     });
                     cb(null, newUser);
                 } else {

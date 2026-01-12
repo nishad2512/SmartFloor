@@ -48,7 +48,7 @@
                                                 id="category" name="category">
                                                 <option value="" disabled selected>Select a category</option>
                                                 <% categories.forEach(category=> { %>
-                                                <option value="<%= category.name %>">
+                                                <option value="<%= category._id %>">
                                                     <%= category.name %>
                                                 </option>
                                                 <% }) %>
