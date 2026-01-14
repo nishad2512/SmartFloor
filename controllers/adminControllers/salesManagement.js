@@ -63,7 +63,7 @@ export const downloadSalesPDF = async (req, res) => {
             { title: "Orders", value: orders.length },
             { title: "Sales Count", value: overallSalesCount },
             { title: "Revenue", value: `₹ ${totalRevenue.toFixed(2)}` },
-            { title: "Discount", value: `₹ ${overallDiscount || 0}` }
+            { title: "Discount", value: `₹ ${overallDiscount.toFixed(2) || 0}` }
         ];
 
         cards.forEach((card, i) => {

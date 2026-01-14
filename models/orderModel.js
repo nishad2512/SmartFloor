@@ -98,6 +98,10 @@ const orderSchema = new mongoose.Schema({
     },
     cancelReason: {
         type: String,
+    },
+    refund: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

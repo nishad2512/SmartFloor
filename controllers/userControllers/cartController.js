@@ -44,9 +44,6 @@ export const addToCart = async (req, res) => {
         const { productId, variantId } = req.body;
         const quantity = parseInt(req.body.quantity, 10);
 
-        // We will ignore req.body.price for security and use server-calculated price
-        // const price = parseInt(req.body.price, 10); 
-
         let cartItem = await Cart.findOne({
             user: userId,
             product: productId,
@@ -56,8 +53,8 @@ export const addToCart = async (req, res) => {
         const product = await Product.findOne({ _id: productId, isActive: true });
 
         if (!product) {
-            req.flash("error", "Product not found");
-            return res.json({ success: false, message: "Product not found" });
+            req.flash("error", "Product not available");
+            return res.json({ success: false, message: "Product not available" });
         }
 
         const variant = product.variants.id(variantId);
@@ -130,7 +127,7 @@ export const addToCart = async (req, res) => {
         }
 
         req.flash("error", "You can only add a maximum of 500 items at once");
-        res.json({ success: false, message: "Maximum limit exceeded" });
+        res.json({ success: true, message: "Maximum limit exceeded" });
     } catch (error) {
         console.error(error);
         req.flash("error", "Error adding to cart");

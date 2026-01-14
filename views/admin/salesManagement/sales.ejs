@@ -239,10 +239,10 @@
                                                     <td class="px-6 py-4 text-center">
                                                         <%= order.coupenCode ? order.coupenCode : '-' %>
                                                     </td>
-                                                    <td class="px-6 py-4 text-center text-green-700">-₹<%=
+                                                    <td class="px-6 py-4 text-center text-red-700">-₹<%=
                                                             order.coupenDiscount ? order.coupenDiscount : 0 %>
                                                     </td>
-                                                    <td class="px-6 py-4 text-right">₹<%= order.totalAmount %>
+                                                    <td class="px-6 py-4 text-right <%= order.status == 'Cancelled' || order.status == 'Returned' ? 'text-red-700' : 'text-green-700' %>"><%= order.status == 'Cancelled' || order.status == 'Returned' ? '-₹' + order.totalAmount : '+₹' + order.totalAmount %>
                                                     </td>
                                                 </tr>
                                                 <% }) %>

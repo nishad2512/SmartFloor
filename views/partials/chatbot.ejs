@@ -1,0 +1,250 @@
+<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<!-- Chatbot Partial -->
+<div id="chatbot-container" class="fixed bottom-8 right-8 z-[9999] font-sans">
+    <!-- Chat Window (Initially Hidden) -->
+    <div id="chat-window"
+        class="hidden absolute bottom-20 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right transform scale-95 opacity-0">
+        <!-- Header -->
+        <div class="bg-black text-white p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="ph-bold ph-robot text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">SmartFloor Assistant</h3>
+                    <p class="text-xs text-gray-300">Online</p>
+                </div>
+            </div>
+            <button id="close-chat" class="text-white hover:text-gray-300 transition">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-messages"
+            class="p-4 h-auto max-h-96 overflow-y-auto bg-gray-50 flex flex-col gap-3 scroll-smooth">
+            <!-- Welcome Message -->
+            <div class="flex items-start gap-2.5">
+                <div class="w-8 h-8 bg-black/5 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-bold ph-robot text-black"></i>
+                </div>
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 max-w-[85%]">
+                    <p class="text-sm text-gray-700">Hi there! 👋<br>How can I help you with your flooring today?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white border-t border-gray-100">
+            <form id="chat-form" class="flex items-center gap-2">
+                <input type="text" id="chat-input" placeholder="Type a message..."
+                    class="flex-1 bg-gray-100 border-none outline-none rounded-full px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:ring-1 focus:ring-black transition"
+                    autocomplete="off">
+                <button type="submit"
+                    class="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="ph-bold ph-paper-plane-right text-lg"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toggle Button (FAB) -->
+    <button id="chatbot-toggle"
+        class="bg-black text-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+        <i id="chat-icon"
+            class="ph-bold ph-chat-teardrop-text text-2xl md:text-3xl transition-transform duration-300 group-hover:rotate-6"></i>
+        <i id="close-icon"
+            class="ph-bold ph-x text-2xl md:text-3xl hidden transition-transform duration-300 rotate-90"></i>
+    </button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('chatbot-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const chatIcon = document.getElementById('chat-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const closeChatBtn = document.getElementById('close-chat');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        let isOpen = false;
+
+        function toggleChat() {
+            isOpen = !isOpen;
+            if (isOpen) {
+                // Open
+                chatWindow.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                requestAnimationFrame(() => {
+                    chatWindow.classList.remove('scale-95', 'opacity-0');
+                    chatWindow.classList.add('scale-100', 'opacity-100');
+                });
+
+                chatIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden', 'rotate-90');
+
+                // Focus input
+                setTimeout(() => chatInput.focus(), 100);
+            } else {
+                // Close
+                chatWindow.classList.remove('scale-100', 'opacity-100');
+                chatWindow.classList.add('scale-95', 'opacity-0');
+
+                // Wait for transition to finish before hiding
+                setTimeout(() => {
+                    if (!isOpen) chatWindow.classList.add('hidden');
+                }, 300);
+
+                chatIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                closeIcon.classList.add('rotate-90'); // Reset rotation for next animation
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleChat);
+        closeChatBtn.addEventListener('click', () => {
+            if (isOpen) toggleChat();
+        });
+
+        // Handle Send Message
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add User Message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            const botResponse = async () => {
+                showTypingIndicator();
+
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: message })
+                    });
+
+                    const data = await response.json();
+                    removeTypingIndicator();
+
+                    if (data && data.reply) {
+                        addMessage(data.reply, 'bot');
+                    } else {
+                        addMessage("Sorry, I didn't understand that. Could you please rephrase?", 'bot');
+                    }
+                } catch (error) {
+                    removeTypingIndicator();
+                    addMessage("Oops! Something went wrong. Please try again later.", 'bot');
+                }
+            };
+            await botResponse();
+        });
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            const isUser = sender === 'user';
+
+            div.className = `flex ${isUser ? 'justify-end' : 'items-start gap-2.5'} animate-fade-in-up`;
+
+            if (isUser) {
+                div.innerHTML = `
+                    <div class="bg-black text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%]">
+                        <p class="text-sm leading-relaxed">${escapeHtml(text)}</p>
+                    </div>
+                `;
+            } else {
+                const rawHtml = marked.parse(text);
+                const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+                div.innerHTML = `
+                    <div class="w-8 h-8 bg-black/5 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-bold ph-robot text-black"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 max-w-[85%]">
+                        <div class="markdown-content text-sm text-gray-700 leading-relaxed">
+                            ${cleanHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatMessages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const id = 'typing-indicator';
+            if (document.getElementById(id)) return;
+
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex items-start gap-2.5 animate-fade-in-up';
+            div.innerHTML = `
+                 <div class="w-8 h-8 bg-black/5 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-bold ph-robot text-black"></i>
+                </div>
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100">
+                    <div class="flex gap-1">
+                        <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                        <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+        }
+    });
+</script>
+
+<style>
+    /* Restore styles for AI-generated content */
+    .markdown-content h1, .markdown-content h2, .markdown-content h3 { font-weight: bold; margin-bottom: 0.5rem; }
+    .markdown-content ul { list-style-type: disc; margin-left: 1.25rem; margin-bottom: 0.75rem; }
+    .markdown-content ol { list-style-type: decimal; margin-left: 1.25rem; margin-bottom: 0.75rem; }
+    
+    /* Table Styling */
+    .markdown-content table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin: 1rem 0; 
+        font-size: 0.8rem; 
+        background: #fff;
+    }
+    .markdown-content th, .markdown-content td { 
+        border: 1px solid #e5e7eb; 
+        padding: 0.5rem; 
+        text-align: left; 
+    }
+    .markdown-content th { 
+        background-color: #f9fafb; 
+        font-weight: 600; 
+    }
+    
+    .markdown-content strong { font-weight: 700; color: #111827; }
+</style>

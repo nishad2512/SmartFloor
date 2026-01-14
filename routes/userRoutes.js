@@ -8,6 +8,7 @@ import * as wishlistController from "../controllers/userControllers/wishlistCont
 import * as checkoutController from "../controllers/userControllers/checkoutController.js";
 import * as orderController from "../controllers/userControllers/orderController.js";
 import * as paymentController from "../controllers/userControllers/paymentController.js";
+import * as chatController from "../controllers/userControllers/chatController.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -20,6 +21,8 @@ const router = express.Router();
 
 router.use(checkUser);
 router.use(nocache());
+
+router.post('/chat', chatController.chatWithBot);
 
 router.get("/", async (req, res) => {
     const products = await productController.getFeaturedProducts();
@@ -66,6 +69,7 @@ router.route('/resetPassword/:token')
     .post(userController.resetPassword);
 
 // products
+router.use(requireAuth);
 
 router.get('/products', productController.products);
 
@@ -75,7 +79,6 @@ router.get('/products/product/:id', productController.productDetails);
 
 // profile -----------------
 
-router.use(requireAuth);
 
 // profile auth routes
 

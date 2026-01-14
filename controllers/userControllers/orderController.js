@@ -4,6 +4,7 @@ import Product from "../../models/productModel.js";
 import generateInvoice from "../../utils/invoice.js";
 import refund, { calculateRefundAmount } from "../../utils/refund.js";
 import User from "../../models/userModel.js";
+import Coupen from "../../models/coupenModel.js";
 
 export const orderConfirmation = async (req, res) => {
     try {
@@ -214,6 +215,7 @@ export const cancelOrderItem = async (req, res) => {
         const { reason } = req.body;
         const orderId = req.params.orderId;
         const itemId = req.params.itemId;
+        let finalRefund = 0;
 
         const order = await Order.findOne({ orderId, user: req.userId });
 
@@ -232,18 +234,27 @@ export const cancelOrderItem = async (req, res) => {
             shouldRefund = false;
         }
 
+        let refundAmount = calculateRefundAmount(order, item);
+
+        if (order.coupenCode) {
+            const coupen = await Coupen.findOne({ code: order.coupenCode });
+            if (coupen && coupen.minPurchaseAmount > 0) {
+                if ((order.subTotal - refundAmount) < coupen.minPurchaseAmount) {
+                    return res.json({ success: false, message: "Order sub-total will become below the minimum purchase amount for the coupon. You will need to cancel the entire order." });
+                }
+            }
+        }
+
         if (shouldRefund) {
 
             const activeItems = order.items.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
             const isLastItem = activeItems.length === 1 && activeItems[0]._id.toString() === itemId.toString();
 
-            let refundAmount = calculateRefundAmount(order, item);
-
             if (isLastItem && order.shipping > 0) {
                 refundAmount += order.shipping;
             }
 
-            const finalRefund = Math.round(refundAmount);
+            finalRefund = Math.round(refundAmount);
 
             const user = await User.findById(order.user);
             user.wallet += finalRefund;
@@ -258,6 +269,9 @@ export const cancelOrderItem = async (req, res) => {
 
         item.status = 'Cancelled';
         item.cancelReason = reason;
+
+        order.refund += finalRefund;
+        order.totalAmount -= refundAmount.toFixed(2);
 
         const product = await Product.findById(item.product);
         const variant = product.variants.id(item.variant);

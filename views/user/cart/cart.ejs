@@ -187,7 +187,10 @@
                         currentQty = parseInt(input.value) + change;
                     }
 
-                    if (currentQty < 1) return;
+                    if (currentQty < 1) {
+                        input.value = 1;
+                        return;
+                    };
 
                     fetch('/cart/update/' + cartItemId, {
                         method: 'PATCH',

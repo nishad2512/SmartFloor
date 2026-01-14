@@ -113,7 +113,7 @@
                         <div class="flex items-center border border-gray-300 rounded-full px-4 py-2">
                             <button onclick="updateQuantity(-1)"
                                 class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">-</button>
-                            <input type="number" id="quantityInput" value="1" min="1" name="quantity"
+                            <input type="number" id="quantityInput" value="1" min="1" max="<%= product.variants[0].stock > 500 ? 500 : product.variants[0].stock %>" name="quantity"
                                 class="w-16 text-center font-bold outline-none appearance-none"
                                 onchange="calculateTotal()">
                             <button onclick="updateQuantity(1)"
@@ -345,7 +345,28 @@
                                     location.reload()
                                 } else {
                                     console.error(data.message);
-                                    location.reload();
+                                    swal.fire({
+                                        icon: 'info',
+                                        title: 'Info',
+                                        text: data.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+                                    setTimeout(() => {
+                                        let cart = document.getElementById('addToCartBtn');
+                                        cart.disabled = true;
+                                        cart.innerText = data.message;
+                                        let buyNow = document.getElementById('buyNowBtn');
+                                        buyNow.style.display = 'none';
+                                        let view = document.getElementById('viewInYourPlaceBtn');
+                                        view.style.display = 'none';
+                                        document.body.style.cursor = 'not-allowed';
+                                        document.body.style.filter = 'grayscale(100%)';
+                                        document.getElementById('stockInfo').innerText = 'This product is no longer available.';
+                                        document.getElementById('stockInfo').style.color = 'red';
+                                    }, 1500);
                                 }
                             })
                             .catch(error => {
@@ -401,6 +422,20 @@
                                         showConfirmButton: false,
                                         timer: 3000
                                     });
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 5000);
+                                    let cart = document.getElementById('addToCartBtn');
+                                    cart.disabled = true;
+                                    cart.innerText = data.message;
+                                    let buyNow = document.getElementById('buyNowBtn');
+                                    buyNow.style.display = 'none';
+                                    let view = document.getElementById('viewInYourPlaceBtn');
+                                    view.style.display = 'none';
+                                    document.body.style.cursor = 'not-allowed';
+                                    document.body.style.filter = 'grayscale(100%)';
+                                    document.getElementById('stockInfo').innerText = 'This product is no longer available.';
+                                    document.getElementById('stockInfo').style.color = 'red';
                                 }
                             })
                             .catch(error => {
@@ -482,15 +517,18 @@
                         const addToCartBtn = document.getElementById('addToCartBtn');
                         const buyNowBtn = document.getElementById('buyNowBtn');
                         const viewInYourPlaceBtn = document.getElementById('viewInYourPlaceBtn');
+                        const quantityInput = document.getElementById('quantityInput');
 
                         if (currentStock > 0) {
                             stockInfo.innerText = `In Stock: ${currentStock}`;
+                            quantityInput.max = currentStock > 500 ? 500 : currentStock;
                             stockInfo.className = 'mt-2 text-sm font-bold text-green-600';
                             addToCartBtn.style.display = 'flex';
                             buyNowBtn.style.display = 'block';
                             if (viewInYourPlaceBtn) viewInYourPlaceBtn.style.display = 'block';
                         } else {
                             stockInfo.innerText = "Out of Stock";
+                            quantityInput.max = 0;
                             stockInfo.className = 'mt-2 text-sm font-bold text-red-600';
                             addToCartBtn.style.display = 'none';
                             buyNowBtn.style.display = 'none';
@@ -512,6 +550,8 @@
                         const input = document.getElementById('quantityInput');
                         let newVal = parseInt(input.value) + change;
                         if (newVal < 1) newVal = 1;
+                        if (newVal > 500) newVal = 500;
+                        if (newVal > currentStock && currentStock > 0 && newVal <= 500) newVal = currentStock;
                         input.value = newVal;
                         calculateTotal();
                     }
@@ -522,6 +562,12 @@
                         if (qty < 1) {
                             document.getElementById('quantityInput').value = 1;
                             total = (currentPrice * 1).toFixed(2);
+                        } else if (qty > 500) {
+                            document.getElementById('quantityInput').value = 500;
+                            total = (currentPrice * 500).toFixed(2);
+                        } else if (qty > currentStock && currentStock > 0 && qty <= 500) {
+                            document.getElementById('quantityInput').value = currentStock;
+                            total = (currentPrice * currentStock).toFixed(2);
                         } else {
                             total = (currentPrice * qty).toFixed(2);
                         }

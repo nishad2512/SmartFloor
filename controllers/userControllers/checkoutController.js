@@ -90,6 +90,10 @@ export const checkout = async (req, res) => {
             req.flash("error", "There are Unavailable products")
             return res.redirect('/cart')
         }
+        if (cartItems.some(item => item.quantity > item.product.variants.id(item.variant).stock)) {
+            req.flash("error", "Some products in your cart exceed available stock.")
+            return res.redirect('/cart')
+        }
         totalAmount = cartItems.reduce((sum, item) => sum + item.total, 0);
 
         const offerPromises = cartItems.map(async (item) => {
@@ -258,7 +262,7 @@ export const placeOrder = async (req, res) => {
         const coupen = await Coupen.findOne({ code: coupenCode, isActive: true, expirationDate: { $gte: new Date() } }).lean();
         if (coupen) {
             coupenDiscount = coupen.discountType === "percentage"
-                ? ((totalAmount + shipping + tax) * coupen.discountValue) / 100
+                ? (totalAmount * coupen.discountValue) / 100
                 : coupen.discountValue;
         }
 
@@ -280,7 +284,7 @@ export const placeOrder = async (req, res) => {
 export const applyCoupen = async (req, res) => {
     try {
 
-        const { code, currentTotal } = req.body;
+        const { code, currentTotal, fullTotal } = req.body;
 
         const coupen = await Coupen.findOne({
             code,
@@ -314,7 +318,12 @@ export const applyCoupen = async (req, res) => {
 
         if (discountAmount > currentTotal) discountAmount = currentTotal;
 
-        const newTotal = currentTotal - discountAmount;
+        console.log("Discount Amount:", discountAmount);
+        console.log("Full Total:", fullTotal);
+
+        const newTotal = fullTotal - discountAmount;
+
+        console.log("New Total after applying coupon:", newTotal);
 
         res.json({
             success: true,
