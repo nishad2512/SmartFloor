@@ -19,6 +19,52 @@
                                         </p>
                                     </div>
                                 </div>
+
+                                <div class="flex flex-col gap-4 mb-6">
+                                    <form action="/admin/returns" method="GET"
+                                        class="flex flex-col sm:flex-row gap-4 w-full">
+                                        <div class="relative flex-1">
+                                            <span
+                                                class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-500 text-lg">search</span>
+                                            <input type="text" name="search"
+                                                value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                                placeholder="Search by reason or customer..."
+                                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] text-sm focus:outline-none focus:border-primary transition-colors">
+                                        </div>
+
+                                        <div class="flex gap-4">
+                                            <select name="status" onchange="this.form.submit()"
+                                                class="px-4 py-2.5 rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] text-sm focus:outline-none focus:border-primary cursor-pointer min-w-[140px]">
+                                                <option value="">All Status</option>
+                                                <option value="Return Request" <%=typeof status !=='undefined' &&
+                                                    status==='Return Request' ? 'selected' : '' %>>Return Request
+                                                </option>
+                                                <option value="Approved" <%=typeof status !=='undefined' &&
+                                                    status==='Approved' ? 'selected' : '' %>>Approved</option>
+                                                <option value="Rejected" <%=typeof status !=='undefined' &&
+                                                    status==='Rejected' ? 'selected' : '' %>>Rejected</option>
+                                                <option value="Picked" <%=typeof status !=='undefined' &&
+                                                    status==='Picked' ? 'selected' : '' %>>Picked</option>
+                                                <option value="Refunded" <%=typeof status !=='undefined' &&
+                                                    status==='Refunded' ? 'selected' : '' %>>Refunded</option>
+                                            </select>
+
+                                            <select name="sort" onchange="this.form.submit()"
+                                                class="px-4 py-2.5 rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] text-sm focus:outline-none focus:border-primary cursor-pointer min-w-[160px]">
+                                                <option value="newest" <%=typeof sort !=='undefined' && sort==='newest'
+                                                    ? 'selected' : '' %>>Newest First</option>
+                                                <option value="oldest" <%=typeof sort !=='undefined' && sort==='oldest'
+                                                    ? 'selected' : '' %>>Oldest First</option>
+                                                <option value="amount_desc" <%=typeof sort !=='undefined' &&
+                                                    sort==='amount_desc' ? 'selected' : '' %>>Amount: High to Low
+                                                </option>
+                                                <option value="amount_asc" <%=typeof sort !=='undefined' &&
+                                                    sort==='amount_asc' ? 'selected' : '' %>>Amount: Low to High
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
                                 <div
                                     class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f]">
                                     <div class="p-6">
@@ -125,7 +171,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <% if (totalCount != 0) { %>
+                                    <% if (totalCount !=0) { %>
                                         <div
                                             class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
                                             <p class="text-[#757575] dark:text-gray-400">
@@ -133,24 +179,24 @@
                                                         <%= totalCount %> returns
                                             </p>
                                             <div class="flex gap-2 items-center">
-                                                <a href="/admin/returns?page=<%= page - 1 %>"
+                                                <a href="/admin/returns?page=<%= page - 1 %>&search=<%= typeof search !== 'undefined' ? search : '' %>&status=<%= typeof status !== 'undefined' ? status : '' %>&sort=<%= typeof sort !== 'undefined' ? sort : '' %>"
                                                     class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 disabled:opacity-50 <%= page === 1 ? 'pointer-events-none opacity-50' : '' %>">
                                                     Previous
                                                 </a>
-                                                <a href="/admin/returns?page=<%= page + 1 %>"
+                                                <a href="/admin/returns?page=<%= page + 1 %>&search=<%= typeof search !== 'undefined' ? search : '' %>&status=<%= typeof status !== 'undefined' ? status : '' %>&sort=<%= typeof sort !== 'undefined' ? sort : '' %>"
                                                     class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= page === totalPages ? 'pointer-events-none opacity-50' : '' %>">
                                                     Next
                                                 </a>
                                             </div>
                                         </div>
-                                    <% } else { %>
-                                       <div
-                                            class="p-4 flex justify-center items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
-                                            <p class="text-[#757575] dark:text-gray-400">
-                                                There are no returns
-                                            </p>
-                                        </div>
-                                    <% } %>
+                                        <% } else { %>
+                                            <div
+                                                class="p-4 flex justify-center items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
+                                                <p class="text-[#757575] dark:text-gray-400">
+                                                    There are no returns
+                                                </p>
+                                            </div>
+                                            <% } %>
                                 </div>
                             </div>
                         </main>

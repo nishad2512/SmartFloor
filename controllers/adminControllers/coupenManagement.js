@@ -3,23 +3,56 @@ import Coupen from "../../models/coupenModel.js";
 export const coupens = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
+        const { search, isActive, discountType, sort } = req.query;
         const limit = 5;
         const skip = (page - 1) * limit;
 
-        const coupens = await Coupen.find()
-            .sort({ createdAt: -1 })
+        let query = {};
+
+        if (search) {
+            query.code = { $regex: search, $options: 'i' };
+        }
+
+        if (isActive) {
+            if (isActive === 'active') query.isActive = true;
+            if (isActive === 'inactive') query.isActive = false;
+        }
+
+        if (discountType) {
+            query.discountType = discountType;
+        }
+
+        let sortQuery = { createdAt: -1 };
+        if (sort === 'oldest') {
+            sortQuery = { createdAt: 1 };
+        } else if (sort === 'expiry_near') {
+            sortQuery = { expirationDate: 1 };
+        } else if (sort === 'expiry_far') {
+            sortQuery = { expirationDate: -1 };
+        } else if (sort === 'value_high') {
+            sortQuery = { discountValue: -1 };
+        } else if (sort === 'value_low') {
+            sortQuery = { discountValue: 1 };
+        }
+
+        const totalCoupens = await Coupen.countDocuments(query);
+        const coupens = await Coupen.find(query)
+            .sort(sortQuery)
             .skip(skip)
             .limit(limit);
 
-        const totalCoupens = await Coupen.countDocuments();
         const totalPages = Math.ceil(totalCoupens / limit);
 
         res.render('admin/coupenManagement/coupens', {
             coupens,
             currentPage: page,
-            totalPages: totalPages,
+            totalPages,
             totalCoupens,
-            limit
+            limit,
+            search,
+            isActive,
+            discountType,
+            sort
         });
 
     } catch (error) {
