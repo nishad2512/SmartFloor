@@ -1,16 +1,16 @@
 import User from "../../models/userModel.js";
 import { Address } from "../../models/userModel.js";
+import * as addressService from "../../services/userServices/address.service.js";
 
 
 export const addresses = async (req, res) => {
     try {
         const userId = req.userId;
-        const user = await User.findById(userId);
-        const addresses = await Address.find({ user: userId });
+        const { addresses, user } = await addressService.addresses(userId);
         res.render("user/profile/address", { addresses, user });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to load addresses.");
+        req.flash("error", error.message || "Failed to load addresses.");
         res.redirect("/profile/details");
     }
 };
@@ -30,51 +30,18 @@ export const addAddressPage = async (req, res) => {
 export const addAddress = async (req, res) => {
     try {
         const userId = req.userId;
-        const { name, email, phone, address1, address2, city, state, zip, type } = req.body;
+        const addressData = req.body;
 
-        if (!name || name.trim().length < 3) {
-            req.flash("error", "Name must be at least 3 characters");
-            req.flash("formData", req.body);
-            return res.redirect("/profile/addresses/add");
-        }
-        if (!phone || !/^\+?[\d\s-]{10,20}$/.test(phone)) {
-            req.flash("error", "Invalid phone number");
-            req.flash("formData", req.body);
-            return res.redirect("/profile/addresses/add");
-        }
-        if (!address1 || !city || !state || !zip) {
-            req.flash("error", "Please fill in all required fields (Street, City, State, Zip)");
-            req.flash("formData", req.body);
-            return res.redirect("/profile/addresses/add");
-        }
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            req.flash("error", "Invalid email address");
-            req.flash("formData", req.body);
-            return res.redirect("/profile/addresses/add");
-        }
-
-        const newAddress = new Address({
-            user: userId,
-            name,
-            email,
-            phone,
-            address1,
-            address2,
-            city,
-            state,
-            zip,
-            type
-        });
-        await newAddress.save();
+        await addressService.addAddress(userId, addressData);
 
         req.flash("success", "Address added successfully");
-
         if (req.session.next_page == "checkout") return res.redirect('/checkout');
 
         res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to add address.");
+        req.flash("formData", req.body);
+        req.flash("error", error.message || "Failed to add address.");
         res.redirect("/profile/addresses/add");
     }
 }
@@ -83,16 +50,12 @@ export const editAddressPage = async (req, res) => {
     try {
         const addressId = req.params.id;
         const userId = req.userId;
-        const address = await Address.findOne({ _id: addressId, user: userId });
-        if (!address) {
-            req.flash("error", "Address not found");
-            return res.redirect("/profile/addresses");
-        }
+        const address = await addressService.getAddressById(userId, addressId);
 
         res.render("user/profile/addAddress", { formData: address });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to load address for editing.");
+        req.flash("error", error.message || "Failed to load address for editing.");
         res.redirect("/profile/addresses");
     }
 };
@@ -101,25 +64,9 @@ export const editAddress = async (req, res) => {
     try {
         const addressId = req.params.id;
         const userId = req.userId;
-        const { name, email, phone, address1, address2, city, state, zip, type } = req.body;
+        const updateData = req.body;
 
-        const address = await Address.findOne({ _id: addressId, user: userId });
-        if (!address) {
-            req.flash("error", "Address not found");
-            return res.redirect("/profile/addresses");
-        }
-
-        await Address.updateOne({ _id: addressId, user: userId }, {
-            name,
-            email,
-            phone,
-            address1,
-            address2,
-            city,
-            state,
-            zip,
-            type
-        });
+        await addressService.editAddress(userId, addressId, updateData);
 
         req.flash("success", "Address updated successfully");
         res.redirect("/profile/addresses");
@@ -134,12 +81,13 @@ export const deleteAddress = async (req, res) => {
     try {
         const addressId = req.params.id;
         const userId = req.userId;
-        await Address.deleteOne({ _id: addressId, user: userId });
+        await addressService.deleteAddress(userId, addressId);
+        
         req.flash("success", "Address deleted successfully");
         res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to delete address.");
+        req.flash("error", error.message || "Failed to delete address.");
         res.redirect("/profile/addresses");
     }
 };

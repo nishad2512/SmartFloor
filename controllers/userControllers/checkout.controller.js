@@ -1,151 +1,31 @@
 import Cart from "../../models/cartModel.js";
-import User, { Address } from "../../models/userModel.js";
 import Order from "../../models/orderModel.js";
 import Product from "../../models/productModel.js";
-import applyOffer from "../../utils/offerFetch.js";
 import Offer from "../../models/offerModel.js";
 import Coupen from "../../models/coupenModel.js";
+import * as checkoutService from "../../services/userServices/checkout.service.js";
 
 export const checkout = async (req, res) => {
     try {
         const userId = req.userId;
-        const { productId, variantId, quantity } = req.query;
-        let totalAmount = 0;
-        let shipping = 0;
-        let tax = 0;
-        let total = 0;
-        const addresses = await Address.find({ user: userId });
-        const now = new Date();
-        const coupens = await Coupen.find({
-            isActive: true,
-            expirationDate: { $gte: new Date() },
-            $or: [
-                { usageLimit: null },
-                { $expr: { $lt: ["$usedCount", "$usageLimit"] } }
-            ]
-        });
-        const user = await User.findById(userId);
+        
+        const checkoutData = await checkoutService.buildCheckout(userId, req.query, req);
 
-        if (productId && variantId && quantity) {
-            const product = await Product.findById(productId);
-            if (!product.isActive) {
-                req.flash("error", "Product not found")
-                return res.redirect('/products')
-            }
-            const variant = product.variants.id(variantId);
-
-            const productObj = product.toObject();
-            const productWithOffer = await applyOffer(productObj);
-            const variantWithOffer = productWithOffer.variants.find(
-                (v) => v._id.toString() === variantId
-            );
-
-            const unitPrice =
-                variantWithOffer.offerPrice || variantWithOffer.price;
-
-            totalAmount = unitPrice * quantity;
-
-            const offers = await Offer.find({
-                isActive: true,
-                start: { $lte: now },
-                end: { $gte: now },
-                $or: [
-                    { products: product._id },
-                    { category: product.category },
-                    { scope: "all" },
-                ],
-                type: "shipping",
-            });
-
-            if (!offers || totalAmount < 5000) {
-                shipping = 200;
-            }
-            tax = (totalAmount * 18) / 100;
-            total = totalAmount + shipping + tax;
+        if (checkoutData.mode === 'single') {
             req.session.item = {
-                product,
-                variant,
-                quantity: parseInt(quantity),
-                totalAmount,
-                offerId: productWithOffer.offer
-                    ? productWithOffer.offer._id
-                    : null,
-                offerPrice: variantWithOffer.offerPrice || null,
+                product: checkoutData.product,
+                variant: checkoutData.variant,
+                quantity: checkoutData.quantity,
+                totalAmount: checkoutData.totalAmount,
+                offerId: checkoutData.offerId,
+                offerPrice: checkoutData.offerPrice,
             };
-            return res.render("user/checkout/checkout", {
-                product,
-                totalAmount,
-                addresses,
-                shipping,
-                tax,
-                total,
-                quantity,
-                coupens,
-                user
-            });
         }
 
-        const cartItems = await Cart.find({ user: userId }).populate("product");
-        if (cartItems.some(item => !item.product.isActive)) {
-            req.flash("error", "There are Unavailable products")
-            return res.redirect('/cart')
-        }
-        if (cartItems.some(item => item.quantity > item.product.variants.id(item.variant).stock)) {
-            req.flash("error", "Some products in your cart exceed available stock.")
-            return res.redirect('/cart')
-        }
-        totalAmount = cartItems.reduce((sum, item) => sum + item.total, 0);
-
-        const offerPromises = cartItems.map(async (item) => {
-
-            const product = await Product.findById(item.product);
-
-            if (!product) return { hasOffer: false };
-
-            const offer = await Offer.findOne({
-                isActive: true,
-                start: { $lte: now },
-                end: { $gte: now },
-                type: "shipping",
-                $or: [
-                    { products: product._id },
-                    { category: product.category },
-                    { scope: "all" },
-                ],
-            });
-
-            return { hasOffer: !!offer };
-        });
-
-        const results = await Promise.all(offerPromises);
-
-        const anyItemsHaveOffers = results.some(res => res.hasOffer);
-
-        if (!anyItemsHaveOffers || totalAmount < 5000) {
-            shipping = 200
-        }
-
-        tax = (totalAmount * 18) / 100;
-        total = totalAmount + shipping + tax;
-
-        if (!cartItems || cartItems.length == 0) {
-            req.flash("error", "There are no products.");
-            return res.redirect("/cart");
-        }
-
-        res.render("user/checkout/checkout", {
-            cartItems,
-            totalAmount,
-            addresses,
-            shipping,
-            tax,
-            total,
-            coupens,
-            user
-        });
+        res.render("user/checkout/checkout", checkoutData);
     } catch (error) {
         console.error(error);
-        req.flash("error", "An error occurred while processing checkout. Please try again.");
+        req.flash("error", error.message || "An error occurred while processing checkout. Please try again.");
         res.redirect("/cart");
     }
 };
@@ -262,7 +142,8 @@ export const placeOrder = async (req, res) => {
         const coupen = await Coupen.findOne({ code: coupenCode, isActive: true, expirationDate: { $gte: new Date() } }).lean();
         if (coupen) {
             coupenDiscount = coupen.discountType === "percentage"
-                ? (totalAmount * coupen.discountValue) / 100
+                ? (coupen.maxDiscountAmount ? Math.min((totalAmount * coupen.discountValue) / 100, coupen.maxDiscountAmount)
+                : (totalAmount * coupen.discountValue) / 100)
                 : coupen.discountValue;
         }
 
@@ -301,13 +182,21 @@ export const applyCoupen = async (req, res) => {
         }
 
         if (coupen.minPurchaseAmount > currentTotal) {
-            res.json({ success: false, message: "minimum purchase amount is not covered" })
+            return res.json({ success: false, message: "minimum purchase amount is not covered" })
+        }
+
+        const used = await Order.findOne({ user: req.userId, coupenCode: code }).lean();
+
+        if (used) {
+            return res.json({ success: false, message: "Coupon already used" });
         }
 
         let discountAmount = 0;
 
         if (coupen.discountType === "percentage") {
-            discountAmount = (currentTotal * coupen.discountValue) / 100;
+            discountAmount = coupen.maxDiscountAmount
+                ? Math.min((currentTotal * coupen.discountValue) / 100, coupen.maxDiscountAmount)
+                : (currentTotal * coupen.discountValue) / 100;
         } else {
             discountAmount = coupen.discountValue;
         }

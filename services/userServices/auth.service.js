@@ -3,7 +3,7 @@ import User from "../../models/userModel.js";
 import { sendOTPEmail, sendResetEmail } from "../../utils/email.js";
 import { createHash, compare } from "../authServices.js";
 import generateCode from "../../utils/referral.js";
-
+// import {findOne} from "../../repositories/baseRepository.js";
 /* ---------------- OTP ---------------- */
 
 const generateOtp = () => crypto.randomInt(100000, 999999).toString();

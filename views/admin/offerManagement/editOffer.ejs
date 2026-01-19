@@ -239,9 +239,9 @@
                     }
 
                     // Validate Percentage
-                    else if (discountType === 'percentage' && parseFloat(value) > 100) {
+                    else if (discountType === 'percentage' && parseFloat(value) > 90) {
                         isValid = false;
-                        errorMessage = 'Percentage cannot exceed 100%';
+                        errorMessage = 'Percentage cannot exceed 90%';
                     }
 
                     // Validate Scope
@@ -280,7 +280,7 @@
                         // } else 
                         if (end < start) {
                             isValid = false;
-                            errorMessage = 'End date cannot be before start date';
+                            errorMessage = 'End date cannot be before or equal to start date';
                         }
                     }
 

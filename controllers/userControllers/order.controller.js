@@ -239,7 +239,7 @@ export const cancelOrderItem = async (req, res) => {
         if (order.coupenCode) {
             const coupen = await Coupen.findOne({ code: order.coupenCode });
             if (coupen && coupen.minPurchaseAmount > 0) {
-                if ((order.subTotal - refundAmount) < coupen.minPurchaseAmount) {
+                if (order.items.length > 1 && (order.subTotal - refundAmount) < coupen.minPurchaseAmount) {
                     return res.json({ success: false, message: "Order sub-total will become below the minimum purchase amount for the coupon. You will need to cancel the entire order." });
                 }
             }
@@ -254,7 +254,7 @@ export const cancelOrderItem = async (req, res) => {
                 refundAmount += order.shipping;
             }
 
-            finalRefund = Math.round(refundAmount);
+            finalRefund = Math.floor(refundAmount);
 
             const user = await User.findById(order.user);
             user.wallet += finalRefund;
@@ -271,7 +271,7 @@ export const cancelOrderItem = async (req, res) => {
         item.cancelReason = reason;
 
         order.refund += finalRefund;
-        order.totalAmount -= refundAmount.toFixed(2);
+        order.totalAmount -= refundAmount;
 
         const product = await Product.findById(item.product);
         const variant = product.variants.id(item.variant);

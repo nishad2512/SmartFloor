@@ -48,10 +48,15 @@ export const signup = async (req, res) => {
 };
 
 export const otp = (req, res) => {
-    res.render("user/auth/otp", {
-        email: req.session.user.email,
-        expiry: req.session.expires,
-    });
+    try {
+        res.render("user/auth/otp", {
+            email: req.session.user.email,
+            expiry: req.session.expires,
+        });
+    } catch {
+        req.flash("error", "Something happened.");
+        res.redirect("/");
+    }
 };
 
 export const verify = async (req, res) => {
@@ -109,7 +114,12 @@ export const googleAuth = async (req, res) => {
 };
 
 export const forgot = (req, res) => {
+    try {
     res.render("user/auth/forgot");
+    } catch {
+        req.flash("error", "An error occurred while rendering forgot password page.");
+        res.redirect("/");
+    }
 };
 
 export const reset = async (req, res) => {

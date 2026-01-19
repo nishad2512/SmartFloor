@@ -243,6 +243,12 @@ function validateProductInfo() {
     if (nameInput.value.trim() === "") {
         toggleError("name-error", true, "Product Name is required.");
         isValid = false;
+    } else if (nameInput.value.trim().length < 3) {
+        toggleError("name-error", true, "Product Name must be at least 3 characters long.");
+        isValid = false;
+    } else if (nameInput.value.trim().length > 100) {
+        toggleError("name-error", true, "Product Name cannot exceed 100 characters.");
+        isValid = false;
     } else {
         toggleError("name-error", false);
     }
@@ -261,6 +267,12 @@ function validateProductInfo() {
             "Product Description is required."
         );
         isValid = false;
+    } else if (descriptionTextarea.value.trim().length < 10) {
+        toggleError("description-error", true, "Product Description must be at least 10 characters long.");
+        isValid = false;
+    } else if (descriptionTextarea.value.trim().length > 2000) {
+        toggleError("description-error", true, "Product Description cannot exceed 2000 characters.");
+        isValid = false;
     } else {
         toggleError("description-error", false);
     }
@@ -277,7 +289,7 @@ function validateImages() {
     const totalImages =
         initialExistingImagesCount - deletedCount + newImagesCount;
 
-    return totalImages >= 3;
+    return totalImages >= 3 && totalImages <= 6;
 }
 
 // 3. Validate Variants
@@ -331,12 +343,12 @@ document.querySelector("form").addEventListener("submit", function (e) {
             const newImagesCount = currentFiles.files.length;
             const totalImages =
                 initialExistingImagesCount - deletedCount + newImagesCount;
-            errorMessage += `\n- Product must have a minimum of 3 images. You currently have ${totalImages} remaining/uploaded.`;
+            errorMessage += `\n- Product must have a minimum of 3 images. You currently have ${totalImages} remaining/uploaded (up to 6 allowed).`;
         }
 
         if (!isVariantsValid) {
             errorMessage +=
-                "\n- At least one complete product variant (Size, Stock, Price) is required.";
+                "\n- At least one complete product variant (Size, Stock, Price) is required (up to 10 allowed).";
         }
 
         // Use SweetAlert2

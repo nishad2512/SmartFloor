@@ -251,4 +251,16 @@
                         document.body.style.overflow = 'auto'; // Restore scrolling
                     });
                 }
+                let debounceTimer;
+
+                searchInput.addEventListener("input", () => {
+                    clearTimeout(debounceTimer);
+
+                    debounceTimer = setTimeout(() => {
+                    const search = searchInput.value;
+
+                    fetch(`/products?search=${encodeURIComponent(search)}`)
+                        .then(res => window.location.href = res.url)
+                    }, 800); // 👈 debounce delay
+                });
             </script>

@@ -109,6 +109,13 @@ export const editOffer = async (req, res) => {
         const data = { ...req.body };
         const offerId = req.params.id
 
+        const offer = await Offer.findOne({ _id: { $ne: offerId }, name: { $regex: data.name, $options: 'i' } });
+
+        if (offer) {
+            req.flash("error", "Offer name already exists");
+            return res.json({ success: false, message: "Offer name already exists" });
+        }
+
         if (data.scope === 'product') {
             data.category = null;
             if (!data.products || (Array.isArray(data.products) && data.products.length === 0)) {

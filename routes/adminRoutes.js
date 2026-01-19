@@ -122,7 +122,7 @@ router.get('/sales/download/excel', sales.downloadSalesExcel);
 
 // logout
 
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
     res.locals.admin = null;
     res.cookie("admin-jwt", "loggedout", {
         httpOnly: false,

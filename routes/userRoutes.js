@@ -55,7 +55,7 @@ router.route("/otp")
 
 router.get("/resend", redirectIfLoggedIn, userController.resend);
 
-router.get('/logout', userController.logout);
+router.post('/logout', userController.logout);
 
 router.route('/forgot-password')
     .get(userController.forgot)

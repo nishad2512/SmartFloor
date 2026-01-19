@@ -197,6 +197,13 @@ export const updateReturnStatus = async (req, res) => {
             await refund(order, item);
         }
 
+        const statuses = ['Return Request', 'Approved', 'Rejected', "Picked", 'Refunded'];
+
+        if (statuses.indexOf(returnRequest.status) > statuses.indexOf(status)) {
+            req.flash("error", "You can't change return status in reverse.");
+            return res.json({ success: false });
+        }
+
         returnRequest.status = status;
         await returnRequest.save();
 

@@ -69,7 +69,7 @@ const dashboard = async (req, res) => {
 
         const salesRecords = await getSalesData({ period: type === '$year' ? 'yearly' : 'monthly' });
 
-        res.render('admin/dashboard', { formattedData, topCategories, topProducts, recentOrders, stockAlerts, salesRecords, inventoryStock, customers, type });
+        res.render('admin/dashboard', { formattedData, topCategories, topProducts, recentOrders, stockAlerts, salesRecords, inventoryStock, customers, type: req.query.type });
     } catch (error) {
         console.error(error);
         req.flash("error", "Failed to load dashboard data.");

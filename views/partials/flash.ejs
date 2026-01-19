@@ -6,6 +6,9 @@
     .colored-toast.swal2-icon-error {
         background-color: #581010 !important; /* Tailwind Red-500 */
     }
+    .colored-toast.swal2-icon-warning {
+        background-color: #92400e !important; /* Tailwind Amber-600 */
+    }
     .colored-toast .swal2-title {
         color: white !important;
     }
@@ -49,6 +52,15 @@
     Toast.fire({
         icon: "error",
         title: "<%= error %>",
+    });
+</script>
+<% } %>
+
+<% if (warning && warning.length > 0) { %>
+<script>
+    Toast.fire({
+        icon: "warning",
+        title: "<%= warning %>",
     });
 </script>
 <% } %>

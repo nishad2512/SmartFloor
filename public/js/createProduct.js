@@ -240,6 +240,12 @@ function validateProductInfo() {
     if (nameInput.value.trim() === "") {
         toggleError("name-error", true, "Product Name is required.");
         isValid = false;
+    } else if (nameInput.value.trim().length < 3) {
+        toggleError("name-error", true, "Product Name must be at least 3 characters long.");
+        isValid = false;
+    } else if (nameInput.value.trim().length > 100) {
+        toggleError("name-error", true, "Product Name cannot exceed 100 characters.");
+        isValid = false;
     } else {
         toggleError("name-error", false);
     }
@@ -258,6 +264,12 @@ function validateProductInfo() {
             "Product Description is required."
         );
         isValid = false;
+    } else if (descriptionTextarea.value.trim().length < 10) {
+        toggleError("description-error", true, "Product Description must be at least 10 characters long.");
+        isValid = false;
+    } else if (descriptionTextarea.value.trim().length > 2000) {
+        toggleError("description-error", true, "Product Description cannot exceed 2000 characters.");
+        isValid = false;
     } else {
         toggleError("description-error", false);
     }
@@ -269,6 +281,9 @@ function validateImages() {
     const fileCount = currentFiles.files.length;
     if (fileCount < 3) {
         toggleError("images-error", true, "You must upload at least 3 images.");
+        return false;
+    } else if (fileCount > 6) {
+        toggleError("images-error", true, "You can upload a maximum of 6 images.");
         return false;
     } else {
         toggleError("images-error", false);
@@ -285,6 +300,13 @@ function validateVariants() {
             "variants-error",
             true,
             "At least one product variant (Size, Stock, Price) is required."
+        );
+        return false;
+    } else if (variantRows.length > 10) {
+        toggleError(
+            "variants-error",
+            true,
+            "You can add a maximum of 10 product variants."
         );
         return false;
     }
@@ -336,12 +358,12 @@ function validateForm() {
         hasError = true;
     }
     if (!isImagesValid) {
-        errorMessage += "\n- Minimum 3 product images are required.";
+        errorMessage += "\n- Minimum 3 product images are required (up to 6 allowed).";
         hasError = true;
     }
     if (!isVariantsValid) {
         errorMessage +=
-            "\n- At least one complete product variant is required.";
+            "\n- At least one complete product variant is required (up to 10 allowed).";
         hasError = true;
     }
 

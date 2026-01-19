@@ -1,220 +1,135 @@
-import Cart from "../../models/cartModel.js";
-import Product from "../../models/productModel.js";
-import applyOffer from "../../utils/offerFetch.js";
+import * as cartService from "../../services/userServices/cart.service.js";
 
 export const cart = async (req, res) => {
     try {
-        const userId = req.userId;
-        const cartItems = await Cart.find({ user: userId }).populate("product");
-        const formattedCart = cartItems
-            .map((item) => {
-                const variant = item.product.variants.id(item.variant);
-
-                if (!variant) {
-                    return null; // or handle error
-                }
-
-                return {
-                    cartItemId: item._id,
-                    productId: item.product._id,
-                    name: item.product.name,
-                    image: item.product.productImages[0],
-                    size: variant.size,
-                    price: item.offerPrice || variant.price,
-                    originalPrice: item.offerPrice ? variant.price : null,
-                    quantity: item.quantity,
-                    total: item.total,
-                    active: item.product.isActive
-                };
-            })
-            .filter(Boolean);
-        const totalAmount = formattedCart.reduce((sum, item) => sum + item.total, 0);
-
-        res.render("user/cart/cart", { formattedCart, totalAmount: totalAmount.toLocaleString('en-IN') });
+        const { formatted, total } = await cartService.getCart(req.userId);
+        res.render("user/cart/cart", {
+            formattedCart: formatted,
+            totalAmount: total.toLocaleString("en-IN"),
+        });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to load your cart. Please try again.");
+        req.flash("error", "An error occurred while fetching the cart. Please try again.");
         res.redirect("/");
     }
 };
 
 export const addToCart = async (req, res) => {
     try {
-        const userId = req.userId;
-        const { productId, variantId } = req.body;
-        const quantity = parseInt(req.body.quantity, 10);
+        const {
+            finalQty,
+            addedQty,
+            requestedQty,
+            stock,
+            hardLimit,
+            currentQty,
+        } = await cartService.addToCart(
+            req.userId,
+            req.body.productId,
+            req.body.variantId,
+            Number(req.body.quantity)
+        );
 
-        let cartItem = await Cart.findOne({
-            user: userId,
-            product: productId,
-            variant: variantId,
-        });
-
-        const product = await Product.findOne({ _id: productId, isActive: true });
-
-        if (!product) {
-            req.flash("error", "Product not available");
-            return res.json({ success: false, message: "Product not available" });
-        }
-
-        const variant = product.variants.id(variantId);
-
-        if (!variant) {
-            req.flash("error", "Invalid product variant");
-            return res.json({ success: false, message: "Invalid product variant" });
-        }
-
-        // Apply Offer Logic
-        const productObj = product.toObject();
-        const productWithOffer = await applyOffer(productObj);
-        const variantWithOffer = productWithOffer.variants.find(v => v._id.toString() === variantId);
-
-        const unitPrice = variantWithOffer.offerPrice || variantWithOffer.price;
-        const offerId = productWithOffer.offer ? productWithOffer.offer._id : null;
-        const offerPrice = variantWithOffer.offerPrice || null;
-
-
-        if (cartItem && (cartItem.quantity + quantity) > variant.stock && cartItem.quantity + quantity <= 500) {
-            cartItem.quantity = variant.stock;
-            cartItem.total = variant.stock * unitPrice;
-            cartItem.offerId = offerId; // Update offer if it changed
-            cartItem.offerPrice = offerPrice;
-            await cartItem.save();
-            req.flash("success", `Only ${variant.stock} items available in stock, ${variant.stock} items added.`);
+        if (addedQty < requestedQty) {
+            if (addedQty === 0) {
+                if (currentQty >= hardLimit) {
+                    req.flash(
+                        "warning",
+                        `Maximum limit of ${hardLimit} items reached for this product.`
+                    );
+                    return res.json({ success: true });
+                }
+                if (stock === 0) {
+                    req.flash("warning", "Product is out of stock.");
+                    return res.json({ success: true });
+                }
+                req.flash("warning", `Only ${stock} items available in stock.`);
+                return res.json({ success: true });
+            }
+            req.flash(
+                "warning",
+                `Only ${addedQty} items added to cart due to stock/limit constraints.`
+            );
             return res.json({ success: true });
         }
 
-        if (!cartItem && parseInt(quantity) > variant.stock && quantity <= 500) {
-            cartItem = new Cart({
-                user: userId,
-                product: productId,
-                variant: variantId,
-                quantity: variant.stock,
-                total: variant.stock * unitPrice,
-                offerId: offerId,
-                offerPrice: offerPrice
-            });
-            await cartItem.save();
-            req.flash("success", `Only ${variant.stock} items available in stock, ${variant.stock} items added.`);
+        if (currentQty - addedQty > 0) {
+            req.flash(
+                "success",
+                `${addedQty} items added to cart. You now have ${finalQty} items of this product in your cart.`
+            );
             return res.json({ success: true });
         }
 
-        if (cartItem && cartItem.quantity + quantity <= 500) {
-
-            cartItem.quantity += quantity;
-            cartItem.total = cartItem.quantity * unitPrice;
-            cartItem.offerId = offerId; // Update latest offer
-            cartItem.offerPrice = offerPrice;
-            await cartItem.save();
-
-            req.flash("success", `${cartItem.quantity} sq.ft of product in cart`);
-            return res.json({ success: true });
-
-        } else if (!cartItem && quantity <= 500) {
-            cartItem = new Cart({
-                user: userId,
-                product: productId,
-                variant: variantId,
-                quantity: quantity,
-                total: quantity * unitPrice,
-                offerId: offerId,
-                offerPrice: offerPrice
-            });
-            await cartItem.save();
-
-            req.flash("success", "Product added to cart");
-            return res.json({ success: true });
-        }
-
-        req.flash("error", "You can only add a maximum of 500 items at once");
-        res.json({ success: true, message: "Maximum limit exceeded" });
+        req.flash("success", "Product added to cart successfully.");
+        res.json({ success: true });
     } catch (error) {
-        console.error(error);
-        req.flash("error", "Error adding to cart");
-        res.json({ success: false });
+        let message = "Failed to add to cart";
+        let code = "UNKNOWN_ERROR";
+        let type = "error";
+
+        if (
+            error.message === "PRODUCT_NOT_FOUND" ||
+            error.message === "inactive"
+        ) {
+            message = "Product is unavailable or blocked by admin.";
+            code = "PRODUCT_BLOCKED";
+        }
+        if (error.message === "INVALID_VARIANT") {
+            message = "Invalid product variant";
+            code = "INVALID_VARIANT";
+        }
+        if (error.message === "LIMIT") {
+            message = "Maximum quantity limit reached for this product";
+            code = "LIMIT_REACHED";
+            type = "warning";
+        }
+
+        res.json({ success: false, message, code, type });
     }
 };
 
 export const updateCartQuantity = async (req, res) => {
     try {
-        const { cartItemId } = req.params;
-        const { quantity } = req.body;
-
-        const cartItem = await Cart.findById(cartItemId).populate("product");
-
-        if (quantity < 1) {
-            return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
-        }
-
-        if (!cartItem) {
-            return res.status(404).json({ success: false, message: "Cart item not found" });
-        }
-
-        // Find variant
-        const variant = cartItem.product.variants.id(cartItem.variant);
-
-        if (!variant) {
-            return res.status(400).json({ success: false, message: "Variant not found" });
-        }
-
-        const unitPrice = cartItem.offerPrice || variant.price;
-
-        // Stock check
-        if (quantity > 500) {
-            return res.status(400).json({
-                message: "You can only add a maximum of 500 items at once",
-                success: false,
-                quantity: cartItem.quantity
-            });
-        }
-
-        if (quantity > variant.stock) {
-            return res.status(400).json({
-                message: "Product stock limit reached",
-                success: false,
-                quantity: cartItem.quantity
-            });
-        }
-
-        cartItem.quantity = quantity;
-        cartItem.total = unitPrice * quantity;
-        await cartItem.save();
-
-        const cartItems = await Cart.find({ user: req.userId }).populate("product");
-        const totalAmount = cartItems.reduce((sum, item) => {
-            return sum + item.total;
-        }, 0);
-
+        const { item, total } = await cartService.updateQuantity(
+            req.userId,
+            req.params.cartItemId,
+            req.body.quantity
+        );
         res.json({
             success: true,
-            message: "Quantity updated",
-            quantity: cartItem.quantity,
-            itemTotal: unitPrice * cartItem.quantity,
-            cartTotal: totalAmount.toLocaleString('en-IN')
+            message: "Cart updated successfully",
+            quantity: item.quantity,
+            itemTotal: item.total,
+            cartTotal: total.toLocaleString("en-IN"),
         });
-
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
+        let message = "Failed to update cart";
+        let type = "error";
+        if (error.message === "NOT_FOUND") message = "Item not found in cart";
+        if (error.message === "INVALID_VARIANT") message = "Invalid variant";
+        if (error.code === "LIMIT") {
+            message = "Stock limit reached for this product";
+            type = "warning";
+        }
+        // console.error(error);
+        res.json({
+            success: false,
+            message,
+            type,
+            quantity: error.quantity,
+            itemTotal: error.itemTotal,
+        });
     }
 };
 
 export const removeFromCart = async (req, res) => {
     try {
-        const { cartItemId } = req.params;
-
-        const cartItem = await Cart.findById(cartItemId);
-
-        if (!cartItem) {
-            res.json({ success: false, message: "Item not found" })
-        }
-
-        await Cart.deleteOne({ _id: cartItemId });
-        req.flash("success", "Item removed from cart successfully");
+        await cartService.removeFromCart(req.params.cartItemId);
+        req.flash("success", "Item removed from cart successfully.");
         res.json({ success: true });
-
     } catch (error) {
-        console.error(error);
-        req.flash("error", "Server issue");
+        req.flash("error", "Failed to remove item from cart.");
+        res.json({ success: false });
     }
-}
+};

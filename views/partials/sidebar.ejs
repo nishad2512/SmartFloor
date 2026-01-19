@@ -101,13 +101,15 @@
             </nav>
         </div>
         <div class="flex flex-col gap-1">
-            <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30"
-                href="/admin/logout">
-                <span class="material-symbols-outlined text-2xl">logout</span>
-                <p class="dark:text-white text-sm font-medium leading-normal">
-                    Logout
-                </p>
-            </a>
+            <form action="/admin/logout" method="POST">
+                <button type="submit"
+                    class="flex w-full items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/30">
+                    <span class="material-symbols-outlined text-2xl">logout</span>
+                    <p class="dark:text-white text-sm font-medium leading-normal">
+                        Logout
+                    </p>
+                </button>
+            </form>
         </div>
     </div>
 </aside>

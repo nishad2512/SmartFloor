@@ -35,11 +35,13 @@
     </nav>
 
     <div class="mt-auto pt-8 border-t border-gray-100">
-        <a href="/logout"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all">
-            <i class="ph-bold ph-sign-out text-lg"></i>
-            <span class="text-sm font-bold">Logout</span>
-        </a>
+        <form action="/logout" method="POST">
+            <button type="submit"
+                class="flex items-center w-full gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all">
+                <i class="ph-bold ph-sign-out text-lg"></i>
+                <span class="text-sm font-bold">Logout</span>
+            </button>
+        </form>
     </div>
 </aside>
 

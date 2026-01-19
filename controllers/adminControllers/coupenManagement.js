@@ -53,6 +53,12 @@ export const create = async (req, res) => {
         if (!data) {
             return res.status(404).json({ success: false, message: "Missing required fields." });
         }
+        const existingCoupen = await Coupen.findOne({ code: { $regex: data.code, $options: 'i' } });
+
+        if (existingCoupen) {
+            req.flash('error', 'Coupon code already exists');
+            return res.status(409).json({ success: false, message: "Coupon code already exists." });
+        }
 
         const newCoupen = new Coupen(data);
         await newCoupen.save();
@@ -92,6 +98,13 @@ export const edit = async (req, res) => {
 
         if (!data) {
             return res.status(404).json({ success: false, message: "Missing required fields." });
+        }
+
+        const existingCoupen = await Coupen.findOne({ _id: { $ne: coupenId }, code: { $regex: data.code, $options: 'i' } });
+
+        if (existingCoupen) {
+            req.flash('error', 'Coupon code already exists');
+            return res.status(409).json({ success: false, message: "Coupon code already exists." });
         }
 
         const updated = await Coupen.findByIdAndUpdate(coupenId, data, { new: true, runValidators: true });
