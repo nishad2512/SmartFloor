@@ -11,22 +11,6 @@
                         <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2400&auto=format&fit=crop"
                             alt="Luxury Living Room" class="w-full h-full object-cover" />
 
-                        <div
-                            class="absolute top-10 left-10 bg-white/90 backdrop-blur-md p-2.5 pr-6 rounded-full flex items-center gap-4 shadow-xl">
-                            <div class="flex -space-x-3">
-                                <img class="w-11 h-11 rounded-full border-[3px] border-white object-cover"
-                                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" />
-                                <img class="w-11 h-11 rounded-full border-[3px] border-white object-cover"
-                                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80" />
-                                <img class="w-11 h-11 rounded-full border-[3px] border-white object-cover"
-                                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" />
-                            </div>
-                            <div class="flex flex-col leading-tight">
-                                <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Check</span>
-                                <span class="text-sm font-extrabold text-black">Reviews</span>
-                            </div>
-                        </div>
-
                         <button
                             onclick="window.location.href='/products'"
                             class="absolute bottom-10 right-10 bg-black text-white pl-8 pr-2 py-2.5 rounded-full flex items-center gap-4 hover:scale-105 transition duration-300 shadow-2xl">
@@ -39,32 +23,34 @@
 
                     <div class="hidden lg:flex flex-col gap-8">
                         <div
+                            onclick="window.location.href='/products/product/<%= products[0].slug %>'"
                             class="flex-1 bg-white rounded-[3rem] p-4 border border-gray-100 shadow-sm hover:shadow-lg transition cursor-pointer flex flex-col">
                             <div class="flex-1 rounded-[2.5rem] overflow-hidden mb-4">
-                                <img src="https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&q=80&w=600"
-                                    class="w-full h-full object-cover" />
+                                <img src="<%= products[0].productImages[0] %>"
+                                    class="w-full h-[220px] object-cover" />
                             </div>
                             <div class="px-3 pb-2">
                                 <h4 class="font-bold text-lg text-gray-900">
-                                    Italian Marble
+                                    <%= products[0].name %>
                                 </h4>
                                 <p class="text-sm font-extrabold text-gray-400 mt-1">
-                                    $125.00
+                                    ₹<%= products[0].variants[0].offerPrice ? products[0].variants[0].offerPrice : products[0].variants[0].price %>
                                 </p>
                             </div>
                         </div>
                         <div
+                            onclick="window.location.href='/products/product/<%= products[5].slug %>'"
                             class="flex-1 bg-white rounded-[3rem] p-4 border border-gray-100 shadow-sm hover:shadow-lg transition cursor-pointer flex flex-col">
                             <div class="flex-1 rounded-[2.5rem] overflow-hidden mb-4">
-                                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=600"
-                                    class="w-full h-full object-cover" />
+                                <img src="<%= products[5].productImages[0] %>"
+                                    class="w-full h-[220px] object-cover" />
                             </div>
                             <div class="px-3 pb-2">
                                 <h4 class="font-bold text-lg text-gray-900">
-                                    Indian Marble
+                                    <%= products[5].name %>
                                 </h4>
                                 <p class="text-sm font-extrabold text-gray-400 mt-1">
-                                    $105.00
+                                    ₹<%= products[5].variants[0].offerPrice ? products[5].variants[0].offerPrice : products[5].variants[0].price %>
                                 </p>
                             </div>
                         </div>
@@ -89,8 +75,12 @@
                     <div class="flex-grow bg-[#F3F3F3] rounded-full px-6 py-4 flex justify-between items-center">
                         <span class="font-bold text-base text-[#1A1A1A]"><%= product.name %></span>
                         <div>
+                            <% if (product.variants[0].offerPrice) { %>
                             <span class="font-bold text-base text-[#1A1A1A]">$<%= product.variants[0].offerPrice %></span>
                             <span class="font-bold line-through text-base text-gray-500">$<%= product.variants[0].price %></span>
+                            <% } else { %>
+                            <span class="font-bold text-base text-[#1A1A1A]">$<%= product.variants[0].price %></span>
+                            <% } %>
                         </div>
                     </div>
                     
@@ -186,6 +176,7 @@
                         </div>
 
                         <button
+                            onclick="window.location.href='/contact'"
                             class="absolute top-12 right-12 bg-[#1A1A1A] hover:bg-black text-white pl-8 pr-3 py-3 rounded-full flex items-center gap-4 text-sm font-bold shadow-xl transition transform hover:-translate-y-1">
                             Consult Now
                             <div class="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center">

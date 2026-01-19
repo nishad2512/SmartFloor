@@ -52,6 +52,13 @@ const getSalesData = async (query) => {
         ])
     ]);
 
+    let refunds = orders.reduce((acc, order) => acc + (order.refund || 0), 0) + orders.reduce((acc, order) => {
+        if (order.status === 'Cancelled' || order.status === 'Returned') {
+            return acc + order.totalAmount;
+        }
+        return acc;
+    }, 0);
+
     const overallOrderAmount = orders.reduce((acc, order) => acc + order.totalAmount, 0);
     const overallDiscount = orders.reduce((acc, order) => acc + (order.coupenDiscount || 0), 0);
     
@@ -68,6 +75,7 @@ const getSalesData = async (query) => {
         startDate,
         endDate,
         status,
+        refunds,
         paymentMethod
     };
 };

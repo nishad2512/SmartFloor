@@ -317,7 +317,7 @@
                                 <% if (order.refund > 0) { %>
                                     <div class="flex justify-between text-[#757575]">
                                         <span>Refunded Amount</span>
-                                        <span class="font-medium text-red-600">-₹<%= order.refund.toLocaleString('en-IN') %></span>
+                                        <span class="font-medium text-red-600">-₹<%= order.refund.toFixed(2) %></span>
                                     </div>
                                     <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
                                 <% } %>

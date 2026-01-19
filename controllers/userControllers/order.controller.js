@@ -188,11 +188,11 @@ export const cancelOrder = async (req, res) => {
 
         if (shouldRefund && totalRefundAmount > 0) {
             const user = await User.findById(order.user);
-            const finalRefund = Math.round(totalRefundAmount);
-            user.wallet += finalRefund;
+            // const finalRefund = Math.round(totalRefundAmount);
+            user.wallet += totalRefundAmount;
 
             user.walletHistory.push({
-                amount: finalRefund,
+                amount: totalRefundAmount,
                 type: "credit",
                 reason: `Refund for order #${order.orderId.split('-')[2]} - Order Cancellation`,
                 date: new Date()
@@ -254,12 +254,12 @@ export const cancelOrderItem = async (req, res) => {
                 refundAmount += order.shipping;
             }
 
-            finalRefund = Math.floor(refundAmount);
+            // finalRefund = Math.round(refundAmount);
 
             const user = await User.findById(order.user);
-            user.wallet += finalRefund;
+            user.wallet += refundAmount;
             user.walletHistory.push({
-                amount: finalRefund,
+                amount: refundAmount,
                 type: "credit",
                 reason: `Refund for order #${order.orderId.split('-')[2]} - Item Cancellation`,
                 date: new Date()
@@ -270,7 +270,7 @@ export const cancelOrderItem = async (req, res) => {
         item.status = 'Cancelled';
         item.cancelReason = reason;
 
-        order.refund += finalRefund;
+        order.refund += refundAmount;
         order.totalAmount -= refundAmount;
 
         const product = await Product.findById(item.product);

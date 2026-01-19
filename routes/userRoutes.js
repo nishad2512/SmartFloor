@@ -68,7 +68,6 @@ router.route('/resetPassword/:token')
     .post(userController.resetPassword);
 
 // products
-router.use(requireAuth);
 
 router.get('/products', productController.products);
 
@@ -78,6 +77,7 @@ router.get('/products/product/:id', productController.productDetails);
 
 // profile -----------------
 
+router.use(requireAuth);
 
 // profile auth routes
 
