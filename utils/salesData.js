@@ -53,7 +53,7 @@ const getSalesData = async (query) => {
     ]);
 
     let refunds = orders.reduce((acc, order) => acc + (order.refund || 0), 0) + orders.reduce((acc, order) => {
-        if (order.status === 'Cancelled' || order.status === 'Returned') {
+        if ((order.status === 'Cancelled' && order.paymentStatus === 'paid') || order.status === 'Returned') {
             return acc + order.totalAmount;
         }
         return acc;

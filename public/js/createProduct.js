@@ -381,6 +381,11 @@ function validateForm() {
         return false; // Prevent form submission
     }
 
+    if (!hasError) {
+        const submitBtn = document.querySelector('#create-product-form button[type="submit"]');
+        showLoading(submitBtn, 'Creating Product...');
+    }
+
     return true; // Allow form submission
 }
 

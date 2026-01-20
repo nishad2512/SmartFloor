@@ -35,8 +35,10 @@
                                                 <select
                                                     class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-no-repeat bg-right pr-8"
                                                     id="discount-type" name="discountType">
-                                                    <option value="percentage" <%=coupen.discountType==='percentage' ? 'selected' : '' %>>Percentage</option>
-                                                    <option value="fixed" <%=coupen.discountType==='fixed' ? 'selected' : '' %>>Fixed Amount</option>
+                                                    <option value="percentage" <%=coupen.discountType==='percentage'
+                                                        ? 'selected' : '' %>>Percentage</option>
+                                                    <option value="fixed" <%=coupen.discountType==='fixed' ? 'selected'
+                                                        : '' %>>Fixed Amount</option>
                                                 </select>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -187,6 +189,9 @@
                             alert(errorMessage);
                         }
                     } else {
+                        const submitBtn = form.querySelector('button.bg-primary');
+                        showLoading(submitBtn, 'Updating Coupon...');
+
                         // Gather form data
                         const formData = new FormData(form);
                         const data = Object.fromEntries(formData.entries());
@@ -211,6 +216,7 @@
                                         window.location.href = '/admin/coupens';
                                     });
                                 } else {
+                                    hideLoading(submitBtn);
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error',
@@ -219,6 +225,7 @@
                                 }
                             })
                             .catch(error => {
+                                hideLoading(submitBtn);
                                 console.error('Error:', error);
                                 Swal.fire({
                                     icon: 'error',

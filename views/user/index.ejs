@@ -76,10 +76,10 @@
                         <span class="font-bold text-base text-[#1A1A1A]"><%= product.name %></span>
                         <div>
                             <% if (product.variants[0].offerPrice) { %>
-                            <span class="font-bold text-base text-[#1A1A1A]">$<%= product.variants[0].offerPrice %></span>
-                            <span class="font-bold line-through text-base text-gray-500">$<%= product.variants[0].price %></span>
+                            <span class="font-bold text-base text-[#1A1A1A]">₹<%= product.variants[0].offerPrice %></span>
+                            <span class="font-bold line-through text-base text-gray-500">₹<%= product.variants[0].price %></span>
                             <% } else { %>
-                            <span class="font-bold text-base text-[#1A1A1A]">$<%= product.variants[0].price %></span>
+                            <span class="font-bold text-base text-[#1A1A1A]">₹<%= product.variants[0].price %></span>
                             <% } %>
                         </div>
                     </div>

@@ -14,16 +14,20 @@ import nocache from "nocache";
 
 const router = express.Router();
 
-router.use(checkAdmin);
 router.use(nocache());
 
-router.get("/dashboard", dashboard);
 
 router.route("/login")
     .get(redirectIfLoggedIn, (req, res) => {
         res.render("admin/login");
     })
     .post(adminLogin);
+
+
+router.use(checkAdmin);
+
+
+router.get("/dashboard", dashboard);
 
 // categoryManagement
 

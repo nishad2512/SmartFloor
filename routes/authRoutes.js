@@ -47,7 +47,8 @@ passport.use(
                         email: profile.email,
                         password: "google",
                         name: profile.displayName,
-                        referral: generateCode(profile.displayName)
+                        referral: generateCode(profile.displayName),
+                        avatar: profile.picture
                     });
                     cb(null, newUser);
                 } else {

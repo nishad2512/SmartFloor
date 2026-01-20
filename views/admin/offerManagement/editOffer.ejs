@@ -57,7 +57,9 @@
                                                             class="flex items-center gap-3 py-2 border-b border-[#e0e0e0] dark:border-primary/10 last:border-0 product-item hover:bg-gray-50 dark:hover:bg-white/5 transition-colors px-2">
                                                             <input type="checkbox" name="products"
                                                                 value="<%= product._id %>" id="prod-<%= product._id %>"
-                                                                <%=(offer.products && offer.products.some(p => p.toString() === product._id.toString())) ? 'checked' : '' %>
+                                                                <%=(offer.products && offer.products.some(p=>
+                                                            p.toString() === product._id.toString())) ? 'checked' : ''
+                                                            %>
                                                             class="w-4 h-4 rounded border-gray-300 text-primary
                                                             focus:ring-primary">
                                                             <img src="<%= product.productImages[0] %>"
@@ -296,6 +298,9 @@
                             alert(errorMessage);
                         }
                     } else {
+                        const submitBtn = form.querySelector('button.bg-primary');
+                        showLoading(submitBtn, 'Updating Offer...');
+
                         // Gather form data
                         const formData = new FormData(form);
                         const data = Object.fromEntries(formData.entries());
@@ -328,6 +333,7 @@
                                         window.location.href = '/admin/offers';
                                     });
                                 } else {
+                                    hideLoading(submitBtn);
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error',
@@ -336,6 +342,7 @@
                                 }
                             })
                             .catch(error => {
+                                hideLoading(submitBtn);
                                 console.error('Error:', error);
                                 Swal.fire({
                                     icon: 'error',

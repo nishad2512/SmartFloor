@@ -1,26 +1,35 @@
 import * as authService from "../../services/userServices/auth.service.js";
 import { createToken, maxAge } from "../../utils/generateToken.js";
 
-
 const getErrorMessage = (code) => {
     switch (code) {
-        case "EMAIL_EXISTS": return "Email is already registered";
-        case "INVALID_REFERRAL": return "Invalid referral code";
-        case "OTP_EXPIRED": return "OTP has expired. Please request a new one";
-        case "INVALID_OTP": return "Incorrect OTP. Please try again";
-        case "BLOCKED": return "Account is blocked";
-        default: return code || "An error occurred";
+        case "EMAIL_EXISTS":
+            return "Email is already registered";
+        case "INVALID_REFERRAL":
+            return "Invalid referral code";
+        case "OTP_EXPIRED":
+            return "OTP has expired. Please request a new one";
+        case "INVALID_OTP":
+            return "Incorrect OTP. Please try again";
+        case "BLOCKED":
+            return "Account is blocked";
+        default:
+            return code || "An error occurred";
     }
 };
-
 
 export const login = async (req, res) => {
     try {
         const user = await authService.loginUser(
             req.body.email,
-            req.body.password
+            req.body.password,
         );
-        res.cookie("jwt", createToken(user._id), { maxAge: maxAge * 1000 });
+        res.cookie("jwt", createToken(user._id), {
+            maxAge: maxAge * 1000,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
 
         req.flash("success", "Logged in successfully");
         res.redirect("/");
@@ -67,6 +76,9 @@ export const verify = async (req, res) => {
         if (result.type === "SIGNED_UP") {
             res.cookie("jwt", createToken(result.user._id), {
                 maxAge: maxAge * 1000,
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
             });
             req.flash("success", "Signup successful");
             return res.redirect("/");
@@ -87,7 +99,7 @@ export const verify = async (req, res) => {
 export const resend = async (req, res) => {
     try {
         const { otp, expires } = await authService.resendOtp(
-            req.session.user.email
+            req.session.user.email,
         );
         req.session.otp = otp;
         req.session.expires = expires;
@@ -103,7 +115,12 @@ export const resend = async (req, res) => {
 export const googleAuth = async (req, res) => {
     try {
         const user = await authService.googleLogin(req.user);
-        res.cookie("jwt", createToken(user._id), { maxAge: maxAge * 1000 });
+        res.cookie("jwt", createToken(user._id), {
+            maxAge: maxAge * 1000,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
 
         req.flash("success", "Logged in successfully");
         res.redirect("/");
@@ -115,9 +132,12 @@ export const googleAuth = async (req, res) => {
 
 export const forgot = (req, res) => {
     try {
-    res.render("user/auth/forgot");
+        res.render("user/auth/forgot");
     } catch {
-        req.flash("error", "An error occurred while rendering forgot password page.");
+        req.flash(
+            "error",
+            "An error occurred while rendering forgot password page.",
+        );
         res.redirect("/");
     }
 };
@@ -138,7 +158,7 @@ export const resetPassword = async (req, res) => {
         await authService.resetPassword(
             req.params.token,
             req.session,
-            req.body.password
+            req.body.password,
         );
         req.flash("success", "Password reset successful");
         res.redirect("/login");

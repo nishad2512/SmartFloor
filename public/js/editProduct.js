@@ -365,5 +365,8 @@ document.querySelector("form").addEventListener("submit", function (e) {
         } else {
             alert(errorMessage);
         }
+    } else {
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        showLoading(submitBtn, 'Updating Product...');
     }
 });
