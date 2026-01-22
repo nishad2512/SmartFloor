@@ -107,8 +107,7 @@
                                         <div class="flex justify-between gap-x-6 py-2">
                                             <p class="text-[#757575] text-base font-normal leading-normal">
                                                 Subtotal (<span class="font-bold">
-                                                    <%= formattedCart.length==1 ? formattedCart.length + ' item' :
-                                                        formattedCart.length + ' items' %>
+                                                    <%= formattedCart.length==1 ? formattedCart.length + ' item' : formattedCart.length + ' items' %>
                                                 </span>)
                                             </p>
                                             <p id="subtotalAmount"
@@ -174,45 +173,54 @@
             <script>
                 // Quantity update functions can be added here
                 function updateQuantity(inputElement, change, cartItemId) {
-                    let currentQty;
                     let input;
+                    let newQty;
 
                     if (change === 0) {
-                        // Input change
-                        currentQty = parseInt(inputElement.value);
                         input = inputElement;
+                        newQty = parseInt(input.value);
                     } else {
-                        // + or -
                         input = inputElement.parentElement.querySelector("input");
-                        currentQty = parseInt(input.value) + change;
+                        newQty = parseInt(input.value) + change;
                     }
 
-                    if (currentQty < 1) return;
+                    if (newQty < 1) newQty = 1;
 
                     fetch('/cart/update/' + cartItemId, {
                         method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            quantity: currentQty
-                        })
-                    }).then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ quantity: newQty })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Server is source of truth
+                            input.value = data.quantity;
 
-                                input.value = data.quantity;
-                                document.querySelector(`p[data-cart-id="${cartItemId}"]`).innerText = '₹' + data.itemTotal.toLocaleString('en-IN');
-                                document.getElementById('totalAmount').innerText = '₹' + data.cartTotal
-                                document.getElementById('subtotalAmount').innerText = '₹' + data.cartTotal
+                            document.querySelector(
+                            `p[data-cart-id="${cartItemId}"]`
+                            ).innerText = '₹' + data.itemTotal.toLocaleString('en-IN');
 
-                            } else {
-                                swal.fire('Mistake', data.message || 'Could not update quantity', 'info');
-                                input.value = data.quantity;
-                            }
-                        });
-                    console.log("Quantity updated");
+                            document.getElementById('totalAmount').innerText = '₹' + data.cartTotal.toLocaleString('en-IN');
+                            document.getElementById('subtotalAmount').innerText = '₹' + data.cartTotal.toLocaleString('en-IN');
+
+                        } else {
+                            swal.fire({
+                            icon: data.type,
+                            title: data.type === 'error' ? 'Error' : 'Warning',
+                            text: data.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                            });
+
+                            // Revert UI to correct value from server
+                            input.value = data.quantity || input.defaultValue;
+                        }
+                    });
                 }
+
 
                 function deleteItem(cartItemId) {
                     fetch('/cart/delete/' + cartItemId, {

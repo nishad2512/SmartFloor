@@ -1,9 +1,6 @@
 import jwt from "jsonwebtoken";
 
 export const checkAdmin = (req, res, next) => {
-    if (req.path === "/login") {
-        return next();
-    }
     const token = req.cookies["admin-jwt"];
     if (token) {
         jwt.verify(token, process.env.JWT_SECRET_ADMIN, async (err, decodedToken) => {

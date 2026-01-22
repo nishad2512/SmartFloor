@@ -124,12 +124,12 @@ function generateInvoice(order, res) {
         // Use subTotal / quantity for unit price approximation
         const unitPrice = item.subTotal / item.quantity;
         doc.text(
-            `₹${unitPrice.toLocaleString("en-IN")}`,
+            `Rs. ${unitPrice.toLocaleString("en-IN")}`,
             priceX,
             y
         );
         doc.text(
-            `₹${item.subTotal.toLocaleString("en-IN")}`,
+            `Rs. ${item.subTotal.toLocaleString("en-IN")}`,
             totalX,
             y
         );
@@ -154,7 +154,7 @@ function generateInvoice(order, res) {
         .text("Subtotal:", summaryX, y)
         .fillColor(primaryColor)
         .text(
-            `₹${(order.subTotal || order.totalAmount).toLocaleString("en-IN", {
+            `${(order.subTotal || order.totalAmount).toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             })}`,
@@ -169,7 +169,7 @@ function generateInvoice(order, res) {
     doc.fillColor(secondaryColor)
         .text("Shipping:", summaryX, y)
         .fillColor(primaryColor)
-        .text(order.shipping === 0 ? "Free" : `₹${order.shipping.toFixed(2)}`, totalX, y, {
+        .text(order.shipping === 0 ? "Free" : `${order.shipping.toFixed(2)}`, totalX, y, {
             align: "right",
         });
 
@@ -181,7 +181,7 @@ function generateInvoice(order, res) {
             .text("Tax (18% GST):", summaryX, y)
             .fillColor(primaryColor)
             .text(
-                `₹${order.tax.toLocaleString("en-IN", {
+                `${order.tax.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 })}`,
@@ -208,7 +208,7 @@ function generateInvoice(order, res) {
         .font("Helvetica-Bold")
         .text("Grand Total:", summaryX, y)
         .text(
-            `₹${order.totalAmount.toLocaleString("en-IN", {
+            `Rs. ${order.totalAmount.toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             })}`,
@@ -235,4 +235,4 @@ function generateInvoice(order, res) {
 
 export default generateInvoice;
 
-// .text(`₹${item.price.toLocaleString()}`, 370, y)
+// .text(`Rs. ${item.price.toLocaleString()}`, 370, y)

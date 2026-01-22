@@ -4,6 +4,7 @@ import Product from "../../models/productModel.js";
 import generateInvoice from "../../utils/invoice.js";
 import refund, { calculateRefundAmount } from "../../utils/refund.js";
 import User from "../../models/userModel.js";
+import Coupen from "../../models/coupenModel.js";
 
 export const orderConfirmation = async (req, res) => {
     try {
@@ -187,11 +188,11 @@ export const cancelOrder = async (req, res) => {
 
         if (shouldRefund && totalRefundAmount > 0) {
             const user = await User.findById(order.user);
-            const finalRefund = Math.round(totalRefundAmount);
-            user.wallet += finalRefund;
+            // const finalRefund = Math.round(totalRefundAmount);
+            user.wallet += totalRefundAmount;
 
             user.walletHistory.push({
-                amount: finalRefund,
+                amount: totalRefundAmount,
                 type: "credit",
                 reason: `Refund for order #${order.orderId.split('-')[2]} - Order Cancellation`,
                 date: new Date()
@@ -214,6 +215,7 @@ export const cancelOrderItem = async (req, res) => {
         const { reason } = req.body;
         const orderId = req.params.orderId;
         const itemId = req.params.itemId;
+        let finalRefund = 0;
 
         const order = await Order.findOne({ orderId, user: req.userId });
 
@@ -232,23 +234,32 @@ export const cancelOrderItem = async (req, res) => {
             shouldRefund = false;
         }
 
+        let refundAmount = calculateRefundAmount(order, item);
+
+        if (order.coupenCode) {
+            const coupen = await Coupen.findOne({ code: order.coupenCode });
+            if (coupen && coupen.minPurchaseAmount > 0) {
+                if (order.items.length > 1 && (order.subTotal - refundAmount) < coupen.minPurchaseAmount) {
+                    return res.json({ success: false, message: "Order sub-total will become below the minimum purchase amount for the coupon. You will need to cancel the entire order." });
+                }
+            }
+        }
+
         if (shouldRefund) {
 
             const activeItems = order.items.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
             const isLastItem = activeItems.length === 1 && activeItems[0]._id.toString() === itemId.toString();
 
-            let refundAmount = calculateRefundAmount(order, item);
-
             if (isLastItem && order.shipping > 0) {
                 refundAmount += order.shipping;
             }
 
-            const finalRefund = Math.round(refundAmount);
+            // finalRefund = Math.round(refundAmount);
 
             const user = await User.findById(order.user);
-            user.wallet += finalRefund;
+            user.wallet += refundAmount;
             user.walletHistory.push({
-                amount: finalRefund,
+                amount: refundAmount,
                 type: "credit",
                 reason: `Refund for order #${order.orderId.split('-')[2]} - Item Cancellation`,
                 date: new Date()
@@ -258,6 +269,9 @@ export const cancelOrderItem = async (req, res) => {
 
         item.status = 'Cancelled';
         item.cancelReason = reason;
+
+        order.refund += refundAmount;
+        order.totalAmount -= refundAmount;
 
         const product = await Product.findById(item.product);
         const variant = product.variants.id(item.variant);

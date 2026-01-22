@@ -127,7 +127,7 @@
                                         </div>
                                         <div class="flex justify-between text-base text-[#757575]">
                                             <span>Taxes</span>
-                                            <span>₹<%= tax %></span>
+                                            <span>₹<%= tax.toFixed(2) %></span>
                                         </div>
                                         <div id="discount-row"
                                             class="hidden flex justify-between text-base text-green-600 mb-2">
@@ -277,7 +277,8 @@
                 }
                 let currentDiscount = 0;
                 let appliedCouponCode = null;
-                const originalTotal = parseFloat('<%= total %>');
+                const originalTotal = parseFloat('<%= totalAmount %>');
+                const fullTotal = parseFloat('<%= total %>');
 
                 async function applyCoupon() {
                     const codeInput = document.getElementById('coupon-code');
@@ -292,7 +293,7 @@
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             // Sending total to validate minimum purchase requirements on backend
-                            body: JSON.stringify({ code, currentTotal: originalTotal })
+                            body: JSON.stringify({ code, currentTotal: originalTotal, fullTotal: fullTotal })
                         });
 
                         const data = await response.json();
@@ -327,7 +328,7 @@
                     document.getElementById('coupon-status').classList.add('hidden');
                     document.getElementById('discount-row').classList.add('hidden');
                     
-                    updateGrandTotal(originalTotal);
+                    updateGrandTotal(fullTotal);
                 }
 
                 function updateGrandTotal(newAmount) {

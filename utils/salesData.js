@@ -3,9 +3,8 @@ import Order from "../models/orderModel.js";
 const getSalesData = async (query) => {
     const { period, startDate, endDate, status, paymentMethod } = query;
 
-    let filter = {}; // Only count successful sales
+    let filter = {};
 
-    // 1. Handle Date Logic
     let start = new Date();
     start.setHours(0, 0, 0, 0);
 
@@ -13,7 +12,7 @@ const getSalesData = async (query) => {
         filter.createdAt = { $gte: start };
     } else if (period === 'weekly') {
         const day = start.getDay();
-        const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
+        const diff = start.getDate() - day + (day === 0 ? -6 : 1);
         start.setDate(diff);
         filter.createdAt = { $gte: start };
     } else if (period === 'monthly') {
@@ -29,41 +28,42 @@ const getSalesData = async (query) => {
         };
     }
 
-    // 2. Handle Status Logic
-    if (status && status !== "") {
-        filter.status = status;
-    }
+    if (status) filter.status = status;
+    if (paymentMethod) filter.paymentMethod = paymentMethod;
 
-    // 3. Handle Payment Method Logic
-    if (paymentMethod && paymentMethod !== "") {
-        filter.paymentMethod = paymentMethod;
-    }
-
-    const orders = await Order.find(filter).sort({ createdAt: -1 }).populate('user');
-
-    // Calculate Stats
-    const overallOrderAmount = orders.reduce((val, acc) => val + acc.totalAmount, 0);
-    let salesAggregation = [];
-    if (status && status !== "Delivered") {
-        salesAggregation = [{ revenue: 0, count: 0 }]; 
-    } else {
-        const revenueFilter = { ...filter, status: "Delivered" };
-        
-        salesAggregation = await Order.aggregate([
-            { $match: revenueFilter },
+    const revenueStatus = status == 'Cancelled' || status == 'Returned' ? true : false;
+    const [orders, stats] = await Promise.all([
+        Order.find(filter).sort({ createdAt: -1 }).populate('user', 'name email').lean(),
+        Order.aggregate([
+            { 
+                $match: { 
+                    ...filter, 
+                    paymentStatus: "paid",
+                    status: { $nin: ["Cancelled", "Returned"] }
+                } 
+            },
             { 
                 $group: { 
                     _id: null, 
-                    revenue: { $sum: "$totalAmount" }, 
-                    count: { $sum: { $sum: '$items.quantity' } } 
+                    totalRevenue: { $sum: "$totalAmount" }, 
+                    totalItemsSold: { $sum: { $sum: "$items.quantity" } } 
                 } 
             }
-        ]);
-    }
+        ])
+    ]);
 
-    const overallSalesCount = salesAggregation.length > 0 ? salesAggregation[0].count : 0;
-    const totalRevenue = salesAggregation.length > 0 ? salesAggregation[0].revenue : 0;
-    const overallDiscount = orders.reduce((val, acc) => val + (acc.coupenDiscount || 0), 0);
+    let refunds = orders.reduce((acc, order) => acc + (order.refund || 0), 0) + orders.reduce((acc, order) => {
+        if ((order.status === 'Cancelled' && order.paymentStatus === 'paid') || order.status === 'Returned') {
+            return acc + order.totalAmount;
+        }
+        return acc;
+    }, 0);
+
+    const overallOrderAmount = orders.reduce((acc, order) => acc + order.totalAmount, 0);
+    const overallDiscount = orders.reduce((acc, order) => acc + (order.coupenDiscount || 0), 0);
+    
+    const totalRevenue = stats.length > 0 ? stats[0].totalRevenue : 0;
+    const overallSalesCount = stats.length > 0 ? stats[0].totalItemsSold : 0;
 
     return {
         orders,
@@ -75,6 +75,7 @@ const getSalesData = async (query) => {
         startDate,
         endDate,
         status,
+        refunds,
         paymentMethod
     };
 };

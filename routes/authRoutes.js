@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth2";
-import * as userController from "../controllers/userControllers/authController.js";
+import * as userController from "../controllers/userControllers/auth.controller.js";
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
 import nocache from "nocache";
@@ -47,7 +47,8 @@ passport.use(
                         email: profile.email,
                         password: "google",
                         name: profile.displayName,
-                        referral: generateCode(profile.displayName)
+                        referral: generateCode(profile.displayName),
+                        avatar: profile.picture
                     });
                     cb(null, newUser);
                 } else {

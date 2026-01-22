@@ -221,7 +221,7 @@ export const editProduct = async (req, res) => {
             try {
                 deletedImages = JSON.parse(req.body.deletedImages).map(num => parseInt(num));
             } catch (e) {
-                console.error("Error parsing deletedImages:", e);
+                return res.status(400).json({ success: false, message: "Invalid deleted images data." });
             }
         }
 
@@ -235,11 +235,9 @@ export const editProduct = async (req, res) => {
         product.productImages = currentImages;
 
         await product.save();
-        req.flash("success", "Product updated successfully");
-        res.redirect("/admin/products");
+        res.status(200).json({ success: true, message: "Product updated successfully" });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to update product details.");
-        res.redirect("/admin/products");
+        res.status(500).json({ success: false, message: "Failed to update product details." });
     }
 };

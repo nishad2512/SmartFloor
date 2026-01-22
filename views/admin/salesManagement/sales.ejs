@@ -176,6 +176,16 @@
                                     </div>
                                     <div
                                         class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6">
+                                        <p class="text-sm font-medium text-[#757575] dark:text-gray-400">Overall
+                                            Refunds</p>
+                                        <p class="text-3xl font-bold text-red-500 mt-2">
+                                            -<%= typeof refunds !=='undefined' ? '₹' +
+                                                refunds.toFixed(2) : '₹0.00' %>
+                                        </p>
+                                        <p class="text-sm text-[#757575] mt-1">Total deductions</p>
+                                    </div>
+                                    <div
+                                        class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6">
                                         <p class="text-sm font-medium text-[#757575] dark:text-gray-400">Total Revenue
                                         </p>
                                         <p class="text-3xl font-bold text-green-700 dark:text-white mt-2">
@@ -239,10 +249,10 @@
                                                     <td class="px-6 py-4 text-center">
                                                         <%= order.coupenCode ? order.coupenCode : '-' %>
                                                     </td>
-                                                    <td class="px-6 py-4 text-center text-green-700">-₹<%=
+                                                    <td class="px-6 py-4 text-center text-red-700">-₹<%=
                                                             order.coupenDiscount ? order.coupenDiscount : 0 %>
                                                     </td>
-                                                    <td class="px-6 py-4 text-right">₹<%= order.totalAmount %>
+                                                    <td class="px-6 py-4 text-right <%= order.status == 'Cancelled' || order.status == 'Returned' ? 'text-red-700' : 'text-green-700' %>"><%= order.status == 'Cancelled' || order.status == 'Returned' ? '-₹' + order.totalAmount.toFixed(2) : '+₹' + order.totalAmount.toFixed(2) %>
                                                     </td>
                                                 </tr>
                                                 <% }) %>

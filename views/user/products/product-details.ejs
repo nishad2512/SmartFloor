@@ -75,15 +75,12 @@
 
                 <div class="mb-8">
                     <% if (product.variants[0]?.offerPrice) { %>
-                        <span class="text-3xl font-bold text-[#1A1A1A]" id="displayOfferPrice">₹<%=
-                                product.variants[0].offerPrice.toLocaleString('en-IN') %>
+                        <span class="text-3xl font-bold text-[#1A1A1A]" id="displayOfferPrice">₹<%= product.variants[0].offerPrice.toLocaleString('en-IN') %>
                         </span>
-                        <span class="text-2xl font-semibold text-gray-500 line-through" id="displayPrice">₹<%=
-                                product.variants[0].price.toLocaleString('en-IN') %>
+                        <span class="text-2xl font-semibold text-gray-500 line-through" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
                         </span>
                         <% } else { %>
-                            <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%=
-                                    product.variants[0].price.toLocaleString('en-IN') %>
+                            <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
                             </span>
                             <% } %>
                                 <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
@@ -113,8 +110,9 @@
                         <div class="flex items-center border border-gray-300 rounded-full px-4 py-2">
                             <button onclick="updateQuantity(-1)"
                                 class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">-</button>
-                            <input type="number" id="quantityInput" value="1" min="1" name="quantity"
-                                class="w-16 text-center font-bold outline-none appearance-none"
+                            <input type="number" id="quantityInput" value="1" min="1"
+                                max="<%= product.variants[0].stock > 500 ? 500 : product.variants[0].stock %>"
+                                name="quantity" class="w-16 text-center font-bold outline-none appearance-none"
                                 onchange="calculateTotal()">
                             <button onclick="updateQuantity(1)"
                                 class="w-8 h-8 flex items-center justify-center text-lg hover:text-gray-500">+</button>
@@ -197,17 +195,27 @@
                 <span class="text-sm text-gray-500">Based on <%= product.reviews?.length ? product.reviews.length : 0 %> reviews</span>
             </div>
 
-            <% product.reviews && product.reviews.forEach(rev => { %>
-            <div class="border-b border-gray-100 pb-8 mb-8">
-                <div class="flex text-xs text-black mb-2 gap-1">
-                    <i class="<%= rev.rating > 0 ? 'ph-fill' : 'ph' %> ph-star"></i><i class="<%= rev.rating > 1 ? 'ph-fill' : 'ph' %> ph-star"></i><i class="<%= rev.rating > 2 ? 'ph-fill' : 'ph' %> ph-star"></i><i
-                        class="<%= rev.rating > 3 ? 'ph-fill' : 'ph' %> ph-star"></i><i class="<%= rev.rating > 4 ? 'ph-fill' : 'ph' %> ph-star"></i>
+            <% product.reviews && product.reviews.forEach(rev=> { %>
+                <div class="border-b border-gray-100 pb-8 mb-8">
+                    <div class="flex text-xs text-black mb-2 gap-1">
+                        <i class="<%= rev.rating > 0 ? 'ph-fill' : 'ph' %> ph-star"></i><i
+                            class="<%= rev.rating > 1 ? 'ph-fill' : 'ph' %> ph-star"></i><i
+                            class="<%= rev.rating > 2 ? 'ph-fill' : 'ph' %> ph-star"></i><i
+                            class="<%= rev.rating > 3 ? 'ph-fill' : 'ph' %> ph-star"></i><i
+                            class="<%= rev.rating > 4 ? 'ph-fill' : 'ph' %> ph-star"></i>
+                    </div>
+                    <h4 class="font-bold text-sm mb-2">
+                        <%= rev.title %>
+                    </h4>
+                    <p class="text-gray-500 text-sm mb-2 w-[800px] flex-wrap">
+                        <%= rev.review %>
+                    </p>
+                    <span class="text-xs text-gray-400">
+                        <%= rev.author %> on <%= rev.date.toLocaleDateString('en-US', { year: 'numeric' , month: 'long'
+                                , day: 'numeric' }) %>
+                    </span>
                 </div>
-                <h4 class="font-bold text-sm mb-2"><%= rev.title %></h4>
-                <p class="text-gray-500 text-sm mb-2 w-[800px] flex-wrap"><%= rev.review %></p>
-                <span class="text-xs text-gray-400"><%= rev.author %> on <%= rev.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
-            </div>
-            <% }) %>
+                <% }) %>
         </div>
 
         <div>
@@ -342,10 +350,53 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    location.reload()
+                                    location.reload();
                                 } else {
                                     console.error(data.message);
-                                    location.reload();
+
+                                    if (data.code === 'PRODUCT_BLOCKED' || data.message.includes('blocked') || data.message.includes('unavailable')) {
+                                        swal.fire({
+                                            icon: 'error',
+                                            title: 'Unavailable',
+                                            text: data.message,
+                                            toast: true,
+                                            position: 'top-end',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        });
+
+                                        setTimeout(() => {
+                                            let cart = document.getElementById('addToCartBtn');
+                                            if (cart) {
+                                                cart.disabled = true;
+                                                cart.innerText = data.message;
+                                            }
+                                            let buyNow = document.getElementById('buyNowBtn');
+                                            if (buyNow) buyNow.style.display = 'none';
+                                            let view = document.getElementById('viewInYourPlaceBtn');
+                                            if (view) view.style.display = 'none';
+
+                                            document.body.style.cursor = 'not-allowed';
+                                            document.body.style.filter = 'grayscale(100%)';
+
+                                            let stockInfo = document.getElementById('stockInfo');
+                                            if (stockInfo) {
+                                                stockInfo.innerText = 'This product is no longer available.';
+                                                stockInfo.style.color = 'red';
+                                            }
+                                        }, 1500);
+                                    } else {
+                                        // Non-critical error (e.g., limit reached, stock issue) - Just show Toast
+                                        swal.fire({
+                                            icon: data.type || 'info', // Use provided type or default to info
+                                            title: data.type === 'error' ? 'Error' : 'Info',
+                                            text: data.message,
+                                            toast: true,
+                                            position: 'top-end',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        });
+                                    }
                                 }
                             })
                             .catch(error => {
@@ -353,7 +404,7 @@
                                 swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: 'You need to login to use cart.'
+                                    text: 'Something went wrong. Check if you are logged in and try again.'
                                 });
                             });
 
@@ -401,6 +452,20 @@
                                         showConfirmButton: false,
                                         timer: 3000
                                     });
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 5000);
+                                    let cart = document.getElementById('addToCartBtn');
+                                    cart.disabled = true;
+                                    cart.innerText = data.message;
+                                    let buyNow = document.getElementById('buyNowBtn');
+                                    buyNow.style.display = 'none';
+                                    let view = document.getElementById('viewInYourPlaceBtn');
+                                    view.style.display = 'none';
+                                    document.body.style.cursor = 'not-allowed';
+                                    document.body.style.filter = 'grayscale(100%)';
+                                    document.getElementById('stockInfo').innerText = 'This product is no longer available.';
+                                    document.getElementById('stockInfo').style.color = 'red';
                                 }
                             })
                             .catch(error => {
@@ -482,15 +547,18 @@
                         const addToCartBtn = document.getElementById('addToCartBtn');
                         const buyNowBtn = document.getElementById('buyNowBtn');
                         const viewInYourPlaceBtn = document.getElementById('viewInYourPlaceBtn');
+                        const quantityInput = document.getElementById('quantityInput');
 
                         if (currentStock > 0) {
                             stockInfo.innerText = `In Stock: ${currentStock}`;
+                            quantityInput.max = currentStock > 500 ? 500 : currentStock;
                             stockInfo.className = 'mt-2 text-sm font-bold text-green-600';
                             addToCartBtn.style.display = 'flex';
                             buyNowBtn.style.display = 'block';
                             if (viewInYourPlaceBtn) viewInYourPlaceBtn.style.display = 'block';
                         } else {
                             stockInfo.innerText = "Out of Stock";
+                            quantityInput.max = 0;
                             stockInfo.className = 'mt-2 text-sm font-bold text-red-600';
                             addToCartBtn.style.display = 'none';
                             buyNowBtn.style.display = 'none';
@@ -512,6 +580,8 @@
                         const input = document.getElementById('quantityInput');
                         let newVal = parseInt(input.value) + change;
                         if (newVal < 1) newVal = 1;
+                        if (newVal > 500) newVal = 500;
+                        if (newVal > currentStock && currentStock > 0 && newVal <= 500) newVal = currentStock;
                         input.value = newVal;
                         calculateTotal();
                     }
@@ -522,6 +592,12 @@
                         if (qty < 1) {
                             document.getElementById('quantityInput').value = 1;
                             total = (currentPrice * 1).toFixed(2);
+                        } else if (qty > 500) {
+                            document.getElementById('quantityInput').value = 500;
+                            total = (currentPrice * 500).toFixed(2);
+                        } else if (qty > currentStock && currentStock > 0 && qty <= 500) {
+                            document.getElementById('quantityInput').value = currentStock;
+                            total = (currentPrice * currentStock).toFixed(2);
                         } else {
                             total = (currentPrice * qty).toFixed(2);
                         }

@@ -1,6 +1,7 @@
 import Order from "../../models/orderModel.js";
 import Return from "../../models/returnModel.js";
 import Product from "../../models/productModel.js";
+import User from "../../models/userModel.js";
 import refund from "../../utils/refund.js";
 
 export const orders = async (req, res) => {
@@ -13,7 +14,8 @@ export const orders = async (req, res) => {
 
         if (search) {
             query.$or = [
-                { orderId: { $regex: search, $options: 'im' } }
+                { orderId: { $regex: search, $options: 'im' } },
+                { user: await User.find({ name: { $regex: search, $options: 'i' } }).distinct('_id') }
             ];
         }
 
@@ -119,21 +121,60 @@ export const updateStatus = async (req, res) => {
 
 export const returns = async (req, res) => {
     try {
-
-        const totalCount = await Return.countDocuments();
-        const page = req.query.page || 1;
+        const { search, status, sort, page = 1 } = req.query;
         const limit = 5;
         const skip = (page - 1) * limit;
+
+        let query = {};
+
+        if (status) {
+            query.status = status;
+        }
+
+        if (search) {
+            const users = await User.find({ name: { $regex: search, $options: 'i' } }).select('_id');
+            const userIds = users.map(user => user._id);
+            query.$or = [
+                { reason: { $regex: search, $options: 'i' } },
+                { userId: { $in: userIds } }
+            ];
+        }
+
+        let sortQuery = { createdAt: -1 };
+        if (sort === 'oldest') {
+            sortQuery = { createdAt: 1 };
+        } else if (sort === 'amount_desc') {
+            sortQuery = { refundAmount: -1 };
+        } else if (sort === 'amount_asc') {
+            sortQuery = { refundAmount: 1 };
+        }
+
+        const totalCount = await Return.countDocuments(query);
         const totalPages = Math.ceil(totalCount / limit);
 
-        const returns = await Return.find().skip(skip).limit(limit).sort({ createdAt: -1 }).populate('userId').populate({
-            path: 'orderId',
-            populate: {
-                path: 'items.product'
-            }
-        });
+        const returns = await Return.find(query)
+            .sort(sortQuery)
+            .skip(skip)
+            .limit(limit)
+            .populate('userId')
+            .populate({
+                path: 'orderId',
+                populate: {
+                    path: 'items.product'
+                }
+            });
 
-        res.render('admin/orderManagement/returns', { returns, page, totalCount, totalPages, skip, limit });
+        res.render('admin/orderManagement/returns', {
+            returns,
+            page: parseInt(page),
+            totalCount,
+            totalPages,
+            skip,
+            limit,
+            search,
+            status,
+            sort
+        });
 
     } catch (error) {
         console.error(error);
@@ -195,6 +236,13 @@ export const updateReturnStatus = async (req, res) => {
 
         if (item.status == "Return Request" && status == "Approved") {
             await refund(order, item);
+        }
+
+        const statuses = ['Return Request', 'Approved', 'Rejected', "Picked", 'Refunded'];
+
+        if (statuses.indexOf(returnRequest.status) > statuses.indexOf(status)) {
+            req.flash("error", "You can't change return status in reverse.");
+            return res.json({ success: false });
         }
 
         returnRequest.status = status;

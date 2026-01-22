@@ -162,8 +162,8 @@
                 const name = document.getElementById('name').value.trim();
                 if (!name) {
                     showError('name', 'Full name is required');
-                } else if (name.length < 3) {
-                    showError('name', 'Name must be at least 3 characters');
+                } else if (name.length < 3 || name.length > 50) {
+                    showError('name', 'Name must be between 3 and 50 characters');
                 }
 
                 // Email Validation (Optional but checked if present)
@@ -185,6 +185,8 @@
                 const address1 = document.getElementById('address1').value.trim();
                 if (!address1) {
                     showError('address1', 'Street address is required');
+                } else if (address1.length < 5 || address1.length > 100) {
+                    showError('address1', 'Address must be between 5 and 100 characters');
                 }
 
                 // City Validation

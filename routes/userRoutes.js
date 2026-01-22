@@ -1,13 +1,14 @@
 import express from "express";
-import * as userController from "../controllers/userControllers/authController.js";
-import * as productController from "../controllers/userControllers/productController.js";
-import * as profileController from "../controllers/userControllers/profileController.js";
-import * as addressController from "../controllers/userControllers/addressController.js";
-import * as cartController from "../controllers/userControllers/cartController.js";
-import * as wishlistController from "../controllers/userControllers/wishlistController.js";
-import * as checkoutController from "../controllers/userControllers/checkoutController.js";
-import * as orderController from "../controllers/userControllers/orderController.js";
-import * as paymentController from "../controllers/userControllers/paymentController.js";
+import * as userController from "../controllers/userControllers/auth.controller.js";
+import * as productController from "../controllers/userControllers/product.controller.js";
+import * as profileController from "../controllers/userControllers/profile.controller.js";
+import * as addressController from "../controllers/userControllers/address.controller.js";
+import * as cartController from "../controllers/userControllers/cart.controller.js";
+import * as wishlistController from "../controllers/userControllers/wishlist.controller.js";
+import * as checkoutController from "../controllers/userControllers/checkout.controller.js";
+import * as orderController from "../controllers/userControllers/order.controller.js";
+import * as paymentController from "../controllers/userControllers/payment.controller.js";
+import * as chatController from "../controllers/userControllers/chat.controller.js";
 import {
     requireAuth,
     redirectIfLoggedIn,
@@ -21,9 +22,10 @@ const router = express.Router();
 router.use(checkUser);
 router.use(nocache());
 
+router.post('/chat', chatController.chatWithBot);
+
 router.get("/", async (req, res) => {
     const products = await productController.getFeaturedProducts();
-    console.log(products);
     res.render("user/index", { products });
 });
 
@@ -53,7 +55,7 @@ router.route("/otp")
 
 router.get("/resend", redirectIfLoggedIn, userController.resend);
 
-router.get('/logout', userController.logout);
+router.post('/logout', userController.logout);
 
 router.route('/forgot-password')
     .get(userController.forgot)

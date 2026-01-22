@@ -10,8 +10,10 @@ const adminLogin = async (req, res) => {
         if (admin && (await compare(password, admin.password))) {
             const token = createAdminToken(admin._id);
             res.cookie("admin-jwt", token, {
-                httpOnly: false,
+                httpOnly: true,
                 maxAge: maxAge * 1000,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
             });
             req.flash("success", "Logged in successfully");
             res.redirect("/admin/dashboard");

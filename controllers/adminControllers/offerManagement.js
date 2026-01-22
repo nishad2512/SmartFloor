@@ -5,11 +5,37 @@ import Category from "../../models/categoryModel.js";
 export const offers = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
+        const { search, isActive, scope, sort } = req.query;
         const limit = 5;
         const skip = (page - 1) * limit;
 
-        const totalOffers = await Offer.countDocuments();
-        const offers = await Offer.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+        let query = {};
+        if (search) {
+            query.name = { $regex: search, $options: 'i' };
+        }
+        if (isActive) {
+            if (isActive === 'active') query.isActive = true;
+            if (isActive === 'inactive') query.isActive = false;
+        }
+        if (scope) {
+            query.scope = scope;
+        }
+
+        let sortQuery = { createdAt: -1 };
+        if (sort === 'oldest') {
+            sortQuery = { createdAt: 1 };
+        } else if (sort === 'value_high') {
+            sortQuery = { value: -1 };
+        } else if (sort === 'value_low') {
+            sortQuery = { value: 1 };
+        } else if (sort === 'start_date_desc') {
+            sortQuery = { start: -1 };
+        } else if (sort === 'start_date_asc') {
+            sortQuery = { start: 1 };
+        }
+
+        const totalOffers = await Offer.countDocuments(query);
+        const offers = await Offer.find(query).sort(sortQuery).skip(skip).limit(limit);
         const totalPages = Math.ceil(totalOffers / limit);
 
         res.render('admin/offerManagement/offers', {
@@ -18,7 +44,11 @@ export const offers = async (req, res) => {
             totalPages,
             totalOffers,
             skip,
-            limit
+            limit,
+            search,
+            isActive,
+            scope,
+            sort
         });
 
     } catch (error) {
@@ -108,6 +138,13 @@ export const editOffer = async (req, res) => {
 
         const data = { ...req.body };
         const offerId = req.params.id
+
+        const offer = await Offer.findOne({ _id: { $ne: offerId }, name: { $regex: data.name, $options: 'i' } });
+
+        if (offer) {
+            req.flash("error", "Offer name already exists");
+            return res.json({ success: false, message: "Offer name already exists" });
+        }
 
         if (data.scope === 'product') {
             data.category = null;

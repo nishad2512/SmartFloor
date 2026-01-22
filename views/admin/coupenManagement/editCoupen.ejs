@@ -46,10 +46,21 @@
                                                     for="discount-value">Discount Value</label>
                                                 <input
                                                     class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                                    id="discount-value" name="discountValue"
-                                                    value="<%= coupen.discountValue %>" placeholder="e.g. 20"
-                                                    type="number" min="0" step="0.01" />
+                                                    id="discount-value" name="discountValue" id="discount-value"
+                                                    name="discountValue" value="<%= coupen.discountValue %>"
+                                                    placeholder="e.g. 20" type="number" min="0" step="0.01" />
                                             </div>
+                                        </div>
+
+                                        <div class="flex flex-col gap-2" id="max-discount-container"
+                                            style="display: none;">
+                                            <label class="text-sm font-medium text-[#141414] dark:text-white"
+                                                for="max-discount-amount">Max Discount Amount (Optional)</label>
+                                            <input
+                                                class="w-full rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-transparent px-3 py-2.5 text-sm text-[#141414] dark:text-white placeholder:text-[#757575] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                id="max-discount-amount" name="maxDiscountAmount"
+                                                value="<%= coupen.maxDiscountAmount %>" placeholder="e.g. 1000"
+                                                type="number" min="0" />
                                         </div>
 
                                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -114,6 +125,7 @@
                     const code = document.getElementById('coupen-code').value;
                     const discountType = document.getElementById('discount-type').value;
                     const discountValue = document.getElementById('discount-value').value;
+                    const maxDiscountAmount = document.getElementById('max-discount-amount').value;
                     const minPurchase = document.getElementById('min-purchase').value;
                     const usageLimit = document.getElementById('usage-limit').value;
                     const expirationDate = document.getElementById('expiration-date').value;
@@ -137,9 +149,14 @@
                     }
 
                     // Validate Percentage
-                    else if (discountType === 'percentage' && parseFloat(discountValue) > 100) {
+                    else if (discountType === 'percentage' && parseFloat(discountValue) > 90) {
                         isValid = false;
-                        errorMessage = 'Percentage cannot exceed 100%';
+                        errorMessage = 'Percentage cannot exceed 90%';
+                    }
+
+                    else if (discountType === 'fixed' && minPurchase && parseFloat(discountValue) >= minPurchase) {
+                        isValid = false;
+                        errorMessage = 'Fixed discount cannot exceed minimum purchase amount';
                     }
 
                     // Validate Expiration Date
@@ -172,6 +189,9 @@
                             alert(errorMessage);
                         }
                     } else {
+                        const submitBtn = form.querySelector('button.bg-primary');
+                        showLoading(submitBtn, 'Updating Coupon...');
+
                         // Gather form data
                         const formData = new FormData(form);
                         const data = Object.fromEntries(formData.entries());
@@ -196,6 +216,7 @@
                                         window.location.href = '/admin/coupens';
                                     });
                                 } else {
+                                    hideLoading(submitBtn);
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error',
@@ -204,6 +225,7 @@
                                 }
                             })
                             .catch(error => {
+                                hideLoading(submitBtn);
                                 console.error('Error:', error);
                                 Swal.fire({
                                     icon: 'error',
@@ -215,4 +237,24 @@
                 });
             }
         });
+
+        // Toggle Max Discount Field
+        const discountTypeSelect = document.getElementById('discount-type');
+        const maxDiscountContainer = document.getElementById('max-discount-container');
+        const maxDiscountInput = document.getElementById('max-discount-amount');
+
+        function toggleMaxDiscount() {
+            if (discountTypeSelect.value === 'percentage') {
+                maxDiscountContainer.style.display = 'flex';
+            } else {
+                maxDiscountContainer.style.display = 'none';
+                if (maxDiscountInput) maxDiscountInput.value = '';
+            }
+        }
+
+        // Initial check
+        if (discountTypeSelect) {
+            toggleMaxDiscount();
+            discountTypeSelect.addEventListener('change', toggleMaxDiscount);
+        }
     </script>

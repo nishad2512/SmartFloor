@@ -301,7 +301,7 @@
                                         </span>
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
-                                        <span>Discount</span>
+                                        <span>Coupen Discount</span>
                                         <span class="font-medium text-green-600">-₹<%= order.coupenDiscount %></span>
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
@@ -314,15 +314,19 @@
                                     </div>
                                 </div>
                                 <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
+                                <% if (order.refund > 0) { %>
+                                    <div class="flex justify-between text-[#757575]">
+                                        <span>Refunded Amount</span>
+                                        <span class="font-medium text-red-600">-₹<%= order.refund.toFixed(2) %></span>
+                                    </div>
+                                    <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
+                                <% } %>
                                 <div class="flex justify-between items-baseline mb-2">
                                     <span class="font-bold text-lg">Total</span>
                                     <span class="font-bold text-3xl tracking-tight">
-                                        ₹<%= order.totalAmount.toLocaleString('en-IN') %>
+                                        ₹<%= order.totalAmount.toFixed(2) %>
                                     </span>
                                 </div>
-                                <!-- <p class="text-xs text-[#757575] text-right">
-                                    Paid on Oct 24, 2023
-                                </p> -->
                             </div>
                         </div>
                     </div>

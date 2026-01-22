@@ -126,7 +126,6 @@ export const changeMail = async (req, res) => {
 
 export const newMailPage = async (req, res) => {
     try {
-        req.flash("success", "Email verified");
         res.render("user/profile/editEmail");
     } catch (error) {
         console.error(error);
@@ -137,7 +136,15 @@ export const newMailPage = async (req, res) => {
 
 export const newMail = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { email: rawEmail } = req.body;
+        const email = rawEmail.trim();
+
+        const currentUser = await User.findById(req.userId);
+
+        if (currentUser.email === email) {
+            req.flash("error", "This is already your email");
+            return res.redirect("/profile/new-mail");
+        }
 
         // Basic email regex validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -166,6 +173,7 @@ export const newMail = async (req, res) => {
         req.session.newMail = email;
         req.session.changeMail = false;
 
+        req.flash("success", "OTP sent to " + email);
         res.render("user/auth/otp", {
             expiry: req.session.expires,
             email: email,

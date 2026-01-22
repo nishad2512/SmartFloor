@@ -23,6 +23,11 @@ const coupenSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    maxDiscountAmount: {
+        type: Number,
+        default: null,
+        min: 0
+    },
     usageLimit: {
         type: Number,
         default: null,

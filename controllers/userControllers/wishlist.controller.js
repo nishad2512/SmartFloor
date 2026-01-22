@@ -1,3 +1,4 @@
+import Product from "../../models/productModel.js";
 import Wishlist from "../../models/wishlistModel.js";
 
 const wishlist = async (req, res) => {
@@ -28,6 +29,12 @@ const addToWishlist = async (req, res) => {
 
         if (existingItem) {
             return res.status(200).json({ success: false, message: "Product already in wishlist" });
+        }
+
+        const product = await Product.findOne({ _id: productId, isActive: true });
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not available" });
         }
 
         const newWishlist = new Wishlist({

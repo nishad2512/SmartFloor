@@ -21,9 +21,7 @@ export const downloadSalesPDF = async (req, res) => {
             totalRevenue,
             overallSalesCount,
             overallDiscount,
-            period,
-            startDate,
-            endDate
+            refunds
         } = await getSalesData(req.query);
 
         const doc = new PDFDocument({ margin: 30, size: "A4" });
@@ -54,7 +52,7 @@ export const downloadSalesPDF = async (req, res) => {
         doc.moveDown(2);
         doc.fillColor("black");
 
-        const cardY = doc.y;
+        let cardY = doc.y;
         const cardWidth = 120;
         const cardHeight = 70;
         const gap = 15;
@@ -63,11 +61,17 @@ export const downloadSalesPDF = async (req, res) => {
             { title: "Orders", value: orders.length },
             { title: "Sales Count", value: overallSalesCount },
             { title: "Revenue", value: `₹ ${totalRevenue.toFixed(2)}` },
-            { title: "Discount", value: `₹ ${overallDiscount || 0}` }
+            { title: "Discount", value: `₹ ${overallDiscount.toFixed(2) || 0}` },
+            { title: "Refunds", value: `₹ ${refunds.toFixed(2) || 0}` },
         ];
 
         cards.forEach((card, i) => {
-            const x = 30 + i * (cardWidth + gap);
+            let x = 30 + i * (cardWidth + gap);
+
+            if (i > 3 ) {
+                x = 30 + (i - 4) * (cardWidth + gap);
+                cardY += cardHeight + gap;
+            }
 
             doc
                 .roundedRect(x, cardY, cardWidth, cardHeight, 8)
@@ -140,7 +144,7 @@ export const downloadSalesPDF = async (req, res) => {
             doc.text(order.paymentMethod, 265, y + 6);
             doc.text(order.status, 345, y + 6);
             doc.text(order.coupenCode || "-", 415, y + 6);
-            doc.text(`₹ ${order.totalAmount}`, 495, y + 6);
+            doc.text(`₹ ${order.totalAmount.toFixed(2)}`, 495, y + 6);
 
             y += 22;
         });
@@ -169,6 +173,8 @@ export const downloadSalesExcel = async (req, res) => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Sales Report');
 
+        worksheet.title = 'Sales Report - SmartFloor';
+
         worksheet.columns = [
             { header: "Date", key: "date", width: 15 },
             { header: "Order ID", key: "orderId", width: 20 },
@@ -189,7 +195,7 @@ export const downloadSalesExcel = async (req, res) => {
                 status: order.status,
                 coupon: order.coupenCode || "-",
                 discount: order.coupenDiscount || 0,
-                amount: order.totalAmount
+                amount: order.totalAmount.toFixed(2)
             });
         });
 
