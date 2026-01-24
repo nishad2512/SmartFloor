@@ -19,6 +19,9 @@ const PORT = process.env.PORT || 3000;
 
 await connectDB();
 
+app.set("view engine", "ejs");
+app.set('trust proxy', true);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -37,9 +40,6 @@ app.use((req, res, next) => {
 });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
-app.set("view engine", "ejs");
-app.set('trust proxy', true);
 
 app.use(methodOverride("_method"));
 
