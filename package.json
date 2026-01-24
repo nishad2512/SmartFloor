@@ -50,6 +50,7 @@
     }
   },
   "devDependencies": {
+    "jest": "^30.2.0",
     "nodemon": "^3.1.11",
     "or": "^0.2.0"
   }
