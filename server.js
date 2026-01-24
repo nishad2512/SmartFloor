@@ -37,7 +37,10 @@ app.use((req, res, next) => {
 });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
 app.set("view engine", "ejs");
+app.set('trust proxy', true);
+
 app.use(methodOverride("_method"));
 
 app.use("/auth", authRoutes);
