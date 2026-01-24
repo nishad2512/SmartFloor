@@ -22,6 +22,7 @@
                     </div>
 
                     <div class="hidden lg:flex flex-col gap-8">
+                        <% if (products && products.length > 0) { %>
                         <div
                             onclick="window.location.href='/products/product/<%= products[0].slug %>'"
                             class="flex-1 bg-white rounded-[3rem] p-4 border border-gray-100 shadow-sm hover:shadow-lg transition cursor-pointer flex flex-col">
@@ -54,6 +55,7 @@
                                 </p>
                             </div>
                         </div>
+                        <% } %>
                     </div>
                 </div>
             </header>
