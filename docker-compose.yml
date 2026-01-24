@@ -3,7 +3,6 @@ services:
   # The Node.js Application
   app:
     build: .
-    container_name: mern-app
     restart: always
     env_file:
       - .env
