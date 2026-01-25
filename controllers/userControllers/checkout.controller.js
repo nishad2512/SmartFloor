@@ -4,6 +4,7 @@ import Product from "../../models/productModel.js";
 import Offer from "../../models/offerModel.js";
 import Coupen from "../../models/coupenModel.js";
 import * as checkoutService from "../../services/userServices/checkout.service.js";
+import { Address } from "../../models/userModel.js";
 
 export const checkout = async (req, res) => {
     try {
@@ -54,9 +55,19 @@ export const placeOrder = async (req, res) => {
             return res.json({ success: false, message: "Cart is empty" });
         }
 
+        const addressDoc = await Address.findById(addressId);
+
+        const addressSnapshot = addressDoc.toObject({ 
+            transform: (doc, ret) => {
+                delete ret._id; // Remove the ID during conversion
+                delete ret.__v; // Remove the version key
+                return ret;
+            }
+        });
+
         const newOrder = new Order({
             user: userId,
-            address: addressId,
+            address: addressSnapshot,
             subTotal: totalAmount,
             tax,
         });

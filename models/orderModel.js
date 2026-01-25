@@ -15,9 +15,15 @@ const orderSchema = new mongoose.Schema({
         }
     },
     address: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Address",
-        required: true
+        name: String,
+        email: String,
+        phone: String,
+        address1: String,
+        address2: String,
+        city: String,
+        state: String,
+        zip: String,
+        type: { type: String }
     },
     paymentMethod: {
         type: String,

@@ -10,7 +10,7 @@ export const orderConfirmation = async (req, res) => {
     try {
         const orderId = req.params.orderId;
         const userId = req.userId;
-        const order = await Order.findOne({ _id: orderId, user: userId }).populate('items.product').populate('address').populate('user');
+        const order = await Order.findOne({ _id: orderId, user: userId }).populate('items.product').populate('user');
 
         if (!order) {
             req.flash("error", "Order not found");
@@ -33,7 +33,7 @@ export const downloadInvoice = async (req, res) => {
         const { orderId } = req.params;
 
         // Fetch order and populate product details
-        const order = await Order.findOne({ orderId }).populate('items.product').populate('address').populate('user');
+        const order = await Order.findOne({ orderId }).populate('items.product').populate('user');
 
         if (!order) {
             return res.status(404).send('Order not found');

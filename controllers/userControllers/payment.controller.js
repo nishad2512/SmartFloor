@@ -177,7 +177,7 @@ export const failedPage = async (req, res) => {
 
         const orderId = req.params.orderId;
         const userId = req.userId;
-        const order = await Order.findOne({ _id: orderId, user: userId }).populate('items.product').populate('address').populate('user');
+        const order = await Order.findOne({ _id: orderId, user: userId }).populate('items.product').populate('user');
 
         if (!order) {
             req.flash("error", "Order not found");
