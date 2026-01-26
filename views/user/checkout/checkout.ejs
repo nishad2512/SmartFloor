@@ -154,22 +154,22 @@
                                                 <i class="ph-bold ph-tag"></i>
                                                 View Available Coupons
                                             </button>
-                                        <% } %>
-                                        <div id="coupon-status"
-                                            class="hidden mt-3 p-3 rounded-lg border border-dashed border-green-500 bg-green-50">
-                                            <div class="flex justify-between items-center">
-                                                <div>
-                                                    <p class="text-sm font-bold text-green-700"
-                                                        id="applied-code-name"></p>
-                                                    <p class="text-xs text-green-600" id="coupon-description">
-                                                    </p>
+                                            <% } %>
+                                                <div id="coupon-status"
+                                                    class="hidden mt-3 p-3 rounded-lg border border-dashed border-green-500 bg-green-50">
+                                                    <div class="flex justify-between items-center">
+                                                        <div>
+                                                            <p class="text-sm font-bold text-green-700"
+                                                                id="applied-code-name"></p>
+                                                            <p class="text-xs text-green-600" id="coupon-description">
+                                                            </p>
+                                                        </div>
+                                                        <button onclick="removeCoupon()"
+                                                            class="text-red-500 hover:text-red-700">
+                                                            <span class="material-symbols-outlined text-sm">close</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <button onclick="removeCoupon()"
-                                                    class="text-red-500 hover:text-red-700">
-                                                    <span class="material-symbols-outlined text-sm">close</span>
-                                                </button>
-                                            </div>
-                                        </div>
                                     </div>
 
 
@@ -179,8 +179,7 @@
                                         <span class="grand-total-display">₹<%= total.toLocaleString('en-IN') %></span>
                                     </div>
                                 </div>
-                                <div
-                                    class="mt-6">
+                                <div class="mt-6">
                                     <button onclick="placeOrder()"
                                         class="flex w-full items-center justify-center rounded-lg bg-black text-white font-bold h-12 px-8 text-base leading-normal transition-colors hover:bg-opacity-90">
                                         Place Order
@@ -252,7 +251,7 @@
                 </div>
             </div>
             <script>
-                window.onpageshow = function(event) {
+                window.onpageshow = function (event) {
                     if (event.persisted) {
                         // Force a reload from the server to check if session.item is actually null
                         window.location.reload();
@@ -308,9 +307,9 @@
                             document.getElementById('applied-code-name').innerText = code;
                             document.getElementById('coupon-description').innerText = `Discount: ₹${currentDiscount}`;
                             document.getElementById('discount-amount').innerText = `- ₹${currentDiscount}`;
-                            
+
                             updateGrandTotal(data.newTotal);
-                            
+
                             Swal.fire({ icon: 'success', title: 'Coupon Applied!', timer: 1500, showConfirmButton: false });
                         } else {
                             Swal.fire({ icon: 'error', title: 'Invalid Coupon', text: data.message });
@@ -327,7 +326,7 @@
                     document.getElementById('coupon-code').value = '';
                     document.getElementById('coupon-status').classList.add('hidden');
                     document.getElementById('discount-row').classList.add('hidden');
-                    
+
                     updateGrandTotal(fullTotal);
                 }
 
@@ -338,6 +337,9 @@
                     }
                 }
                 function placeOrder() {
+                    const btn = document.querySelector('button[onclick="placeOrder()"]');
+                    const originalContent = btn.innerHTML;
+
                     const selectedAddress = document.querySelector('input[name="shipping-address"]:checked');
                     // const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked');
                     const totalAmount = '<%= totalAmount %>';
@@ -351,14 +353,10 @@
                         return;
                     }
 
-                    // if (!selectedPaymentMethod) {
-                    //     swal.fire({
-                    //         icon: 'warning',
-                    //         title: 'No Payment Method Selected',
-                    //         text: 'Please select a payment method to proceed.',
-                    //     });
-                    //     return;
-                    // }
+                    // Loading State
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="flex items-center gap-2"><i class="ph-bold ph-spinner animate-spin"></i> Placing Order...</span>';
+                    btn.classList.add('opacity-70', 'cursor-not-allowed');
 
                     const orderData = {
                         addressId: selectedAddress.value,
@@ -378,6 +376,11 @@
                             if (data.success) {
                                 window.location.href = '/payment/' + data.orderId;
                             } else {
+                                // Revert State
+                                btn.disabled = false;
+                                btn.innerHTML = originalContent;
+                                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+
                                 swal.fire({
                                     icon: 'error',
                                     title: 'Order Failed',
@@ -386,6 +389,11 @@
                             }
                         })
                         .catch(error => {
+                            // Revert State
+                            btn.disabled = false;
+                            btn.innerHTML = originalContent;
+                            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+
                             console.error('Error:', error);
                             swal.fire({
                                 icon: 'error',

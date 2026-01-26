@@ -106,39 +106,39 @@
                                     </div>
                                 </div>
                             </label>
-                        <% } %>
-                        <!-- COD Option (Inactive) -->
-                        <% if (order.totalAmount < 1000) { %>
-                            <label
-                                class="group relative flex cursor-pointer flex-col gap-4 rounded-xl border p-6 transition-all border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm has-[:checked]:border-black has-[:checked]:bg-white has-[:checked]:shadow-lg has-[:checked]:ring-1 has-[:checked]:ring-black">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex gap-4 items-center">
-                                        <div
-                                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white text-[#757575] border border-gray-100 shadow-sm">
-                                            <i class="ph-bold ph-truck text-2xl"></i>
+                            <% } %>
+                                <!-- COD Option (Inactive) -->
+                                <% if (order.totalAmount < 1000) { %>
+                                    <label
+                                        class="group relative flex cursor-pointer flex-col gap-4 rounded-xl border p-6 transition-all border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm has-[:checked]:border-black has-[:checked]:bg-white has-[:checked]:shadow-lg has-[:checked]:ring-1 has-[:checked]:ring-black">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex gap-4 items-center">
+                                                <div
+                                                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white text-[#757575] border border-gray-100 shadow-sm">
+                                                    <i class="ph-bold ph-truck text-2xl"></i>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <p class="text-base font-semibold text-black">
+                                                        Cash on Delivery
+                                                    </p>
+                                                    <p class="text-sm text-[#757575] mt-1">
+                                                        Pay upon arrival of your order.
+                                                    </p>
+                                                    <p class="text-xs text-orange-600 mt-1 font-medium">
+                                                        <!-- Additional $5 handling fee applies -->
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white dark:bg-transparent ring-offset-2 group-has-[:checked]:border-black group-has-[:checked]:bg-black">
+                                                <input class="h-0 w-0 opacity-0" name="payment_method" type="radio"
+                                                    value="cod" />
+                                                <i class="ph-bold ph-check text-white"></i>
+                                            </div>
                                         </div>
-                                        <div class="flex flex-col">
-                                            <p class="text-base font-semibold text-black">
-                                                Cash on Delivery
-                                            </p>
-                                            <p class="text-sm text-[#757575] mt-1">
-                                                Pay upon arrival of your order.
-                                            </p>
-                                            <p class="text-xs text-orange-600 mt-1 font-medium">
-                                                <!-- Additional $5 handling fee applies -->
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white dark:bg-transparent ring-offset-2 group-has-[:checked]:border-black group-has-[:checked]:bg-black">
-                                        <input class="h-0 w-0 opacity-0" name="payment_method" type="radio"
-                                            value="cod" />
-                                        <i class="ph-bold ph-check text-white"></i>
-                                    </div>
-                                </div>
-                            </label>
-                        <% } %>
-                                
+                                    </label>
+                                    <% } %>
+
                     </div>
                     <!-- Security Note -->
                     <div class="mt-6 flex items-center justify-center gap-2 text-xs text-[#757575]">
@@ -294,40 +294,93 @@
                 }
 
                 async function payNow() {
-                    const amount = Math.round(parseFloat('<%= order.totalAmount %>'));
-                    const orderId = '<%= order._id %>';
-                    const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                    const payButton = document.getElementById('payOutButton');
+                    const originalText = payButton.innerHTML;
 
-                    // Debugging: Check Key ID
-                    console.log("Using Key ID:", "<%= razorpayKeyId %>");
+                    // Loading State
+                    payButton.disabled = true;
+                    payButton.innerHTML = '<span class="flex items-center justify-center gap-2"><i class="ph-bold ph-spinner animate-spin"></i> Processing...</span>';
+                    payButton.classList.add('opacity-70', 'cursor-not-allowed');
 
-                    if (selectedMethod == 'razorpay') {
-                        const res = await fetch("/payment/create-order", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ orderId: orderId })
-                        });
+                    try {
+                        const amount = Math.round(parseFloat('<%= order.totalAmount %>'));
+                        const orderId = '<%= order._id %>';
+                        const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
 
-                        const data = await res.json();
+                        // Debugging: Check Key ID
+                        console.log("Using Key ID:", "<%= razorpayKeyId %>");
 
-                        const options = {
-                            key: "<%= razorpayKeyId %>", // PUBLIC key
-                            amount: data.order.amount,
-                            currency: "INR",
-                            name: "SmartFloor",
-                            description: "Order Payment",
-                            order_id: data.order.id,
+                        if (selectedMethod == 'razorpay') {
+                            const res = await fetch("/payment/create-order", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ orderId: orderId })
+                            });
 
-                            prefill: {
-                                name: "<%= user.name %>",
-                                email: "<%= user.email %>",
-                                contact: "<%= user.phone %>"
-                            },
-                            retry: {
-                                enabled: false
-                            },
+                            const data = await res.json();
 
-                            handler: async function (response) {
+                            if (!data.order) {
+                                throw new Error(data.message || 'Failed to create Razorpay order');
+                            }
+
+                            const options = {
+                                key: "<%= razorpayKeyId %>", // PUBLIC key
+                                amount: data.order.amount,
+                                currency: "INR",
+                                name: "SmartFloor",
+                                description: "Order Payment",
+                                order_id: data.order.id,
+
+                                prefill: {
+                                    name: "<%= user.name %>",
+                                    email: "<%= user.email %>",
+                                    contact: "<%= user.phone %>"
+                                },
+                                retry: {
+                                    enabled: false
+                                },
+
+                                handler: async function (response) {
+                                    response.orderId = orderId
+                                    const res = await fetch("/payment/verify-payment", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(response)
+                                    });
+                                    const data = await res.json();
+                                    if (data.success) {
+                                        setTimeout(() => {
+                                            window.location.href = `/order/confirmation/${orderId}`;
+                                        }, 800);
+                                    } else {
+                                        // Payment verification failed
+                                        payButton.disabled = false;
+                                        payButton.innerHTML = originalText;
+                                        payButton.classList.remove('opacity-70', 'cursor-not-allowed');
+                                        swal.fire({
+                                            icon: 'error',
+                                            title: 'Verification Failed',
+                                            text: data.message
+                                        });
+                                    }
+                                },
+                                modal: {
+                                    ondismiss: function () {
+                                        // Revert button state if user cancels
+                                        payButton.disabled = false;
+                                        payButton.innerHTML = originalText;
+                                        payButton.classList.remove('opacity-70', 'cursor-not-allowed');
+                                    }
+                                },
+                                theme: {
+                                    color: "#000000",
+                                },
+                            };
+
+                            console.log("Razorpay Options:", options);
+
+                            const rzp = new Razorpay(options);
+                            rzp.on('payment.failed', async function (response) {
                                 response.orderId = orderId
                                 const res = await fetch("/payment/verify-payment", {
                                     method: "POST",
@@ -335,60 +388,55 @@
                                     body: JSON.stringify(response)
                                 });
                                 const data = await res.json();
-                                if (data.success) {
-                                    setTimeout(() => {
-                                        window.location.href = `/order/confirmation/${orderId}`;
-                                    }, 800);
+                                if (!data.success) {
+                                    window.location.href = `/payment/failed/${orderId}`;
                                 }
-                            },
-
-                            theme: {
-                                color: "#000000",
-                            },
-                        };
-
-                        console.log("Razorpay Options:", options);
-
-                        const rzp = new Razorpay(options);
-                        rzp.on('payment.failed', async function (response) {
-                            response.orderId = orderId
-                            const res = await fetch("/payment/verify-payment", {
+                            });
+                            rzp.open();
+                        } else {
+                            const res = await fetch("/payment/place-order", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(response)
+                                body: JSON.stringify({ orderId, selectedMethod })
                             });
+
                             const data = await res.json();
-                            if (!data.success) {
-                                window.location.href = `/payment/failed/${orderId}`;
+
+                            if (data.success) {
+                                swal.fire({
+                                    icon: 'success',
+                                    title: 'Payment Successful',
+                                    text: 'Your payment has been processed successfully.',
+                                    confirmButton: false
+                                });
+                                setTimeout(() => {
+                                    window.location.href = `/order/confirmation/${orderId}`;
+                                }, 2000);
+                            } else {
+                                // Revert on failure
+                                payButton.disabled = false;
+                                payButton.innerHTML = originalText;
+                                payButton.classList.remove('opacity-70', 'cursor-not-allowed');
+
+                                swal.fire({
+                                    icon: 'error',
+                                    title: 'Order Failed',
+                                    text: data.message || 'Payment failed to do.',
+                                });
                             }
-                        });
-                        rzp.open();
-                    } else {
-                        const res = await fetch("/payment/place-order", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ orderId, selectedMethod })
-                        });
-
-                        const data = await res.json();
-
-                        if (data.success) {
-                            swal.fire({
-                                icon: 'success',
-                                title: 'Payment Successful',
-                                text: 'Your payment has been processed successfully.',
-                                confirmButton: false
-                            });
-                            setTimeout(() => {
-                                window.location.href = `/order/confirmation/${orderId}`;
-                            }, 2000);
-                        } else {
-                            swal.fire({
-                                icon: 'error',
-                                title: 'Order Failed',
-                                text: data.message || 'Payment failed to do.',
-                            });
                         }
+                    } catch (error) {
+                        // Revert on catch
+                        payButton.disabled = false;
+                        payButton.innerHTML = originalText;
+                        payButton.classList.remove('opacity-70', 'cursor-not-allowed');
+
+                        console.error('Payment Error:', error);
+                        swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong processing your payment.',
+                        });
                     }
                 }
             </script>

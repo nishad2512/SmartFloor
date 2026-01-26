@@ -21,7 +21,8 @@
                     <div class="rounded-xl border border-[#e0e0e0] bg-white">
                         <div class="p-6">
                             <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST"
-                                action="<%= locals.createAddr ? '/profile/addresses/add' : '/profile/addresses/edit/' + formData._id + '?_method=PATCH' %>" novalidate onsubmit="return validateAddressForm()">
+                                action="<%= locals.createAddr ? '/profile/addresses/add' : '/profile/addresses/edit/' + formData._id + '?_method=PATCH' %>"
+                                novalidate onsubmit="return validateAddressForm()">
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-[#141414] mb-2" for="name">Full Name
                                         <span class="text-red-500">*</span></label>
@@ -121,6 +122,7 @@
                 </div>
             </div>
     </div>
+    </div>
     <%- include("../../partials/footer.ejs") %>
         <script>
             function validateAddressForm() {
@@ -205,6 +207,18 @@
                 const zip = document.getElementById('zip').value.trim();
                 if (!zip) {
                     showError('zip', 'Postal code is required');
+                }
+
+                if (isValid) {
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    const originalContent = submitBtn.innerHTML;
+                    submitBtn.innerText = "Saving...";
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+                    // Create a hidden input if needed or just let form submit
+                    // Since it's a standard form submit, we don't need fetch, just let it go.
+                    // But if validation fails on server side and it re-renders, the button state is reset on reload.
                 }
 
                 return isValid;
