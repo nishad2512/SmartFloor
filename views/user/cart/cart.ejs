@@ -53,7 +53,7 @@
                                                                         Variant: <%= item.size %>
                                                                     </p>
                                                                     <button
-                                                                        onclick="deleteItem('<%= item.cartItemId %>')"
+                                                                        onclick="deleteItem(this, '<%= item.cartItemId %>')"
                                                                         class="flex items-center gap-1 text-sm text-red-500 mt-2 mb-2">
                                                                         <i class="ph-bold ph-trash text-base"></i>
                                                                         Remove
@@ -176,6 +176,11 @@
                     let input;
                     let newQty;
 
+                    // Find container to disable controls
+                    const container = inputElement.closest('.flex.items-center.gap-2'); // Adjust selector if needed, but parentElement is safer
+                    const buttons = inputElement.parentElement.querySelectorAll('button');
+                    const inputField = inputElement.parentElement.querySelector('input');
+
                     if (change === 0) {
                         input = inputElement;
                         newQty = parseInt(input.value);
@@ -186,43 +191,64 @@
 
                     if (newQty < 1) newQty = 1;
 
+                    // Disable controls
+                    buttons.forEach(b => b.disabled = true);
+                    inputField.disabled = true;
+                    // visual feedback? maybe opacity
+                    inputElement.parentElement.classList.add('opacity-50');
+
                     fetch('/cart/update/' + cartItemId, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ quantity: newQty })
                     })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Server is source of truth
-                            input.value = data.quantity;
+                        .then(res => res.json())
+                        .then(data => {
+                            // Re-enable controls
+                            buttons.forEach(b => b.disabled = false);
+                            inputField.disabled = false;
+                            inputElement.parentElement.classList.remove('opacity-50');
 
-                            document.querySelector(
-                            `p[data-cart-id="${cartItemId}"]`
-                            ).innerText = '₹' + data.itemTotal.toLocaleString('en-IN');
+                            if (data.success) {
+                                // Server is source of truth
+                                input.value = data.quantity;
 
-                            document.getElementById('totalAmount').innerText = '₹' + data.cartTotal.toLocaleString('en-IN');
-                            document.getElementById('subtotalAmount').innerText = '₹' + data.cartTotal.toLocaleString('en-IN');
+                                document.querySelector(
+                                    `p[data-cart-id="${cartItemId}"]`
+                                ).innerText = '₹' + data.itemTotal.toLocaleString('en-IN');
 
-                        } else {
-                            swal.fire({
-                            icon: data.type,
-                            title: data.type === 'error' ? 'Error' : 'Warning',
-                            text: data.message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                            });
+                                document.getElementById('totalAmount').innerText = '₹' + data.cartTotal.toLocaleString('en-IN');
+                                document.getElementById('subtotalAmount').innerText = '₹' + data.cartTotal.toLocaleString('en-IN');
 
-                            // Revert UI to correct value from server
-                            input.value = data.quantity || input.defaultValue;
-                        }
-                    });
+                            } else {
+                                swal.fire({
+                                    icon: data.type,
+                                    title: data.type === 'error' ? 'Error' : 'Warning',
+                                    text: data.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+
+                                // Revert UI to correct value from server
+                                input.value = data.quantity || input.defaultValue;
+                            }
+                        })
+                        .catch(e => {
+                            console.error(e);
+                            buttons.forEach(b => b.disabled = false);
+                            inputField.disabled = false;
+                            inputElement.parentElement.classList.remove('opacity-50');
+                        });
                 }
 
 
-                function deleteItem(cartItemId) {
+                function deleteItem(btn, cartItemId) {
+                    const originalContent = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-base"></i> Removing...';
+
                     fetch('/cart/delete/' + cartItemId, {
                         method: 'DELETE',
                         headers: {
@@ -232,8 +258,15 @@
                         if (data.success) {
                             location.reload();
                         } else {
-                            swal.fire('Error', data.message || 'Could not update quantity', 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = originalContent;
+                            swal.fire('Error', data.message || 'Could not delete item', 'error');
                         }
+                    }).catch(error => {
+                        console.error(error);
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                        swal.fire('Error', 'Something went wrong', 'error');
                     })
                 }
             </script>

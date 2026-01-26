@@ -71,6 +71,10 @@ loginForm.addEventListener("submit", (e) => {
 
     // Submit form if valid
     if (isValid) {
+        const submitBtn = loginForm.querySelector('input[type="submit"]');
+        submitBtn.value = "Logging In...";
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
         loginForm.submit();
     }
 });

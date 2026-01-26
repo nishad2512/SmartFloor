@@ -75,12 +75,15 @@
 
                 <div class="mb-8">
                     <% if (product.variants[0]?.offerPrice) { %>
-                        <span class="text-3xl font-bold text-[#1A1A1A]" id="displayOfferPrice">₹<%= product.variants[0].offerPrice.toLocaleString('en-IN') %>
+                        <span class="text-3xl font-bold text-[#1A1A1A]" id="displayOfferPrice">₹<%=
+                                product.variants[0].offerPrice.toLocaleString('en-IN') %>
                         </span>
-                        <span class="text-2xl font-semibold text-gray-500 line-through" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
+                        <span class="text-2xl font-semibold text-gray-500 line-through" id="displayPrice">₹<%=
+                                product.variants[0].price.toLocaleString('en-IN') %>
                         </span>
                         <% } else { %>
-                            <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%= product.variants[0].price.toLocaleString('en-IN') %>
+                            <span class="text-3xl font-bold text-[#1A1A1A]" id="displayPrice">₹<%=
+                                    product.variants[0].price.toLocaleString('en-IN') %>
                             </span>
                             <% } %>
                                 <span class="text-gray-400 text-lg font-medium ml-2">/ sq ft</span>
@@ -192,7 +195,8 @@
                     <i class="<%= avgRating > 3 ? 'ph-fill' : 'ph' %> ph-star text-lg"></i>
                     <i class="<%= avgRating > 4 ? 'ph-fill' : 'ph' %> ph-star text-lg"></i>
                 </div>
-                <span class="text-sm text-gray-500">Based on <%= product.reviews?.length ? product.reviews.length : 0 %> reviews</span>
+                <span class="text-sm text-gray-500">Based on <%= product.reviews?.length ? product.reviews.length : 0 %>
+                        reviews</span>
             </div>
 
             <% product.reviews && product.reviews.forEach(rev=> { %>
@@ -211,8 +215,7 @@
                         <%= rev.review %>
                     </p>
                     <span class="text-xs text-gray-400">
-                        <%= rev.author %> on <%= rev.date.toLocaleDateString('en-US', { year: 'numeric' , month: 'long'
-                                , day: 'numeric' }) %>
+                        <%= rev.author %> on <%= rev.date.toLocaleDateString('en-US', { year: 'numeric' , month: 'long', day: 'numeric' }) %>
                     </span>
                 </div>
                 <% }) %>
@@ -321,19 +324,17 @@
                         }
                     }
 
-                    document.getElementById('buyNowBtn').addEventListener('click', () => {
+
+
+                    document.getElementById('addToCartBtn').addEventListener('click', function () {
                         const quantity = parseInt(document.getElementById('quantityInput').value);
+                        const btn = this;
+                        const originalContent = btn.innerHTML;
 
-                        if (quantity > 0) {
-                            location.reload();
-                        } else {
-                            window.location.href = `/checkout?productId=${productId}&variantId=${currentVariantId}&quantity=${quantity}`;
-                        }
-
-                    })
-
-                    document.getElementById('addToCartBtn').addEventListener('click', () => {
-                        const quantity = parseInt(document.getElementById('quantityInput').value);
+                        // Set loading state
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Adding...';
+                        btn.classList.add('opacity-75', 'cursor-not-allowed');
 
                         fetch('/cart/add', {
                             method: 'POST',
@@ -352,6 +353,11 @@
                                 if (data.success) {
                                     location.reload();
                                 } else {
+                                    // Reset button state
+                                    btn.disabled = false;
+                                    btn.innerHTML = originalContent;
+                                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+
                                     console.error(data.message);
 
                                     if (data.code === 'PRODUCT_BLOCKED' || data.message.includes('blocked') || data.message.includes('unavailable')) {
@@ -366,10 +372,9 @@
                                         });
 
                                         setTimeout(() => {
-                                            let cart = document.getElementById('addToCartBtn');
-                                            if (cart) {
-                                                cart.disabled = true;
-                                                cart.innerText = data.message;
+                                            if (btn) {
+                                                btn.disabled = true;
+                                                btn.innerText = data.message;
                                             }
                                             let buyNow = document.getElementById('buyNowBtn');
                                             if (buyNow) buyNow.style.display = 'none';
@@ -400,6 +405,11 @@
                                 }
                             })
                             .catch(error => {
+                                // Reset button state on error
+                                btn.disabled = false;
+                                btn.innerHTML = originalContent;
+                                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+
                                 console.error('Error:', error);
                                 swal.fire({
                                     icon: 'error',
@@ -410,12 +420,39 @@
 
                     });
 
-                    document.getElementById('buyNowBtn').addEventListener('click', () => {
+                    document.getElementById('buyNowBtn').addEventListener('click', function () {
+                        const btn = this;
+                        const originalContent = btn.innerHTML;
                         const quantity = parseInt(document.getElementById('quantityInput').value);
+
+                        // Set loading state
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Processing...';
+                        btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+                        // Simulate a small delay or just proceed (since we are redirecting)
+                        // If we redirect immediately, the user might not even see the loading if connection is fast,
+                        // but it helps provide feedback.
                         window.location.href = `/checkout?productId=${productId}&variantId=${currentVariantId}&quantity=${quantity}`;
+
+                        // Note: If the user comes back (back button), the button might still be disabled depending on browser bfcache.
+                        // Ideally we'd enable it again, but since we are navigating away:
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.innerHTML = originalContent;
+                            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                        }, 2000);
                     });
 
-                    document.getElementById('addToWishlistBtn').addEventListener('click', () => {
+                    document.getElementById('addToWishlistBtn').addEventListener('click', function () {
+                        const btn = this;
+                        const icon = document.getElementById('wishlistIcon');
+                        const originalIconClass = icon.className;
+
+                        // Set loading state
+                        btn.disabled = true;
+                        icon.className = 'ph-bold ph-spinner animate-spin text-xl'; // Use spinner icon
+
                         fetch('/wishlist/add', {
                             method: 'POST',
                             headers: {
@@ -428,10 +465,10 @@
                         })
                             .then(response => response.json())
                             .then(data => {
+                                btn.disabled = false;
                                 if (data.success) {
-                                    const icon = document.getElementById('wishlistIcon');
-                                    icon.classList.remove('ph-bold');
-                                    icon.classList.add('ph-fill', 'text-red-500');
+                                    // Update icon to success state (red heart)
+                                    icon.className = 'ph-fill ph-heart text-xl text-red-500';
 
                                     swal.fire({
                                         icon: 'success',
@@ -443,6 +480,13 @@
                                         timer: 3000
                                     });
                                 } else {
+                                    // Revert icon if operation failed or just info
+                                    // However, the original code logic for 'info' was a bit specific (product unavailable handling)
+
+                                    // If we are blocking the product, we probably shouldn't revert the icon to "unliked" strictly, 
+                                    // but let's stick to reverting it to what it was or handling based on context.
+                                    // The existing code for "stock unavailable" etc. modified the UI heavily.
+
                                     swal.fire({
                                         icon: 'info',
                                         title: 'Info',
@@ -452,23 +496,39 @@
                                         showConfirmButton: false,
                                         timer: 3000
                                     });
-                                    setTimeout(() => {
-                                        location.reload();
-                                    }, 5000);
-                                    let cart = document.getElementById('addToCartBtn');
-                                    cart.disabled = true;
-                                    cart.innerText = data.message;
-                                    let buyNow = document.getElementById('buyNowBtn');
-                                    buyNow.style.display = 'none';
-                                    let view = document.getElementById('viewInYourPlaceBtn');
-                                    view.style.display = 'none';
-                                    document.body.style.cursor = 'not-allowed';
-                                    document.body.style.filter = 'grayscale(100%)';
-                                    document.getElementById('stockInfo').innerText = 'This product is no longer available.';
-                                    document.getElementById('stockInfo').style.color = 'red';
+
+                                    if (data.message.includes('unavailable') || data.message.includes('blocked')) {
+                                        // Keep the special handling for blocked/unavailable
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 5000);
+                                        let cart = document.getElementById('addToCartBtn');
+                                        if (cart) {
+                                            cart.disabled = true;
+                                            cart.innerText = data.message;
+                                        }
+                                        let buyNow = document.getElementById('buyNowBtn');
+                                        if (buyNow) buyNow.style.display = 'none';
+                                        let view = document.getElementById('viewInYourPlaceBtn');
+                                        if (view) view.style.display = 'none';
+                                        document.body.style.cursor = 'not-allowed';
+                                        document.body.style.filter = 'grayscale(100%)';
+                                        let stockInfo = document.getElementById('stockInfo');
+                                        if (stockInfo) {
+                                            stockInfo.innerText = 'This product is no longer available.';
+                                            stockInfo.style.color = 'red';
+                                        }
+                                        // Maybe revert icon anyway
+                                        icon.className = originalIconClass;
+                                    } else {
+                                        // Just revert icon
+                                        icon.className = originalIconClass;
+                                    }
                                 }
                             })
                             .catch(error => {
+                                btn.disabled = false;
+                                icon.className = originalIconClass;
                                 console.error('Error:', error);
                                 swal.fire({
                                     icon: 'error',
