@@ -9,7 +9,7 @@ import * as coupens from "../controllers/adminControllers/coupenManagement.js";
 import * as sales from "../controllers/adminControllers/salesManagement.js";
 import dashboard from "../controllers/adminControllers/dashboardManagement.js";
 import adminLogin from "../controllers/adminControllers/admin.auth.js";
-import {upload} from "../utils/cloudinary.js";
+import { upload } from "../utils/cloudinary.js";
 import nocache from "nocache";
 
 const router = express.Router();
@@ -43,15 +43,14 @@ router.route("/categories/edit/:id")
     .get(categories.editPage)
     .patch(categories.editCategory);
 
-router.get("/categories/delete/:id", categories.deleteCategory);
 
-router.get("/categories/unblock/:id", categories.unblockCategory);
+router.patch("/categories/block/:id", categories.blockCategory);
 
 // userManagement
 
 router.get("/customers", users.users)
 
-router.put("/customers/block/:id", users.blockUser);
+router.patch("/customers/block/:id", users.blockUser);
 
 // productManagement
 
@@ -68,9 +67,8 @@ router.route("/products/edit/:id")
     .get(products.editProductPage)
     .patch(upload.array('images', 5), products.editProduct);
 
-router.get("/products/delete/:id", products.deleteProduct);
 
-router.get("/products/unblock/:id", products.unblockProduct);
+router.patch("/products/block/:id", products.blockProduct);
 
 // orderManagement
 

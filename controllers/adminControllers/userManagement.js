@@ -31,15 +31,19 @@ export const users = async (req, res) => {
 
 export const blockUser = async (req, res) => {
     try {
-        const block = req.query.block;
         const user = await User.findById(req.params.id);
-        user.isBlocked = block === "true" ? true : false;
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found." });
+        }
+        user.isBlocked = !user.isBlocked;
         await user.save();
-        req.flash("success", `User has been ${block === "true" ? "blocked" : "unblocked"} successfully.`);
-        res.redirect("/admin/customers");
+        res.status(200).json({
+            success: true,
+            message: `User has been ${user.isBlocked ? "blocked" : "unblocked"} successfully.`,
+            isBlocked: user.isBlocked
+        });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to update user status.");
-        res.redirect("/admin/customers");
+        res.status(500).json({ success: false, message: "Failed to update user status." });
     }
 };

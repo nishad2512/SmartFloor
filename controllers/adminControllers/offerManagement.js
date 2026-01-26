@@ -116,20 +116,25 @@ export const createOffer = async (req, res) => {
 
 export const blockOrUnblock = async (req, res) => {
     try {
-
         const isActive = req.query.isActive === 'true';
         const offer = await Offer.findById(req.params.id);
+
+        if (!offer) {
+            return res.status(404).json({ success: false, message: "Offer not found" });
+        }
 
         offer.isActive = !isActive;
         await offer.save();
 
-        req.flash("success", `Offer ${isActive ? 'blocked' : 'unblocked'} successfully.`)
-        res.json({ success: true });
+        res.status(200).json({
+            success: true,
+            message: `Offer ${isActive ? 'blocked' : 'unblocked'} successfully.`,
+            isActive: offer.isActive
+        });
 
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to update offer status.");
-        res.json({ success: false })
+        res.status(500).json({ success: false, message: "Failed to update offer status." })
     }
 }
 

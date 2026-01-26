@@ -98,32 +98,26 @@ export const editCategory = async (req, res) => {
     }
 }
 
-export const deleteCategory = async (req, res) => {
+export const blockCategory = async (req, res) => {
     try {
-        const category = await Category.findById({ _id: req.params.id });
-        category.isActive = false;
+        const category = await Category.findById(req.params.id);
+        if (!category) {
+            return res.status(404).json({ success: false, message: "Category not found." });
+        }
+        category.isActive = !category.isActive;
         await category.save();
-        await Product.updateMany({ category: category._id }, { isActive: false });
-        req.flash("success", "Category blocked successfully");
-        res.redirect("/admin/categories");
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Error blocking category");
-        res.redirect("/admin/categories");
-    }
-}
 
-export const unblockCategory = async (req, res) => {
-    try {
-        const category = await Category.findById({ _id: req.params.id });
-        category.isActive = true;
-        await category.save();
-        await Product.updateMany({ category: category._id }, { isActive: true });
-        req.flash("success", "Category unblocked successfully");
-        res.redirect("/admin/categories");
+        if (!category.isActive) {
+            await Product.updateMany({ category: category._id }, { isActive: false });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Category ${category.isActive ? "unblocked" : "blocked"} successfully`,
+            isActive: category.isActive
+        });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Error unblocking category");
-        res.redirect("/admin/categories");
+        res.status(500).json({ success: false, message: "Error updating category status" });
     }
 }

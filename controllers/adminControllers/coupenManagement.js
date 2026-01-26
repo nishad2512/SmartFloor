@@ -156,22 +156,24 @@ export const edit = async (req, res) => {
 
 export const block = async (req, res) => {
     try {
-
         const coupenId = req.params.id;
         const coupen = await Coupen.findById(coupenId);
 
-        coupen.isActive = !coupen.isActive
+        if (!coupen) {
+            return res.status(404).json({ success: false, message: "Coupon not found" });
+        }
 
+        coupen.isActive = !coupen.isActive
         await coupen.save();
 
-        req.flash("success", `Coupon ${coupen.isActive ? 'activated' : 'deactivated'} successfully.`)
-        res.status(200).json({ success: true });
+        res.status(200).json({
+            success: true,
+            message: `Coupon ${coupen.isActive ? 'activated' : 'deactivated'} successfully.`,
+            isActive: coupen.isActive
+        });
 
     } catch (error) {
-
         console.error(error);
-        req.flash('error', 'Failed to update coupon status.');
         res.status(500).json({ success: false, message: "Internal server error." });
-
     }
 }

@@ -158,10 +158,12 @@
                                                                     class="material-symbols-outlined text-lg">edit</span>
                                                             </a>
                                                             <button
-                                                                class="inline-block p-1.5 rounded-md hover:bg-red/10 text-red-600 dark:hover:bg-red/30"
-                                                                onclick="confirmAction('<%= coupen.isActive %>', '<%= coupen._id %>')">
-                                                                <span
-                                                                    class="material-symbols-outlined text-lg">block</span>
+                                                                class="inline-block p-1.5 rounded-md block-btn <%= coupen.isActive ? 'text-red-600 hover:bg-red-500/10 dark:hover:bg-red-500/20' : 'text-green-600 hover:bg-green-500/10 dark:hover:bg-green-500/20' %>"
+                                                                data-expiry="<%= coupen.expirationDate %>"
+                                                                onclick="toggleCouponBlock('<%= coupen.isActive %>', '<%= coupen._id %>', this)">
+                                                                <span class="material-symbols-outlined text-lg">
+                                                                    <%= coupen.isActive ? 'block' : 'check_circle' %>
+                                                                </span>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -204,47 +206,79 @@
             </div>
         </div>
         <script>
-            function confirmAction(active, id) {
-                if (active == 'true') {
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "You can revert this!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Yes, block it!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Using the 'id' passed into the function
-                            fetch(`/admin/coupens/block/${id}`, { method: 'PATCH' })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data) location.reload();
-                                })
-                                .catch(err => console.error(err));
+            async function toggleCouponBlock(isActiveStr, id, btn) {
+                const isActive = isActiveStr === 'true';
+                const action = isActive ? "Block" : "Unblock";
+
+                const result = await Swal.fire({
+                    title: "Are you sure?",
+                    text: `Do you want to ${action.toLowerCase()} this coupon?`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: isActive ? "#d33" : "#10b981",
+                    cancelButtonColor: "#6b7280",
+                    confirmButtonText: `Yes, ${action}!`
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`/admin/coupens/block/${id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            Swal.fire(
+                                `${action}ed!`,
+                                data.message,
+                                'success'
+                            );
+
+                            // Update UI
+                            const isNowActive = data.isActive;
+
+                            // Update dataset
+                            // Update button onclick
+                            btn.setAttribute('onclick', `toggleCouponBlock('${isNowActive}', '${id}', this)`);
+
+                            // Update class for color
+                            btn.className = `inline-block p-1.5 rounded-md block-btn ${isNowActive ? 'text-red-600 hover:bg-red-500/10 dark:hover:bg-red-500/20' : 'text-green-600 hover:bg-green-500/10 dark:hover:bg-green-500/20'}`;
+
+                            // Update icon
+                            const iconSpan = btn.querySelector('.material-symbols-outlined');
+                            iconSpan.textContent = isNowActive ? 'block' : 'check_circle';
+
+                            // Update Status badge
+                            const row = btn.closest('tr');
+                            const statusCell = row.querySelectorAll('td')[6];
+                            if (statusCell) {
+                                let badgeHtml = '';
+                                const expiryDateStr = btn.dataset.expiry;
+                                const isExpired = expiryDateStr ? new Date(expiryDateStr) < new Date() : false;
+
+                                if (isNowActive) {
+                                    if (isExpired) {
+                                        badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300">Expired</span>';
+                                    } else {
+                                        badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</span>';
+                                    }
+                                } else {
+                                    badgeHtml = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">Inactive</span>';
+                                }
+                                statusCell.innerHTML = badgeHtml;
+                            }
+
+                        } else {
+                            Swal.fire('Error', data.message || 'Something went wrong', 'error');
                         }
-                    });
-                } else {
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "You can revert this!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Yes, unblock it!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Using the 'id' passed into the function
-                            fetch(`/admin/coupens/block/${id}`, { method: 'PATCH' }) // Use PATCH or POST for updates
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data) location.reload();
-                                })
-                                .catch(err => console.error(err));
-                        }
-                    });
+                    } catch (error) {
+                        console.error(error);
+                        Swal.fire('Error', 'Failed to communicate with server', 'error');
+                    }
                 }
             }
         </script>

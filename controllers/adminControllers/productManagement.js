@@ -122,31 +122,23 @@ export const createProduct = async (req, res) => {
     }
 };
 
-export const deleteProduct = async (req, res) => {
+export const blockProduct = async (req, res) => {
     try {
-        const product = await Product.findById({ _id: req.params.id });
-        product.isActive = false;
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found." });
+        }
+        product.isActive = !product.isActive;
         await product.save();
-        req.flash("success", "Product blocked successfully");
-        res.redirect("/admin/products");
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Failed to block product.");
-        res.redirect("/admin/products");
-    }
-};
 
-export const unblockProduct = async (req, res) => {
-    try {
-        const product = await Product.findById({ _id: req.params.id });
-        product.isActive = true;
-        await product.save();
-        req.flash("success", "Product unblocked successfully");
-        res.redirect("/admin/products");
+        res.status(200).json({
+            success: true,
+            message: `Product ${product.isActive ? "unblocked" : "blocked"} successfully`,
+            isActive: product.isActive
+        });
     } catch (error) {
         console.error(error);
-        req.flash("error", "Failed to unblock product.");
-        res.redirect("/admin/products");
+        res.status(500).json({ success: false, message: "Failed to update product status." });
     }
 };
 
