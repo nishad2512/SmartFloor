@@ -40,7 +40,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="overflow-x-auto">
+                                    <div class="hidden md:block overflow-x-auto">
                                         <table class="w-full text-left">
                                             <thead class="text-sm text-[#757575] dark:text-gray-400">
                                                 <tr class="border-b border-t border-[#e0e0e0] dark:border-primary/20">
@@ -83,7 +83,7 @@
                                                         </td>
                                                         <td class="px-6 py-4 text-center">
                                                             <button
-                                                                onclick="toggleBlock('<%= user._id %>', <%= user.isBlocked %>, this)"
+                                                                onclick="toggleBlock('<%= user._id %>', '<%= user.isBlocked %>', this)"
                                                                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium <%= user.isBlocked ? 'text-green-600 dark:text-green-400 bg-green-500/10 hover:bg-green-500/20' : 'text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20' %>">
                                                                 <span class="material-symbols-outlined text-base">
                                                                     <%= user.isBlocked ? 'check_circle' : 'block' %>
@@ -97,6 +97,53 @@
                                                     <% }) %>
                                             </tbody>
                                         </table>
+                                    </div>
+
+                                    <!-- Mobile Card View -->
+                                    <div class="grid grid-cols-1 gap-4 p-4 md:hidden">
+                                        <% users.forEach(user=> { %>
+                                            <div
+                                                class="bg-white dark:bg-[#1f1f1f] p-4 rounded-xl border border-[#e0e0e0] dark:border-primary/20 shadow-sm flex flex-col gap-4">
+                                                <div
+                                                    class="flex items-center gap-4 border-b border-[#e0e0e0] dark:border-primary/20 pb-4">
+                                                    <% if (user.avatar) { %>
+                                                        <img src="<%= user.avatar %>" alt="Profile pic"
+                                                            class="rounded-full size-12 object-cover">
+                                                        <% } else { %>
+                                                            <div
+                                                                class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700">
+                                                                <span
+                                                                    class="material-symbols-outlined text-lg text-gray-600 dark:text-gray-300">person</span>
+                                                            </div>
+                                                            <% } %>
+                                                                <div class="flex flex-col">
+                                                                    <p
+                                                                        class="font-bold text-[#141414] dark:text-white text-lg">
+                                                                        <%= user.name %>
+                                                                    </p>
+                                                                    <p
+                                                                        class="text-sm text-[#757575] dark:text-gray-400 break-all">
+                                                                        <%= user.email %>
+                                                                    </p>
+                                                                </div>
+                                                </div>
+
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-xs text-[#757575] dark:text-gray-400">Account
+                                                        Status</span>
+                                                    <button
+                                                        onclick="toggleBlock('<%= user._id %>', '<%= user.isBlocked %>', this)"
+                                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium w-full justify-center <%= user.isBlocked ? 'text-green-600 dark:text-green-400 bg-green-500/10 hover:bg-green-500/20' : 'text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20' %>">
+                                                        <span class="material-symbols-outlined text-base">
+                                                            <%= user.isBlocked ? 'check_circle' : 'block' %>
+                                                        </span>
+                                                        <span>
+                                                            <%= user.isBlocked ? 'Unblock' : 'Block' %>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <% }) %>
                                     </div>
                                     <div
                                         class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
@@ -120,14 +167,16 @@
             <script>
 
                 async function toggleBlock(userId, isBlocked, btn) {
-                    const action = isBlocked ? "Unblock" : "Block";
+                    // Ensure boolean type for logic
+                    const isBlockedBool = (isBlocked === true || isBlocked === 'true');
+                    const action = isBlockedBool ? "Unblock" : "Block";
 
                     const result = await Swal.fire({
                         title: "Are you sure?",
                         text: `Do you want to ${action.toLowerCase()} this user?`,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonColor: isBlocked ? "#10b981" : "#d33",
+                        confirmButtonColor: isBlockedBool ? "#10b981" : "#d33",
                         cancelButtonColor: "#6b7280",
                         confirmButtonText: `Yes, ${action}!`
                     });

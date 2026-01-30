@@ -293,7 +293,8 @@ function validateImages() {
 
 function validateVariants() {
     const variantRows = document.querySelectorAll(".variant-row");
-    let hasValidVariant = false;
+    let allValid = true;
+    let specificError = "";
 
     if (variantRows.length === 0) {
         toggleError(
@@ -316,26 +317,27 @@ function validateVariants() {
         const stockInput = row.querySelector('input[name="stock[]"]');
         const priceInput = row.querySelector('input[name="price[]"]');
 
-        const isRowValid =
-            sizeInput &&
-            sizeInput.value.trim() !== "" &&
-            stockInput &&
-            stockInput.value.trim() !== "" &&
-            stockInput.value >= 0 &&
-            priceInput &&
-            priceInput.value.trim() !== "" &&
-            priceInput.value >= 0;
+        const size = sizeInput ? sizeInput.value.trim() : "";
+        const stock = stockInput ? stockInput.value.trim() : "";
+        const price = priceInput ? priceInput.value.trim() : "";
 
-        if (isRowValid) {
-            hasValidVariant = true;
+        if (size === "" || stock === "" || price === "") {
+            allValid = false;
+            if (!specificError) specificError = "All fields (Size, Stock, Price) are required for every variant.";
+        } else if (parseFloat(stock) < 0) {
+            allValid = false;
+            if (!specificError) specificError = "Stock cannot be negative.";
+        } else if (parseFloat(price) < 10) {
+            allValid = false;
+            if (!specificError) specificError = "Price must be at least 10 for every variant.";
         }
     });
 
-    if (!hasValidVariant) {
+    if (!allValid) {
         toggleError(
             "variants-error",
             true,
-            "At least one complete product variant (Size, Stock, Price) is required."
+            specificError || "Please ensure all variants are valid."
         );
         return false;
     } else {
@@ -363,7 +365,7 @@ function validateForm() {
     }
     if (!isVariantsValid) {
         errorMessage +=
-            "\n- At least one complete product variant is required (up to 10 allowed).";
+            "\n- All product variants must be complete and have a price of at least 10.";
         hasError = true;
     }
 

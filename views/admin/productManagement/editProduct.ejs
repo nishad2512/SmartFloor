@@ -147,7 +147,7 @@
                                                         Add Size
                                                     </button>
                                                 </div>
-                                                <div class="p-6 space-y-4">
+                                                <div id="variant-list" class="p-6 space-y-4">
                                                     <div
                                                         class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center pb-2 border-b border-transparent">
                                                         <label
@@ -160,8 +160,8 @@
                                                         <div class="w-8"></div>
                                                     </div>
                                                     <% product.variants.forEach(variant=> { %>
-                                                        <div id="variant-container"
-                                                            class="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
+                                                        <div
+                                                            class="variant-row grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
                                                             <input
                                                                 class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm"
                                                                 placeholder=' eg: 6" x 48"' type="text" name="size"
@@ -176,7 +176,7 @@
                                                                 class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center"
                                                                 placeholder="eg: ₹5.99" type="text" name="price"
                                                                 value="<%= variant.price %>" />
-                                                            <button onclick="this.parentElement.remove()"
+                                                            <button type="button" onclick="this.parentElement.remove()"
                                                                 class="p-2 text-[#757575] dark:text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-primary/30 rounded-full">
                                                                 <span
                                                                     class="material-symbols-outlined text-xl">delete</span>
@@ -444,10 +444,9 @@
                 }
 
                 function addVariant() {
-                    // Add variant logic (using 'size', 'stock', 'price' as singular names for dynamically added fields)
-                    const container = document.getElementById("variant-container"); // Assuming you have a container for new variants
+                    const container = document.getElementById("variant-list");
                     const newRow = document.createElement("div");
-                    newRow.className = "grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center";
+                    newRow.className = "variant-row grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center";
                     newRow.innerHTML = `
                         <input class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder='eg: 6" x 48"' type="text" name="size" required />
                         <input class="w-full bg-transparent border-[#e0e0e0] dark:border-primary/20 rounded-lg focus:ring-primary focus:border-primary text-sm text-center" placeholder="eg: 50" type="number" name="stock" min="0" required />
@@ -456,7 +455,7 @@
                             <span class="material-symbols-outlined text-xl">delete</span>
                         </button>
                     `;
-                    container.parentNode.insertBefore(newRow, container.nextSibling);
+                    container.appendChild(newRow);
                 }
 
                 // --- REPLICATED VALIDATION FUNCTIONS (From createProduct page) ---
@@ -520,32 +519,50 @@
 
                 // 3. Validate Variants
                 function validateVariants() {
-                    // NOTE: The edit form variant naming uses singular 'size', 'stock', 'price' for the EJS loop,
-                    // but uses the same HTML structure for new additions.
-                    // For simplicity and matching the old script, we check for presence.
-
-                    // We look for any input named 'size', 'stock', or 'price'
                     const sizeInputs = document.querySelectorAll('input[name="size"]');
                     const stockInputs = document.querySelectorAll('input[name="stock"]');
                     const priceInputs = document.querySelectorAll('input[name="price"]');
 
-                    // Ensure at least one variant set is present and complete
-                    if (sizeInputs.length === 0) return false;
+                    if (sizeInputs.length === 0) {
+                        return { valid: false, message: "At least one product variant (Size, Stock, Price) is required." };
+                    }
 
-                    let hasValidVariant = false;
+                    if (sizeInputs.length > 10) {
+                        return { valid: false, message: "You can add a maximum of 10 product variants." };
+                    }
+
+                    let specificError = "";
+                    let allValid = true;
 
                     for (let i = 0; i < sizeInputs.length; i++) {
                         const size = sizeInputs[i].value.trim();
                         const stock = stockInputs[i].value.trim();
                         const price = priceInputs[i].value.trim();
 
-                        if (size !== "" && stock !== "" && price !== "") {
-                            hasValidVariant = true;
+                        if (size === "" || stock === "" || price === "") {
+                            allValid = false;
+                            specificError = "All fields (Size, Stock, Price) are required for every variant.";
+                            break;
+                        }
+
+                        if (parseFloat(stock) < 0) {
+                            allValid = false;
+                            specificError = "Stock cannot be negative.";
+                            break;
+                        }
+
+                        if (parseFloat(price) < 10) {
+                            allValid = false;
+                            specificError = "Price must be at least 10 for every variant.";
                             break;
                         }
                     }
 
-                    return hasValidVariant;
+                    if (!allValid) {
+                        return { valid: false, message: specificError || "Please ensure all variants are valid." };
+                    }
+
+                    return { valid: true };
                 }
 
                 // 4. Final Form Validation on Submit with SweetAlert2
@@ -556,7 +573,8 @@
 
                         const isInfoValid = validateProductInfo();
                         const isImagesValid = validateImages();
-                        const isVariantsValid = validateVariants();
+                        const variantValidation = validateVariants();
+                        const isVariantsValid = variantValidation.valid;
 
                         if (!isInfoValid || !isImagesValid || !isVariantsValid) {
                             let errorMessage = "Please correct the following issues:";
@@ -575,8 +593,7 @@
                             }
 
                             if (!isVariantsValid) {
-                                errorMessage +=
-                                    "\n- At least one complete product variant (Size, Stock, Price) is required.";
+                                errorMessage += `\n- ${variantValidation.message}`;
                             }
 
                             // Use SweetAlert2

@@ -1,6 +1,6 @@
 <%- include("../../partials/header.ejs") %>
 
-    <div class="flex flex-col md:flex-row py-12 min-h-[90vh]">
+    <div class="flex flex-col md:flex-row py-12 min-h-[90vh] pb-24 md:pb-12">
         <!-- Sidebar -->
         <%- include("../../partials/user-sidebar.ejs") %>
 
@@ -93,7 +93,7 @@
                                     </button>
                                 </div>
                                 <% } %>
-                                
+
                                     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                                     <script>
                                         document.addEventListener('DOMContentLoaded', () => {
@@ -227,7 +227,7 @@
                                                 didOpen: () => {
                                                     const input = document.getElementById('walletAmount');
                                                     const wrapper = document.getElementById('amountWrapper');
-                                                    
+
                                                     // Focus effect
                                                     input.addEventListener('focus', () => wrapper.style.borderColor = '#3b82f6');
                                                     input.addEventListener('blur', () => wrapper.style.borderColor = '#f3f4f6');
@@ -329,9 +329,9 @@
                                                 rzp.open();
                                             } catch (error) {
                                                 Swal.fire({
-                                                icon: 'error',
-                                                title: 'Failed',
-                                                text: error.message || 'Something went wrong'
+                                                    icon: 'error',
+                                                    title: 'Failed',
+                                                    text: error.message || 'Something went wrong'
                                                 });
                                             }
                                         }
@@ -340,9 +340,11 @@
                         </div>
                     </div>
             </main>
-            </div>
-            </div>
-            <%- include('../../partials/footer.ejs') %>
+    </div>
+    </div>
+    <div class="hidden md:block">
+        <%- include('../../partials/footer.ejs') %>
+    </div>
     </div>
     </div>
     </body>

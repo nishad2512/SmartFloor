@@ -78,8 +78,7 @@ function generateInvoice(order, res) {
     if (order.address) {
         doc.text(`${order.address.address1 || ""}`, 350, billTop + 35);
         doc.text(
-            `${order.address.city || ""}, ${order.address.state || ""} ${
-                order.address.pincode || ""
+            `${order.address.city || ""}, ${order.address.state || ""} ${order.address.pincode || ""
             }`,
             350,
             billTop + 50
@@ -112,17 +111,34 @@ function generateInvoice(order, res) {
     let y = tableTop + 40;
 
     order.items.forEach((item, i) => {
+
+        let variantLabel = "";
+
+        if (item.product && Array.isArray(item.product.variants)) {
+            const foundVariant = item.product.variants.find(v => v._id && item.variant && v._id.toString() === item.variant.toString());
+            if (foundVariant && foundVariant.size) {
+                variantLabel = `Size: ${foundVariant.size}`;
+            }
+        }
+
         // Item Name
         doc.font("Helvetica-Bold")
             .fontSize(10)
-            .text(item.product.name, itemX + 10, y, { width: 280 });
+            .text(item.product ? item.product.name : "Unknown Product", itemX + 10, y, { width: 280 });
+
+        if (variantLabel) {
+            doc.font("Helvetica")
+                .fontSize(9)
+                .fillColor(secondaryColor)
+                .text(variantLabel, itemX + 10, y + 12, { width: 280 });
+        }
 
         doc.fillColor(primaryColor).fontSize(10); // Reset
 
         doc.text(item.quantity.toString(), qtyX, y);
 
         // Use subTotal / quantity for unit price approximation
-        const unitPrice = item.subTotal / item.quantity;
+        const unitPrice = item.quantity > 0 ? (item.subTotal / item.quantity) : 0;
         doc.text(
             `Rs. ${unitPrice.toLocaleString("en-IN")}`,
             priceX,
@@ -135,13 +151,13 @@ function generateInvoice(order, res) {
         );
 
         // Line Separator
-        doc.moveTo(50, y + 25)
-            .lineTo(550, y + 25)
+        doc.moveTo(50, y + 35)
+            .lineTo(550, y + 35)
             .lineWidth(0.5)
             .strokeColor("#E0E0E0")
             .stroke();
 
-        y += 35;
+        y += 45;
     });
 
     // --- Summary Section ---
@@ -234,5 +250,3 @@ function generateInvoice(order, res) {
 }
 
 export default generateInvoice;
-
-// .text(`Rs. ${item.price.toLocaleString()}`, 370, y)

@@ -179,8 +179,7 @@
                                         <p class="text-sm font-medium text-[#757575] dark:text-gray-400">Overall
                                             Refunds</p>
                                         <p class="text-3xl font-bold text-red-500 mt-2">
-                                            -<%= typeof refunds !=='undefined' ? '₹' +
-                                                refunds.toFixed(2) : '₹0.00' %>
+                                            -<%= typeof refunds !=='undefined' ? '₹' + refunds.toFixed(2) : '₹0.00' %>
                                         </p>
                                         <p class="text-sm text-[#757575] mt-1">Total deductions</p>
                                     </div>
@@ -195,7 +194,7 @@
                                         <p class="text-sm text-green-500 mt-1">Net revenue</p>
                                     </div>
                                 </div>
-                                <div class="overflow-x-auto">
+                                <div class="hidden md:block overflow-x-auto">
                                     <table
                                         class="w-full text-left text-sm text-[#141414] dark:text-white border border-gray-200 rounded-lg">
                                         <thead
@@ -206,8 +205,8 @@
                                                 <th class="px-6 py-3 whitespace-nowrap">Order Date</th>
                                                 <th class="px-6 py-3 whitespace-nowrap">Payment</th>
                                                 <th class="px-6 py-3 whitespace-nowrap">Status</th>
-                                                <th class="px-6 py-3 whitespace-nowrap text-center">Coupen</th>
-                                                <th class="px-6 py-3 whitespace-nowrap text-center">Discount</th>
+                                                <th class="px-6 py-3 whitespace-nowrap text-center">Coupen Discount</th>
+                                                <th class="px-6 py-3 whitespace-nowrap text-center">Refund</th>
                                                 <th class="px-6 py-3 whitespace-nowrap text-right">Total Amount</th>
                                             </tr>
                                         </thead>
@@ -246,19 +245,136 @@
                                                                 <%= order.status %>
                                                             </span>
                                                     </td>
-                                                    <td class="px-6 py-4 text-center">
-                                                        <%= order.coupenCode ? order.coupenCode : '-' %>
-                                                    </td>
                                                     <td class="px-6 py-4 text-center text-red-700">-₹<%=
                                                             order.coupenDiscount ? order.coupenDiscount : 0 %>
                                                     </td>
-                                                    <td class="px-6 py-4 text-right <%= order.status == 'Cancelled' || order.status == 'Returned' ? 'text-red-700' : 'text-green-700' %>"><%= order.status == 'Cancelled' || order.status == 'Returned' ? '-₹' + order.totalAmount.toFixed(2) : '+₹' + order.totalAmount.toFixed(2) %>
+                                                    <td class="px-6 py-4 text-center text-red-700">
+                                                        -₹<%= order.refund ? order.refund.toFixed(2) : '0' %>
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-4 text-right <%= order.status == 'Cancelled' || order.status == 'Returned' ? 'text-red-700' : 'text-green-700' %>">
+                                                        <%= order.status=='Cancelled' || order.status=='Returned' ? '-₹'
+                                                            + order.totalAmount.toFixed(2) : '+₹' +
+                                                            order.totalAmount.toFixed(2) %>
                                                     </td>
                                                 </tr>
                                                 <% }) %>
                                         </tbody>
                                     </table>
                                 </div>
+
+                                <!-- Mobile Card View -->
+                                <div class="grid grid-cols-1 gap-4 md:hidden">
+                                    <% orders.forEach(order=> { %>
+                                        <div
+                                            class="bg-white dark:bg-[#1f1f1f] p-4 rounded-xl border border-[#e0e0e0] dark:border-primary/20 shadow-sm flex flex-col gap-3">
+                                            <div
+                                                class="flex justify-between items-start border-b border-[#e0e0e0] dark:border-primary/20 pb-3">
+                                                <div>
+                                                    <p class="text-xs text-[#757575] dark:text-gray-400">Order ID</p>
+                                                    <p class="font-bold text-[#141414] dark:text-white">ORD-<%=
+                                                            order.orderId.split('-')[2] %>
+                                                    </p>
+                                                </div>
+                                                <div class="flex flex-col items-end">
+                                                    <p class="text-xs text-[#757575] dark:text-gray-400">Date</p>
+                                                    <p class="text-sm font-medium text-[#141414] dark:text-white">
+                                                        <%= order.createdAt.toLocaleDateString() %>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <p class="text-xs text-[#757575] dark:text-gray-400">Customer</p>
+                                                    <p class="font-medium text-[#141414] dark:text-white">
+                                                        <%= order.user.name %>
+                                                    </p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="text-xs text-[#757575] dark:text-gray-400">Payment</p>
+                                                    <p class="font-medium text-[#141414] dark:text-white uppercase">
+                                                        <%= order.paymentMethod %>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div
+                                                class="flex flex-col gap-2 bg-gray-50 dark:bg-white/5 p-3 rounded-lg text-sm">
+                                                <div class="flex justify-between">
+                                                    <span class="text-[#757575] dark:text-gray-400">Discount</span>
+                                                    <span class="text-red-500 font-medium">-₹<%= order.coupenDiscount ?
+                                                            order.coupenDiscount : 0 %></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-[#757575] dark:text-gray-400">Refund</span>
+                                                    <span class="text-red-500 font-medium">-₹<%= order.refund ?
+                                                            order.refund.toFixed(2) : '0' %></span>
+                                                </div>
+                                                <div
+                                                    class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-2 mt-1">
+                                                    <span class="font-bold text-[#141414] dark:text-white">Total</span>
+                                                    <span
+                                                        class="font-bold <%= order.status == 'Cancelled' || order.status == 'Returned' ? 'text-red-700' : 'text-green-700' %>">
+                                                        <%= order.status=='Cancelled' || order.status=='Returned' ? '-₹'
+                                                            + order.totalAmount.toFixed(2) : '+₹' +
+                                                            order.totalAmount.toFixed(2) %>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex justify-between items-center mt-1">
+                                                <% let
+                                                    statusClass="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                                                    ; switch (order.status) { case "Cancelled" : case "Returned" :
+                                                    statusClass="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                                                    ; break; case "Processing" : case "Shipped" :
+                                                    statusClass="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                                                    ; break; case "Pending" :
+                                                    statusClass="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                                    ; break; case "Return Request" :
+                                                    statusClass="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
+                                                    ; break; case "Delivered" :
+                                                    statusClass="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                                    ; break; } %>
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold <%= statusClass %>">
+                                                        <%= order.status %>
+                                                    </span>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+
+                                <!-- Pagination -->
+                                <% if (typeof totalPages !=='undefined' && totalPages> 1) { %>
+                                    <div
+                                        class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] rounded-b-xl">
+                                        <p class="text-[#757575] dark:text-gray-400">
+                                            Showing <%= skip + 1 %> to <%= Math.min(skip + limit, totalOrders) %> of
+                                                    <%= totalOrders %> orders
+                                        </p>
+                                        <div class="flex gap-2 items-center">
+                                            <% let queryString='' ; if (typeof period !=='undefined' && period)
+                                                queryString +='&period=' + period; if (typeof status !=='undefined' &&
+                                                status) queryString +='&status=' + status; if (typeof paymentMethod
+                                                !=='undefined' && paymentMethod) queryString +='&paymentMethod=' +
+                                                paymentMethod; if (typeof startDate !=='undefined' && startDate)
+                                                queryString +='&startDate=' + startDate; if (typeof endDate
+                                                !=='undefined' && endDate) queryString +='&endDate=' + endDate; %>
+                                                <a href="/admin/sales?page=<%= currentPage - 1 %><%= queryString %>"
+                                                    class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= currentPage === 1 ? 'pointer-events-none opacity-50' : '' %>">
+                                                    Previous
+                                                </a>
+                                                <span class="px-2 text-gray-600 dark:text-gray-400">Page <%= currentPage
+                                                        %> of <%= totalPages %></span>
+                                                <a href="/admin/sales?page=<%= currentPage + 1 %><%= queryString %>"
+                                                    class="px-3 py-1 border border-[#e0e0e0] dark:border-primary/20 rounded-md hover:bg-gray-100 dark:hover:bg-primary/30 <%= currentPage === totalPages ? 'pointer-events-none opacity-50' : '' %>">
+                                                    Next
+                                                </a>
+                                        </div>
+                                    </div>
+                                    <% } %>
                             </div>
                         </div>
                     </main>

@@ -36,7 +36,7 @@
                                             class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] text-sm focus:outline-none focus:border-primary transition-colors">
                                     </div>
 
-                                    <div class="flex gap-4">
+                                    <div class="flex flex-wrap gap-4">
                                         <select name="isActive" onchange="this.form.submit()"
                                             class="px-4 py-2.5 rounded-lg border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] text-sm focus:outline-none focus:border-primary cursor-pointer">
                                             <option value="">All Status</option>
@@ -75,7 +75,7 @@
                             </div>
                             <div
                                 class="rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] flex flex-col">
-                                <div class="overflow-x-auto">
+                                <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-sm text-left">
                                         <thead class="border-b border-[#e0e0e0] dark:border-primary/20">
                                             <tr>
@@ -178,6 +178,94 @@
                                                             <% } %>
                                         </tbody>
                                     </table>
+                                </div>
+
+                                <!-- Mobile Card View -->
+                                <div class="grid grid-cols-1 gap-4 p-4 md:hidden">
+                                    <% if (typeof coupens !=='undefined' && coupens.length> 0) { %>
+                                        <% coupens.forEach(coupen=> { %>
+                                            <div
+                                                class="bg-white dark:bg-[#1f1f1f] p-4 rounded-xl border border-[#e0e0e0] dark:border-primary/20 shadow-sm flex flex-col gap-3">
+                                                <div
+                                                    class="flex justify-between items-start border-b border-[#e0e0e0] dark:border-primary/20 pb-2">
+                                                    <div>
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Coupon Code
+                                                        </p>
+                                                        <p class="font-bold text-[#141414] dark:text-white text-lg">
+                                                            <%= coupen.code %>
+                                                        </p>
+                                                    </div>
+                                                    <% if (coupen.isActive && new Date(coupen.expirationDate)> new
+                                                        Date()) { %>
+                                                        <span
+                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</span>
+                                                        <% } else if (!coupen.isActive) { %>
+                                                            <span
+                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">Inactive</span>
+                                                            <% } else { %>
+                                                                <span
+                                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300">Expired</span>
+                                                                <% } %>
+                                                </div>
+
+                                                <div class="flex justify-between items-center">
+                                                    <div>
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Type</p>
+                                                        <p class="font-medium text-[#141414] dark:text-white text-sm">
+                                                            <%= coupen.discountType==='percentage' ? 'Percentage'
+                                                                : 'Fixed Amount' %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Value</p>
+                                                        <p class="font-medium text-green-600 dark:text-green-400">
+                                                            <%= coupen.discountType==='percentage' ?
+                                                                coupen.discountValue + '%' : '₹' + coupen.discountValue
+                                                                %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex justify-between items-center">
+                                                    <div>
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Used /
+                                                            Limit</p>
+                                                        <p class="font-medium text-[#141414] dark:text-white">
+                                                            <%= coupen.usedCount %> / <%= coupen.usageLimit ?
+                                                                    coupen.usageLimit : '∞' %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Expires</p>
+                                                        <p class="font-medium text-[#141414] dark:text-white">
+                                                            <%= new Date(coupen.expirationDate).toLocaleDateString() %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    class="flex items-center justify-end gap-3 mt-2 pt-2 border-t border-[#e0e0e0] dark:border-primary/20">
+                                                    <a href="/admin/coupens/edit/<%= coupen._id %>"
+                                                        class="flex items-center gap-1 text-sm font-medium text-primary dark:text-white hover:underline">
+                                                        <span class="material-symbols-outlined text-lg">edit</span> Edit
+                                                    </a>
+                                                    <button
+                                                        onclick="toggleCouponBlock('<%= coupen.isActive %>', '<%= coupen._id %>', this)"
+                                                        data-expiry="<%= coupen.expirationDate %>"
+                                                        class="flex items-center gap-1 text-sm font-medium hover:underline <%= coupen.isActive ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400' %>">
+                                                        <span class="material-symbols-outlined text-lg">
+                                                            <%= coupen.isActive ? 'block' : 'check_circle' %>
+                                                        </span>
+                                                        <%= coupen.isActive ? 'Block' : 'Unblock' %>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                                                        No coupons found.
+                                                    </div>
+                                                    <% } %>
                                 </div>
                                 <% if (typeof totalPages !=='undefined' && totalPages> 1) { %>
                                     <div

@@ -46,7 +46,8 @@
                                                     Order Items (<%= order.items.length %>)
                                                 </h2>
                                             </div>
-                                            <div class="overflow-x-auto">
+                                            <!-- Desktop Table View -->
+                                            <div class="hidden md:block overflow-x-auto">
                                                 <table class="w-full text-left">
                                                     <thead
                                                         class="text-sm text-[#757575] dark:text-gray-400 bg-gray-50 dark:bg-[#2a2a2a]">
@@ -61,19 +62,19 @@
                                                     <tbody>
                                                         <% order.items.forEach((item, index)=> { %>
                                                             <tr
-                                                                class="border-b border-[#e0e0e0] dark:border-primary/20 last:border-0">
+                                                                class="border-b border-[#e0e0e0] dark:border-primary/20 last:border-0 text-sm">
                                                                 <td class="px-6 py-4">
                                                                     <div class="flex items-center gap-4">
                                                                         <img src="<%= item.product.productImages[0] || 'https://via.placeholder.com/60' %>"
                                                                             alt="Product"
-                                                                            class="w-16 h-16 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
+                                                                            class="w-12 h-12 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
                                                                         <div>
                                                                             <h6
                                                                                 class="text-[#141414] dark:text-white font-semibold">
                                                                                 <%= item.product.name %>
                                                                             </h6>
                                                                             <p
-                                                                                class="text-sm text-[#757575] dark:text-gray-400">
+                                                                                class="text-xs text-[#757575] dark:text-gray-400">
                                                                                 Size: <%= variants[index] ?
                                                                                     variants[index].size : 'N/A' %>
                                                                             </p>
@@ -87,7 +88,8 @@
                                                                 <td class="px-6 py-4 text-[#757575] dark:text-gray-400">
                                                                     x <%= item.quantity %>
                                                                 </td>
-                                                                <td class="px-6 text-center py-4 text-[#757575] dark:text-gray-400">
+                                                                <td
+                                                                    class="px-6 text-center py-4 text-[#757575] dark:text-gray-400">
                                                                     <%= item.status %>
                                                                 </td>
                                                                 <td
@@ -98,6 +100,48 @@
                                                             <% }) %>
                                                     </tbody>
                                                 </table>
+                                            </div>
+
+                                            <!-- Mobile Card View -->
+                                            <div class="md:hidden flex flex-col gap-4 p-4">
+                                                <% order.items.forEach((item, index)=> { %>
+                                                    <div
+                                                        class="flex flex-col gap-3 p-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg border border-[#e0e0e0] dark:border-primary/20">
+                                                        <div class="flex gap-4">
+                                                            <img src="<%= item.product.productImages[0] || 'https://via.placeholder.com/60' %>"
+                                                                alt="Product"
+                                                                class="w-20 h-20 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
+                                                            <div class="flex flex-col gap-1 w-full">
+                                                                <div class="flex justify-between items-start">
+                                                                    <h6
+                                                                        class="text-[#141414] dark:text-white font-semibold text-sm line-clamp-2">
+                                                                        <%= item.product.name %>
+                                                                    </h6>
+                                                                    <p
+                                                                        class="font-bold text-[#141414] dark:text-white text-sm whitespace-nowrap">
+                                                                        ₹<%= item.subTotal.toLocaleString() %>
+                                                                    </p>
+                                                                </div>
+                                                                <p class="text-xs text-[#757575] dark:text-gray-400">
+                                                                    Size: <%= variants[index] ? variants[index].size
+                                                                        : 'N/A' %>
+                                                                </p>
+                                                                <div class="flex justify-between items-end mt-2">
+                                                                    <p
+                                                                        class="text-xs text-[#757575] dark:text-gray-400">
+                                                                        <%= item.quantity %> x ₹<%= variants[index] ?
+                                                                                variants[index].price.toFixed(2)
+                                                                                : '0.00' %>
+                                                                    </p>
+                                                                    <span
+                                                                        class="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                                                        <%= item.status %>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% }) %>
                                             </div>
                                         </div>
 
@@ -126,8 +170,9 @@
                                                                     ? 'selected' : '' %>>Shipped</option>
                                                                 <option value="Delivered" <%=order.status==='Delivered'
                                                                     ? 'selected' : '' %>>Delivered</option>
-                                                                <option value="Delivered" <%=order.status==='Return Request'
-                                                                    ? 'selected' : '' %> disabled>Return Request</option>
+                                                                <option value="Return Request"
+                                                                    <%=order.status==='Return Request' ? 'selected' : ''
+                                                                    %> disabled>Return Request</option>
                                                                 <option value="Cancelled" <%=order.status==='Cancelled'
                                                                     ? 'selected' : '' %> disabled>Cancelled</option>
                                                                 <option value="Returned" <%=order.status==='Returned'
@@ -148,7 +193,7 @@
                                     </div>
 
                                     <!-- Right Column: Summary & Info -->
-                                    <div class="lg:w-[400px] flex flex-col gap-6">
+                                    <div class="lg:w-[400px] flex flex-col gap-6 w-full">
 
                                         <!-- Order Summary -->
                                         <div
@@ -164,7 +209,8 @@
                                                 </div>
                                                 <div class="flex justify-between text-[#757575] dark:text-gray-400">
                                                     <span>Discount</span>
-                                                    <span class="text-green-600">-₹<%= order.coupenDiscount ? order.coupenDiscount.toFixed(2) : "0.00" %></span>
+                                                    <span class="text-green-600">-₹<%= order.coupenDiscount ?
+                                                            order.coupenDiscount.toFixed(2) : "0.00" %></span>
                                                 </div>
                                                 <div class="flex justify-between text-[#757575] dark:text-gray-400">
                                                     <span>Shipping</span>
@@ -272,15 +318,33 @@
                     body: JSON.stringify({ status })
                 });
 
-                if (response.success) {
-                    location.reload();
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Order status updated successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
                     console.error('Failed to update status');
-                    location.reload();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to update status'
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while updating status'
+                });
             }
         });
     </script>

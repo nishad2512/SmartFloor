@@ -1,110 +1,207 @@
 <%- include('../partials/header.ejs') %>
 
-            <header class="py-10 mb-20">
-                <h1 class="text-4xl lg:text-[4rem] 2xl:text-[5.5rem] font-extrabold text-center mb-20 leading-[1.1]">
-                    About <span class="text-black">SmartFloor</span>
-                </h1>
-            </header>
+    <header class="py-10 mb-20">
+        <h1 class="text-4xl lg:text-[4rem] 2xl:text-[5.5rem] font-extrabold text-center mb-20 leading-[1.1]">
+            About <span class="text-black">SmartFloor</span>
+        </h1>
+    </header>
 
-            <section class="py-16 mb-32">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
-                    <div class="relative">
-                        <div class="rounded-[3rem] overflow-hidden h-[600px]">
-                            <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1200"
-                                class="w-full h-full object-cover" />
-                        </div>
-                        <button
-                            class="absolute bottom-12 -right-10 bg-black text-white w-24 h-24 rounded-full flex items-center justify-center border-[8px] border-white shadow-2xl hover:scale-105 transition z-10">
-                            <i class="ph-fill ph-play text-4xl ml-1"></i>
-                        </button>
-                        <p class="mt-8 font-bold text-base w-3/4 leading-relaxed pl-2">
-                            Watch the video and learn more about, SmartFloor
-                        </p>
-                    </div>
-
-                    <div class="pt-8">
-                        <h2 class="text-5xl font-bold mb-6">Why Choose Us</h2>
-                        <p class="text-gray-400 text-base mb-12 w-3/4 leading-relaxed">
-                            We provide the reasons SmartFloor stands out as the
-                            ultimate choice for flooring solutions.
-                        </p>
-
-                        <div class="flex flex-col space-y-2">
-                            <div
-                                class="border-b border-gray-100 py-6 flex justify-between items-center cursor-pointer group">
-                                <h4 class="font-bold text-xl">
-                                    Unrivaled quality
-                                </h4>
-                                <i class="ph-bold ph-plus text-xl group-hover:rotate-90 transition duration-300"></i>
-                            </div>
-
-                            <div class="border-b border-gray-100 py-6">
-                                <div class="flex justify-between items-center cursor-pointer mb-4">
-                                    <h4 class="font-bold text-xl">
-                                        Sustainability
-                                    </h4>
-                                    <i class="ph-bold ph-x text-xl"></i>
-                                </div>
-                                <p class="text-base leading-relaxed text-gray-500 font-medium w-11/12">
-                                    We prioritize eco-friendly solutions
-                                    ensuring top production quality.
-                                </p>
-                            </div>
-
-                            <div
-                                class="border-b border-gray-100 py-6 flex justify-between items-center cursor-pointer group">
-                                <h4 class="font-bold text-xl">
-                                    Unmatched variety
-                                </h4>
-                                <i class="ph-bold ph-plus text-xl group-hover:rotate-90 transition duration-300"></i>
-                            </div>
-
-                            <div
-                                class="border-b border-gray-100 py-6 flex justify-between items-center cursor-pointer group">
-                                <h4 class="font-bold text-xl">
-                                    Legacy of excellence
-                                </h4>
-                                <i class="ph-bold ph-plus text-xl group-hover:rotate-90 transition duration-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="mb-32">
-                <div class="relative rounded-[3.5rem] overflow-hidden h-[600px] shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1599619351208-3e6c839d6828?q=80&w=2400&auto=format&fit=crop"
+    <section class="py-16 mb-32">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+            <div class="relative">
+                <div class="rounded-[3rem] overflow-hidden h-[600px]">
+                    <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1200"
                         class="w-full h-full object-cover" />
+                </div>
+                <button
+                    class="absolute bottom-12 -right-4 md:-right-10 bg-black text-white w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center border-4 md:border-[8px] border-white shadow-2xl hover:scale-105 transition z-10">
+                    <i class="ph-fill ph-play text-2xl md:text-4xl ml-1"></i>
+                </button>
+                <p class="mt-8 font-bold text-base w-3/4 leading-relaxed pl-2">
+                    Watch the video and learn more about, SmartFloor
+                </p>
+            </div>
 
-                    <div class="absolute inset-0 bg-white/5"></div>
+            <div class="pt-8">
+                <h2 class="text-5xl font-bold mb-6">Why Choose Us</h2>
+                <p class="text-gray-400 text-base mb-12 w-3/4 leading-relaxed">
+                    We provide the reasons SmartFloor stands out as the
+                    ultimate choice for flooring solutions.
+                </p>
 
-                    <div class="absolute inset-0 p-16 flex flex-col justify-center">
-                        <div class="max-w-4xl">
-                            <h2
-                                class="text-5xl xl:text-[4rem] font-extrabold leading-[1.1] [text-shadow:_0_2px_10px_rgb(255_255_255_/_0.6)] text-black mb-8">
-                                When We Collect <br />
-                                Products, We Strive <br />
-                                For The Finest Quality.
-                            </h2>
+                <div class="flex flex-col space-y-2" id="accordion-container">
+                    <!-- Item 1 -->
+                    <div class="border-b border-gray-100 py-6 accordion-item">
+                        <div class="flex justify-between items-center cursor-pointer group accordion-header">
+                            <h4 class="font-bold text-xl">Unrivaled quality</h4>
+                            <i class="ph-bold ph-x text-xl transition-all duration-300"></i>
                         </div>
+                        <div class="accordion-content overflow-hidden transition-all duration-500 ease-in-out"
+                            style="max-height: 500px; opacity: 1;">
+                            <p class="text-base leading-relaxed text-gray-500 font-medium w-11/12 mt-4">
+                                One of our primary goals is to provide the best quality flooring products in the market.
+                                We carefully select our suppliers and test every product to ensure it meets our high
+                                standards.
+                            </p>
+                        </div>
+                    </div>
 
-                        <button
-                            class="absolute top-12 right-12 bg-[#1A1A1A] hover:bg-black text-white pl-8 pr-3 py-3 rounded-full flex items-center gap-4 text-sm font-bold shadow-xl transition transform hover:-translate-y-1">
-                            Consult Now
-                            <div class="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center">
-                                <i class="ph-bold ph-arrow-right text-sm"></i>
-                            </div>
-                        </button>
+                    <!-- Item 2 -->
+                    <div class="border-b border-gray-100 py-6 accordion-item">
+                        <div class="flex justify-between items-center cursor-pointer group accordion-header">
+                            <h4 class="font-bold text-xl">Sustainability</h4>
+                            <i class="ph-bold ph-plus text-xl transition-all duration-300"></i>
+                        </div>
+                        <div
+                            class="accordion-content overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
+                            <p class="text-base leading-relaxed text-gray-500 font-medium w-11/12 mt-4">
+                                We prioritize eco-friendly solutions ensuring top production quality. Our manufacturing
+                                processes are designed to minimize environmental impact while maximizing durability.
+                            </p>
+                        </div>
+                    </div>
 
-                        <button
-                            class="absolute bottom-16 left-16 bg-[#1A1A1A] hover:bg-black text-white px-10 py-4 rounded-full text-base font-bold shadow-xl transition transform hover:-translate-y-1">
-                            See Products
-                        </button>
+                    <!-- Item 3 -->
+                    <div class="border-b border-gray-100 py-6 accordion-item">
+                        <div class="flex justify-between items-center cursor-pointer group accordion-header">
+                            <h4 class="font-bold text-xl">Unmatched variety</h4>
+                            <i class="ph-bold ph-plus text-xl transition-all duration-300"></i>
+                        </div>
+                        <div
+                            class="accordion-content overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
+                            <p class="text-base leading-relaxed text-gray-500 font-medium w-11/12 mt-4">
+                                With an extensive collection of tiles across various categories like porcelain, ceramic,
+                                and vitrified, we offer designs that cater to every aesthetic preference, from modern to
+                                traditional.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="border-b border-gray-100 py-6 accordion-item">
+                        <div class="flex justify-between items-center cursor-pointer group accordion-header">
+                            <h4 class="font-bold text-xl">Legacy of excellence</h4>
+                            <i class="ph-bold ph-plus text-xl transition-all duration-300"></i>
+                        </div>
+                        <div
+                            class="accordion-content overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
+                            <p class="text-base leading-relaxed text-gray-500 font-medium w-11/12 mt-4">
+                                Built on a foundation of trust and customer satisfaction, SmartFloor has been serving
+                                homes and businesses for years, becoming a name synonymous with reliability and style.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
-        <%- include('../partials/footer.ejs') %>
-</body>
+    </section>
 
-</html>
+    <section class="mb-32">
+        <div class="relative rounded-[3.5rem] overflow-hidden h-[600px] shadow-sm">
+            <img src="https://images.unsplash.com/photo-1599619351208-3e6c839d6828?q=80&w=2400&auto=format&fit=crop"
+                class="w-full h-full object-cover" />
+
+            <div class="absolute inset-0 bg-white/5"></div>
+
+            <div class="absolute inset-0 p-16 flex flex-col justify-center">
+                <div class="max-w-4xl">
+                    <h2
+                        class="text-5xl xl:text-[4rem] font-extrabold leading-[1.1] [text-shadow:_0_2px_10px_rgb(255_255_255_/_0.6)] text-black mb-8">
+                        When We Collect <br />
+                        Products, We Strive <br />
+                        For The Finest Quality.
+                    </h2>
+                </div>
+
+                <button
+                    class="absolute top-12 right-12 bg-[#1A1A1A] hover:bg-black text-white pl-8 pr-3 py-3 rounded-full flex items-center gap-4 text-sm font-bold shadow-xl transition transform hover:-translate-y-1">
+                    Consult Now
+                    <div class="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center">
+                        <i class="ph-bold ph-arrow-right text-sm"></i>
+                    </div>
+                </button>
+
+                <button
+                    class="absolute bottom-16 left-16 bg-[#1A1A1A] hover:bg-black text-white px-10 py-4 rounded-full text-base font-bold shadow-xl transition transform hover:-translate-y-1">
+                    See Products
+                </button>
+            </div>
+        </div>
+    </section>
+    </div>
+    <%- include('../partials/footer.ejs') %>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const headers = document.querySelectorAll('.accordion-header');
+
+                headers.forEach(header => {
+                    header.addEventListener('click', () => {
+                        const content = header.nextElementSibling;
+                        const icon = header.querySelector('i');
+
+                        // Check open state by checking max-height
+                        const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                        if (isOpen) {
+                            content.style.maxHeight = '0px';
+                            content.style.opacity = '0';
+                            icon.classList.replace('ph-x', 'ph-plus');
+                        } else {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            content.style.opacity = '1';
+                            icon.classList.replace('ph-plus', 'ph-x');
+                        }
+                    });
+                });
+            });
+
+            // Video Modal Script
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('promoVideo');
+            const playButton = document.querySelector('.ph-play').parentElement;
+            const closeVideoButton = document.getElementById('closeVideo');
+
+            if (playButton) {
+                playButton.addEventListener('click', () => {
+                    videoModal.classList.remove('hidden');
+                    videoPlayer.play();
+                });
+            }
+
+            if (closeVideoButton) {
+                closeVideoButton.addEventListener('click', () => {
+                    videoModal.classList.add('hidden');
+                    videoPlayer.pause();
+                    videoPlayer.currentTime = 0;
+                });
+            }
+
+            // Close modal when clicking outside the video
+            if (videoModal) {
+                videoModal.addEventListener('click', (e) => {
+                    if (e.target === videoModal) {
+                        videoModal.classList.add('hidden');
+                        videoPlayer.pause();
+                        videoPlayer.currentTime = 0;
+                    }
+                });
+            }
+        </script>
+
+        <!-- Video Modal -->
+        <div id="videoModal"
+            class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="relative w-full max-w-5xl bg-black rounded-2xl overflow-hidden shadow-2xl">
+                <button id="closeVideo"
+                    class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-colors">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+                <video id="promoVideo" class="w-full h-auto max-h-[80vh]" controls>
+                    <source src="/videos/Flooring eCommerce Powerhouse.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        </body>
+
+        </html>

@@ -41,7 +41,8 @@
                                                     Returned Item
                                                 </h2>
                                             </div>
-                                            <div class="overflow-x-auto">
+                                            <!-- Desktop Table View -->
+                                            <div class="hidden md:block overflow-x-auto">
                                                 <table class="w-full text-left">
                                                     <thead
                                                         class="text-sm text-[#757575] dark:text-gray-400 bg-gray-50 dark:bg-[#2a2a2a]">
@@ -54,19 +55,19 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr
-                                                            class="border-b border-[#e0e0e0] dark:border-primary/20 last:border-0">
+                                                            class="border-b border-[#e0e0e0] dark:border-primary/20 last:border-0 text-sm">
                                                             <td class="px-6 py-4">
                                                                 <div class="flex items-center gap-4">
                                                                     <img src="<%= orderItem.product.productImages[0] || 'https://via.placeholder.com/60' %>"
                                                                         alt="Product"
-                                                                        class="w-16 h-16 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
+                                                                        class="w-12 h-12 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
                                                                     <div>
                                                                         <h6
                                                                             class="text-[#141414] dark:text-white font-semibold">
                                                                             <%= orderItem.product.name %>
                                                                         </h6>
                                                                         <p
-                                                                            class="text-sm text-[#757575] dark:text-gray-400">
+                                                                            class="text-xs text-[#757575] dark:text-gray-400">
                                                                             Reason: <%= returnRequest.reason %>
                                                                         </p>
                                                                     </div>
@@ -83,6 +84,36 @@
                                                     </tbody>
                                                 </table>
                                             </div>
+
+                                            <!-- Mobile Card View -->
+                                            <div class="md:hidden p-4">
+                                                <div
+                                                    class="flex flex-col gap-3 p-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg border border-[#e0e0e0] dark:border-primary/20">
+                                                    <div class="flex gap-4">
+                                                        <img src="<%= orderItem.product.productImages[0] || 'https://via.placeholder.com/60' %>"
+                                                            alt="Product"
+                                                            class="w-20 h-20 object-cover rounded-md border border-[#e0e0e0] dark:border-primary/10">
+                                                        <div class="flex flex-col gap-1 w-full">
+                                                            <div class="flex justify-between items-start">
+                                                                <h6
+                                                                    class="text-[#141414] dark:text-white font-semibold text-sm line-clamp-2">
+                                                                    <%= orderItem.product.name %>
+                                                                </h6>
+                                                                <p
+                                                                    class="font-bold text-[#141414] dark:text-white text-sm whitespace-nowrap">
+                                                                    ₹<%= returnRequest.refundAmount.toLocaleString() %>
+                                                                </p>
+                                                            </div>
+                                                            <p class="text-xs text-[#757575] dark:text-gray-400">
+                                                                Size: <%= variant ? variant.size : 'N/A' %>
+                                                            </p>
+                                                            <p class="text-xs text-[#757575] dark:text-gray-400 mt-1">
+                                                                Reason: <%= returnRequest.reason %>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- Update Status Section -->
@@ -94,53 +125,45 @@
                                             </div>
                                             <div class="p-6">
                                                 <form id="statusForm" class="flex flex-col sm:flex-row gap-4 items-end">
-                                                    <%
-                                                    const statusOrder = [
-                                                    "Return Request",
-                                                    "Approved",
-                                                    "Rejected",
-                                                    "Picked",
-                                                    "Refunded"
-                                                    ];
+                                                    <% const statusOrder=[ "Return Request" , "Approved" , "Rejected"
+                                                        , "Picked" , "Refunded" ]; const
+                                                        currentIndex=statusOrder.indexOf(returnRequest.status); %>
 
-                                                    const currentIndex = statusOrder.indexOf(returnRequest.status);
-                                                    %>
+                                                        <div class="flex-1 w-full">
+                                                            <label
+                                                                class="block text-sm font-medium text-[#757575] mb-2">
+                                                                Current Status
+                                                            </label>
 
-                                                    <div class="flex-1 w-full">
-                                                        <label class="block text-sm font-medium text-[#757575] mb-2">
-                                                            Current Status
-                                                        </label>
+                                                            <div class="relative">
+                                                                <select name="status" id="statusSelect"
+                                                                    class="w-full px-4 py-3 bg-gray-50 border rounded-lg appearance-none">
 
-                                                        <div class="relative">
-                                                            <select
-                                                            name="status"
-                                                            id="statusSelect"
-                                                            class="w-full px-4 py-3 bg-gray-50 border rounded-lg appearance-none">
+                                                                    <% statusOrder.forEach((status, index)=> { %>
+                                                                        <option value="<%= status %>"
+                                                                            <%=status===returnRequest.status
+                                                                            ? "selected" : "" %>
+                                                                            <%= index < currentIndex ? "disabled" : ""
+                                                                                %>>
+                                                                                <%= status %>
+                                                                        </option>
+                                                                        <% }) %>
 
-                                                            <% statusOrder.forEach((status, index) => { %>
-                                                                <option
-                                                                value="<%= status %>"
-                                                                <%= status === returnRequest.status ? "selected" : "" %>
-                                                                <%= index < currentIndex ? "disabled" : "" %>>
-                                                                <%= status %>
-                                                                </option>
-                                                            <% }) %>
-
-                                                            </select>
+                                                                </select>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <button type="submit"
-                                                        class="w-full sm:w-auto px-6 py-3 bg-primary text-white font-medium rounded-lg hover:opacity-90 transition-opacity">
-                                                        Update Status
-                                                    </button>
+                                                        <button type="submit"
+                                                            class="w-full sm:w-auto px-6 py-3 bg-primary text-white font-medium rounded-lg hover:opacity-90 transition-opacity">
+                                                            Update Status
+                                                        </button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Right Column: Requested By -->
-                                    <div class="lg:w-[400px] flex flex-col gap-6">
+                                    <div class="lg:w-[400px] flex flex-col gap-6 w-full">
 
                                         <!-- Customer Details -->
                                         <div
@@ -202,21 +225,33 @@
                     body: JSON.stringify({ status })
                 });
 
-                if (response.ok) { // Check if ok since controller uses res.json({success: true}) which is status 200
-                    const data = await response.json();
-                    if (data.success) {
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Return status updated successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
                         location.reload();
-                    } else {
-                        console.error('Failed to update status');
-                        location.reload(); // Or show alert
-                    }
+                    });
                 } else {
                     console.error('Failed to update status');
-                    alert('Failed to update status');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to update status'
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while updating status'
+                });
             }
         });
     </script>

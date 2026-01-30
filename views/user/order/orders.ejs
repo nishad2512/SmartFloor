@@ -1,6 +1,6 @@
 <%- include("../../partials/header.ejs") %>
 
-    <div class="flex flex-col md:flex-row py-12 gap-[100px] min-h-[90vh]">
+    <div class="flex flex-col md:flex-row gap-8 md:gap-[100px] py-12 min-h-[90vh] pb-24 md:pb-12">
         <!-- Sidebar -->
         <%- include("../../partials/user-sidebar.ejs") %>
             <!-- Main Content -->
@@ -56,8 +56,8 @@
                                     ? 'selected' : '' %>>Delivered</option>
                                 <option value="Cancelled" <%=typeof status !=='undefined' && status==='Cancelled'
                                     ? 'selected' : '' %>>Cancelled</option>
-                                <option value="Return Request" <%=typeof status !=='undefined' && status==='Return Request'
-                                    ? 'selected' : '' %>>Return Request</option>
+                                <option value="Return Request" <%=typeof status !=='undefined' &&
+                                    status==='Return Request' ? 'selected' : '' %>>Return Request</option>
                                 <option value="Returned" <%=typeof status !=='undefined' && status==='Returned'
                                     ? 'selected' : '' %>>Returned</option>
                             </select>
@@ -66,21 +66,24 @@
 
                     <!-- Order List -->
                     <div class="flex flex-col gap-4">
-                        <% if (orders && orders.length > 0) { %>
+                        <% if (orders && orders.length> 0) { %>
                             <% orders.forEach(order=> { %>
                                 <div onclick="window.location.href='/profile/order/details/<%= order.orderId %>'"
                                     class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg justify-between hover:shadow-md transition-shadow duration-300 cursor-pointer">
                                     <div class="flex items-center gap-4 flex-1">
-                                        <div class="relative group text-black flex items-center justify-center rounded-lg bg-gray-200 shrink-0 size-12 overflow-hidden">
-                                            <img src="<%= order.items[0].product.productImages[0] %>" alt="product images" class="size-full object-cover">
-                                            
-                                            <% if (order.items.length > 1) { %>
-                                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                        <div
+                                            class="relative group text-black flex items-center justify-center rounded-lg bg-gray-200 shrink-0 size-12 overflow-hidden">
+                                            <img src="<%= order.items[0].product.productImages[0] %>"
+                                                alt="product images" class="size-full object-cover">
+
+                                            <% if (order.items.length> 1) { %>
+                                                <div
+                                                    class="absolute inset-0 bg-black/40 flex items-center justify-center">
                                                     <span class="text-white text-xs font-bold">
                                                         +<%= order.items.length %>
                                                     </span>
                                                 </div>
-                                            <% } %>
+                                                <% } %>
                                         </div>
                                         <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
                                             <div class="flex flex-col">
@@ -137,7 +140,7 @@
                     </div>
 
                     <!-- Pagination -->
-                    <% if (typeof totalPages !=='undefined' && totalPages > 1) { %>
+                    <% if (typeof totalPages !=='undefined' && totalPages> 1) { %>
                         <div class="flex justify-center items-center gap-4 mt-8">
                             <a href="/profile/orders?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %><%= sort ? '&sort=' + sort : '' %><%= status ? '&status=' + status : '' %>"
                                 class="flex items-center justify-center size-10 rounded-lg bg-white hover:bg-gray-100 <%= currentPage === 1 ? 'pointer-events-none opacity-50' : '' %>">
@@ -154,7 +157,9 @@
             </main>
     </div>
     </div>
-    <%- include('../../partials/footer.ejs') %>
-        </body>
+    <div class="hidden md:block">
+        <%- include('../../partials/footer.ejs') %>
+    </div>
+    </body>
 
-        </html>
+    </html>

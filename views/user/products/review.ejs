@@ -1,60 +1,41 @@
 <%- include("../../partials/header.ejs") %>
+
     <body
-        class="bg-white min-h-screen flex flex-col font-body text-gray-900 antialiased selection:bg-black selection:text-white"
-    >
-        
-        <main class="flex-1 w-full max-w-[1280px] mx-auto px-6 py-8 md:py-12">
-            <nav
-                class="flex flex-wrap items-center gap-2 mb-8 text-sm font-medium text-gray-500"
-            >
+        class="bg-white min-h-screen flex flex-col font-body text-gray-900 antialiased selection:bg-black selection:text-white">
+
+        <main class="flex-1 w-full max-w-[1280px] mx-auto px-4 md:px-6 py-8 md:py-12">
+            <nav class="flex flex-wrap items-center gap-2 mb-8 text-sm font-medium text-gray-500">
                 <a class="hover:text-black transition-colors" href="/">Home</a>
                 <span class="text-gray-300">/</span>
-                <a class="hover:text-black transition-colors" href="/profile/orders"
-                    >My Orders</a
-                >
+                <a class="hover:text-black transition-colors" href="/profile/orders">My Orders</a>
                 <span class="text-gray-300">/</span>
                 <span class="text-black font-bold">Write a Review</span>
             </nav>
-            <div
-                class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
-            >
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
                 <div class="lg:col-span-4 lg:sticky lg:top-28">
                     <div class="flex flex-col gap-6">
-                        <div
-                            class="aspect-square w-full bg-gray-100 border border-gray-200 overflow-hidden relative"
-                        >
-                            <div
-                                class="w-full h-full bg-center bg-cover grayscale contrast-125"
-                                style="
+                        <div class="aspect-square w-full bg-gray-100 border border-gray-200 overflow-hidden relative">
+                            <div class="w-full h-full bg-center bg-cover grayscale contrast-125" style="
                                     background-image: url('<%= product.productImages[0] %>');
-                                "
-                            ></div>
+                                "></div>
                         </div>
                         <div class="flex flex-col gap-3">
-                            <h1
-                                class="text-2xl font-display font-bold leading-tight tracking-tight text-black"
-                            >
+                            <h1 class="text-2xl font-display font-bold leading-tight tracking-tight text-black">
                                 <%= product.name %>
                             </h1>
                             <div class="flex flex-wrap gap-2">
                                 <span
-                                    class="px-2 py-1 bg-gray-100 border border-gray-200 text-xs font-bold text-gray-600 uppercase tracking-wide"
-                                    >Order #<%= order.orderId.split('-')[2] %></span
-                                >
+                                    class="px-2 py-1 bg-gray-100 border border-gray-200 text-xs font-bold text-gray-600 uppercase tracking-wide">Order
+                                    #<%= order.orderId.split('-')[2] %></span>
                             </div>
-                            <p
-                                class="text-sm text-gray-500 mt-1 pb-4 border-b border-gray-200"
-                            >
-                                Purchased on <%= order.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                            <p class="text-sm text-gray-500 mt-1 pb-4 border-b border-gray-200">
+                                Purchased on <%= order.createdAt.toLocaleDateString('en-US', { year: 'numeric' ,
+                                    month: 'long' , day: 'numeric' }) %>
                             </p>
                             <div class="text-sm text-gray-600">
                                 <p>
                                     Need help with your order?
-                                    <a
-                                        class="underline font-bold text-black"
-                                        href="/contact"
-                                        >Contact Support</a
-                                    >
+                                    <a class="underline font-bold text-black" href="/contact">Contact Support</a>
                                 </p>
                             </div>
                         </div>
@@ -62,9 +43,7 @@
                 </div>
                 <div class="lg:col-span-8">
                     <div class="mb-10">
-                        <h2
-                            class="text-4xl md:text-5xl font-display font-black tracking-tighter text-black mb-3"
-                        >
+                        <h2 class="text-3xl md:text-5xl font-display font-black tracking-tighter text-black mb-3">
                             Write a Review
                         </h2>
                         <p class="text-gray-600 text-lg max-w-2xl">
@@ -79,7 +58,7 @@
                             </h3>
                             <div class="flex flex-col gap-2">
                                 <input type="hidden" name="rating" id="rating-value" value="0" required>
-                                
+
                                 <div class="star-rating flex gap-3 cursor-pointer w-fit" id="star-container">
                                     <i class="ph ph-star text-4xl" data-index="1"></i>
                                     <i class="ph ph-star text-4xl" data-index="2"></i>
@@ -92,57 +71,37 @@
                                 </p>
                             </div>
                         </div>
-                        <div
-                            class="bg-gray-50 border border-gray-100 p-8 rounded-lg flex flex-col gap-8"
-                        >
+                        <div class="bg-gray-50 border border-gray-100 p-8 rounded-lg flex flex-col gap-8">
                             <div class="flex flex-col gap-3">
-                                <label
-                                    class="text-sm font-bold text-black uppercase tracking-wider"
-                                    for="headline"
-                                    >Review Headline</label
-                                >
+                                <label class="text-sm font-bold text-black uppercase tracking-wider"
+                                    for="headline">Review Headline</label>
                                 <input
                                     class="w-full bg-white border border-gray-300 rounded-md py-4 px-5 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all font-medium"
-                                    id="headline"
-                                    placeholder="What's the most important thing to know?"
-                                    type="text"
-                                    name="title"
-                                />
+                                    id="headline" placeholder="What's the most important thing to know?" type="text"
+                                    name="title" />
                             </div>
                             <div class="flex flex-col gap-3">
-                                <label
-                                    class="text-sm font-bold text-black uppercase tracking-wider"
-                                    for="review"
-                                    >Your Review</label
-                                >
+                                <label class="text-sm font-bold text-black uppercase tracking-wider" for="review">Your
+                                    Review</label>
                                 <textarea
                                     class="w-full bg-white border border-gray-300 rounded-md py-4 px-5 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all font-medium resize-y min-h-[160px]"
                                     id="review"
                                     placeholder="What did you like or dislike? How was the installation process?"
-                                    rows="6"
-                                    name="review"
-                                ></textarea>
+                                    rows="6" name="review"></textarea>
                                 <div class="flex justify-end">
-                                    <span
-                                        class="text-xs font-bold text-gray-400"
-                                        >MIN. 50 CHARACTERS</span
-                                    >
+                                    <span class="text-xs font-bold text-gray-400">MIN. 50 CHARACTERS</span>
                                 </div>
                             </div>
                         </div>
-                        <div
-                            class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4"
-                        >
+                        <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4">
                             <button
                                 class="w-full sm:w-auto px-8 h-14 rounded-md border border-gray-300 bg-white text-black font-bold uppercase tracking-wider hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-gray-200"
-                                type="button"
-                            >
+                                type="button">
                                 Cancel
                             </button>
                             <button
                                 class="w-full sm:w-auto px-10 h-14 rounded-md bg-black text-white font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-black shadow-xl"
-                                type="submit"
-                            >
+                                type="submit">
                                 Submit Review
                             </button>
                         </div>
@@ -156,7 +115,7 @@
             const ratingInput = document.getElementById('rating-value');
 
             stars.forEach(star => {
-                star.addEventListener('click', function() {
+                star.addEventListener('click', function () {
                     const rating = this.getAttribute('data-index');
                     ratingInput.value = rating; // Set the hidden input value
 
@@ -174,4 +133,5 @@
             });
         </script>
     </body>
-</html>
+
+    </html>

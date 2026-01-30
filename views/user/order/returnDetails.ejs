@@ -2,7 +2,7 @@
 
     <body
         class="bg-background-light text-black font-display antialiased min-h-[90vh] flex flex-col selection:bg-black selection:text-white">
-        <main class="flex-grow pb-24">
+        <main class="flex-grow pb-24 md:pb-12">
             <div class="px-6 md:px-12 lg:px-20 mx-auto min-h-[80vh] max-w-[1400px]">
                 <div
                     class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#f2f2f2] mb-10">
@@ -238,7 +238,9 @@
             </div>
         </main>
         </div>
-        <%- include('../../partials/footer.ejs') %>
+        <div class="hidden md:block">
+            <%- include('../../partials/footer.ejs') %>
+        </div>
     </body>
 
     </html>

@@ -19,7 +19,7 @@
                                             this page.
                                         </p>
                                     </div>
-                                    <form action="/admin/products" method="GET" class="flex">
+                                    <form action="/admin/products" method="GET" class="flex flex-wrap gap-2">
                                         <input type="text" name="search"
                                             value="<%= typeof search !== 'undefined' ? search : '' %>"
                                             placeholder="Search products..."
@@ -49,7 +49,7 @@
                                             products.
                                         </p>
                                     </div>
-                                    <div class="overflow-x-auto">
+                                    <div class="hidden md:block overflow-x-auto">
                                         <table class="w-full text-left">
                                             <thead class="text-sm text-[#757575] dark:text-gray-400">
                                                 <tr class="border-b border-t border-[#e0e0e0] dark:border-primary/20">
@@ -116,7 +116,7 @@
                                                                 </a>
 
                                                                 <button
-                                                                    onclick="toggleBlock('<%= product._id %>', <%= product.isActive %>, this)"
+                                                                    onclick="toggleBlock('<%= product._id %>', '<%= product.isActive %>', this)"
                                                                     class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-primary/30 <%= product.isActive ? 'text-red-600' : 'text-green-600' %>"
                                                                     title="<%= product.isActive ? 'Block' : 'Unblock' %>">
                                                                     <span class="material-symbols-outlined text-lg">
@@ -130,6 +130,71 @@
                                                     <% }) %>
                                             </tbody>
                                         </table>
+                                    </div>
+
+                                    <!-- Mobile Card View -->
+                                    <div class="grid grid-cols-1 gap-4 p-4 md:hidden">
+                                        <% products.forEach(product=> { %>
+                                            <div
+                                                class="bg-white dark:bg-[#1f1f1f] p-4 rounded-xl border border-[#e0e0e0] dark:border-primary/20 shadow-sm flex flex-col gap-3">
+                                                <div class="flex gap-4">
+                                                    <img src="<%= product.productImages[0] %>" alt="<%= product.name %>"
+                                                        class="w-20 h-20 object-cover rounded-lg border border-[#e0e0e0] dark:border-primary/20">
+                                                    <div class="flex-1 flex flex-col justify-between">
+                                                        <div>
+                                                            <p
+                                                                class="font-bold text-[#141414] dark:text-white text-lg <%= product.isActive ? '' : 'line-through decoration-red-500' %>">
+                                                                <%= product.name %>
+                                                            </p>
+                                                            <p class="text-sm text-[#757575] dark:text-gray-400">
+                                                                <%= product.category.name %>
+                                                            </p>
+                                                        </div>
+                                                        <p class="font-bold text-primary dark:text-white text-lg">
+                                                            <%= product.variants.length> 1 ? 'From ₹' +
+                                                                Math.min(...product.variants.map(v => v.price)) : '₹' +
+                                                                product.variants[0].price %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    class="flex justify-between items-center bg-gray-50 dark:bg-white/5 p-3 rounded-lg">
+                                                    <div class="text-center">
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Stock</p>
+                                                        <p class="font-medium text-[#141414] dark:text-white">
+                                                            <%= product.variants.length> 1 ? 'From ' +
+                                                                Math.min(...product.variants.map(v => v.stock)) :
+                                                                product.variants[0].stock %>
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        class="text-center border-l border-gray-200 dark:border-gray-700 pl-4 ml-4">
+                                                        <p class="text-xs text-[#757575] dark:text-gray-400">Variants
+                                                        </p>
+                                                        <p class="font-medium text-[#141414] dark:text-white">
+                                                            <%= product.variants.length %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    class="flex items-center justify-end gap-3 mt-1 pt-2 border-t border-[#e0e0e0] dark:border-primary/20">
+                                                    <a href="/admin/products/edit/<%= product._id %>"
+                                                        class="flex items-center gap-1 text-sm font-medium text-primary dark:text-white hover:underline">
+                                                        <span class="material-symbols-outlined text-lg">edit</span> Edit
+                                                    </a>
+                                                    <button
+                                                        onclick="toggleBlock('<%= product._id %>', '<%= product.isActive %>', this)"
+                                                        class="flex items-center gap-1 text-sm font-medium hover:underline <%= product.isActive ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400' %>">
+                                                        <span class="material-symbols-outlined text-lg">
+                                                            <%= product.isActive ? 'block' : 'refresh' %>
+                                                        </span>
+                                                        <%= product.isActive ? 'Block' : 'Unblock' %>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <% }) %>
                                     </div>
                                     <div
                                         class="p-4 flex justify-between items-center text-sm border-t border-[#e0e0e0] dark:border-primary/20">
@@ -152,14 +217,16 @@
 
                 <script>
                     async function toggleBlock(id, isActive, btn) {
-                        const action = isActive ? "Block" : "Unblock";
+                        // Ensure boolean type for logic
+                        const isActiveBool = (isActive === true || isActive === 'true');
+                        const action = isActiveBool ? "Block" : "Unblock";
 
                         const result = await Swal.fire({
                             title: "Are you sure?",
                             text: `Do you want to ${action.toLowerCase()} this product?`,
                             icon: "warning",
                             showCancelButton: true,
-                            confirmButtonColor: isActive ? "#d33" : "#10b981",
+                            confirmButtonColor: isActiveBool ? "#d33" : "#10b981",
                             cancelButtonColor: "#6b7280",
                             confirmButtonText: `Yes, ${action}!`
                         });
@@ -193,13 +260,37 @@
 
                                     // Optional: update row style (strikethrough name)
                                     const row = btn.closest('tr');
-                                    const nameCell = row.querySelectorAll('td')[1]; // Adjust index if needed
-                                    if (nameCell) {
-                                        if (!isNowActive) {
-                                            nameCell.classList.add('line-through');
-                                        } else {
-                                            nameCell.classList.remove('line-through');
+                                    if (row) {
+                                        const nameCell = row.querySelectorAll('td')[1]; // Adjust index if needed
+                                        if (nameCell) {
+                                            if (!isNowActive) {
+                                                nameCell.classList.add('line-through');
+                                            } else {
+                                                nameCell.classList.remove('line-through');
+                                            }
                                         }
+                                    }
+
+                                    // Update Mobile Card style if present
+                                    const card = btn.closest('.bg-white');
+                                    if (card) {
+                                        const nameP = card.querySelector('p.font-bold.text-lg');
+                                        if (nameP) {
+                                            if (!isNowActive) {
+                                                nameP.classList.add('line-through', 'decoration-red-500');
+                                            } else {
+                                                nameP.classList.remove('line-through', 'decoration-red-500');
+                                            }
+                                        }
+
+                                        // Update button style
+                                        btn.className = `flex items-center gap-1 text-sm font-medium hover:underline ${isNowActive ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`;
+
+                                        // Update button text content (last child usually)
+                                        // This is tricky because of the icon span. 
+                                        // The button content structure in mobile card is: <span icon></span> Text
+                                        // We need to be careful not to remove the icon.
+                                        btn.lastChild.textContent = isNowActive ? ' Block' : ' Unblock';
                                     }
 
                                 } else {

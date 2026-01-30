@@ -5,6 +5,26 @@ import ExcelJS from "exceljs";
 export const sales = async (req, res) => {
     try {
         const data = await getSalesData(req.query);
+
+        // Pagination Logic
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const allOrders = data.orders; // Store all orders
+        const totalOrders = allOrders.length;
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        // Slice orders for the current page
+        data.orders = allOrders.slice(skip, skip + limit);
+
+        // Add pagination data to the response object
+        data.currentPage = page;
+        data.totalPages = totalPages;
+        data.totalOrders = totalOrders;
+        data.limit = limit;
+        data.skip = skip;
+
         res.render('admin/salesManagement/sales', data);
     } catch (error) {
         console.error(error);
@@ -68,7 +88,7 @@ export const downloadSalesPDF = async (req, res) => {
         cards.forEach((card, i) => {
             let x = 30 + i * (cardWidth + gap);
 
-            if (i > 3 ) {
+            if (i > 3) {
                 x = 30 + (i - 4) * (cardWidth + gap);
                 cardY += cardHeight + gap;
             }
@@ -109,8 +129,9 @@ export const downloadSalesPDF = async (req, res) => {
             doc.text("Customer", 165, y + 7);
             doc.text("Payment", 265, y + 7);
             doc.text("Status", 345, y + 7);
-            doc.text("Coupon", 415, y + 7);
-            doc.text("Amount", 495, y + 7);
+            doc.text("Discount", 415, y + 7);
+            doc.text("Refund", 470, y + 7);
+            doc.text("Amount", 525, y + 7);
 
             y += 25;
             doc.fillColor("black").font("Helvetica");
@@ -143,8 +164,9 @@ export const downloadSalesPDF = async (req, res) => {
             doc.text(order.user?.name || "Guest", 165, y + 6);
             doc.text(order.paymentMethod, 265, y + 6);
             doc.text(order.status, 345, y + 6);
-            doc.text(order.coupenCode || "-", 415, y + 6);
-            doc.text(`₹ ${order.totalAmount.toFixed(2)}`, 495, y + 6);
+            doc.text(`- ${order.coupenDiscount || 0}`, 415, y + 6);
+            doc.text(`- ${order.refund.toFixed(2) || 0}`, 470, y + 6);
+            doc.text(order.totalAmount.toFixed(2), 525, y + 6);
 
             y += 22;
         });
