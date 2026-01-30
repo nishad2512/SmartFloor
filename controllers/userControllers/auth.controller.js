@@ -160,9 +160,15 @@ export const resetPassword = async (req, res) => {
             req.session,
             req.body.password,
         );
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(200).json({ success: true, message: "Password reset successful" });
+        }
         req.flash("success", "Password reset successful");
         res.redirect("/login");
     } catch {
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(400).json({ success: false, message: "Invalid or expired link" });
+        }
         req.flash("error", "Invalid or expired link");
         res.redirect("/forgot");
     }

@@ -83,16 +83,27 @@ export const editCategory = async (req, res) => {
         });
 
         if (existingCategory) {
+            if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: "Category name already exists" });
+            }
             req.flash("error", "Category name already exists");
             return res.redirect("/admin/categories");
         }
 
         category.name = name;
         await category.save();
+
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(200).json({ success: true, message: "Category updated successfully" });
+        }
+
         req.flash("success", "Category updated successfully");
         res.redirect("/admin/categories");
     } catch (error) {
         console.error(error);
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(500).json({ success: false, message: "Error updating category" });
+        }
         req.flash("error", "Error updating category");
         res.redirect("/admin/categories");
     }

@@ -27,6 +27,9 @@ export const editDetails = async (req, res) => {
         const { name } = req.body;
 
         if (!name || name.trim().length === 0) {
+            if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: "Name cannot be empty" });
+            }
             req.flash("error", "Name cannot be empty");
             return res.redirect("/profile/details");
         }
@@ -39,11 +42,18 @@ export const editDetails = async (req, res) => {
         }
         await user.save();
 
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(200).json({ success: true, message: "Profile updated successfully" });
+        }
+
         req.flash("success", "Profile updated successfully");
         res.redirect("/profile/details");
 
     } catch (error) {
         console.error(error);
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(400).json({ success: false, message: "Failed to update profile details." });
+        }
         req.flash("error", "Failed to update profile details.");
         res.redirect("/profile/details");
     }
@@ -142,6 +152,9 @@ export const newMail = async (req, res) => {
         const currentUser = await User.findById(req.userId);
 
         if (currentUser.email === email) {
+            if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: "This is already your email" });
+            }
             req.flash("error", "This is already your email");
             return res.redirect("/profile/new-mail");
         }
@@ -149,6 +162,9 @@ export const newMail = async (req, res) => {
         // Basic email regex validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
+            if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: "Invalid email format" });
+            }
             req.flash("error", "Invalid email format");
             return res.redirect("/profile/new-mail");
         }
@@ -156,6 +172,9 @@ export const newMail = async (req, res) => {
         // Check if email already exists
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
+            if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: "Email already in use by another account" });
+            }
             req.flash("error", "Email already in use by another account");
             return res.redirect("/profile/new-mail");
         }
@@ -173,6 +192,11 @@ export const newMail = async (req, res) => {
         req.session.newMail = email;
         req.session.changeMail = false;
 
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(200).json({ success: true, message: "OTP sent to " + email, redirectUrl: "/profile/verify-email-otp" });
+            // Assuming explicit redirect or frontend handling
+        }
+
         req.flash("success", "OTP sent to " + email);
         res.render("user/auth/otp", {
             expiry: req.session.expires,
@@ -180,6 +204,9 @@ export const newMail = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            return res.status(400).json({ success: false, message: "Failed to process email change." });
+        }
         req.flash("error", "Failed to process email change.");
         res.redirect("/profile/details");
     }

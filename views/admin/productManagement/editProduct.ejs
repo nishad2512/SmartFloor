@@ -21,8 +21,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <form id="edit-product-form"
-                                    action="/admin/products/edit/<%= product._id %>?_method=PATCH" method="post"
+                                <form id="edit-product-form" action="/admin/products/edit/<%= product._id %>"
                                     enctype="multipart/form-data">
                                     <input type="hidden" name="deletedImages" id="deleted-images-input" value="[]">
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">

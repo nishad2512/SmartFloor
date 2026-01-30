@@ -20,9 +20,9 @@
                                 </div>
                                 <div
                                     class="flex flex-col rounded-xl border border-[#e0e0e0] dark:border-primary/20 bg-white dark:bg-[#1f1f1f] p-6 lg:p-8">
-                                    <form class="flex flex-col gap-6" method="POST"
-                                        action="/admin/categories/edit/<%= category._id %>?_method=PATCH"
-                                        onsubmit="showLoading(this.querySelector('button[type=submit]'), 'Updating Category...')">
+                                    <form id="editCategoryForm" class="flex flex-col gap-6"
+                                        action="/admin/categories/edit/<%= category._id %>"
+                                        onsubmit="return handleCategoryUpdate(event)">
                                         <div class="flex flex-col gap-2">
                                             <label class="text-[#141414] dark:text-white text-sm font-medium"
                                                 for="category-name">Category Name</label>
@@ -49,6 +49,63 @@
                         </main>
                 </div>
             </div>
+            <script>
+                async function handleCategoryUpdate(event) {
+                    event.preventDefault();
+                    const form = event.target;
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    const name = form.querySelector('input[name="name"]').value;
+
+                    if (!name.trim()) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Category Name is required'
+                        });
+                        return false;
+                    }
+
+                    try {
+                        // Show loading state
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Updating...';
+
+                        const response = await fetch(form.action, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ name })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: result.message || 'Category updated successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = '/admin/categories';
+                            });
+                        } else {
+                            throw new Error(result.message || 'Failed to update category');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message
+                        });
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                    return false;
+                }
+            </script>
     </body>
 
     </html>

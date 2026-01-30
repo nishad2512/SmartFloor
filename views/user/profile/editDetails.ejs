@@ -25,8 +25,7 @@
                         </div>
                         <div
                             class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow duration-300">
-                            <form action="/profile/details/edit?_method=patch" method="post"
-                                enctype="multipart/form-data" class="space-y-6">
+                            <form id="editDetailsForm" onsubmit="return handleDetailsSubmit(event)" class="space-y-6">
                                 <div>
                                     <label class="block text-sm font-medium text-[#1A1A1A] mb-4">Profile Picture</label>
                                     <div class="flex items-center gap-5">
@@ -105,6 +104,49 @@
     </div>
 
     <script>
+        async function handleDetailsSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+
+            try {
+                submitBtn.innerText = 'Saving...';
+                submitBtn.disabled = true;
+
+                const response = await fetch('/profile/details/edit', {
+                    method: 'PATCH',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: result.message || 'Details updated successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = '/profile/details';
+                    });
+                } else {
+                    throw new Error(result.message || 'Failed to update details');
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                });
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+            return false;
+        }
+
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {

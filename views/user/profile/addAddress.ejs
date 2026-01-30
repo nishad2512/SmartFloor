@@ -20,9 +20,8 @@
 
                     <div class="rounded-xl border border-[#e0e0e0] bg-white">
                         <div class="p-6">
-                            <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST"
-                                action="<%= locals.createAddr ? '/profile/addresses/add' : '/profile/addresses/edit/' + formData._id + '?_method=PATCH' %>"
-                                novalidate onsubmit="return validateAddressForm()">
+                            <form class="grid grid-cols-1 md:grid-cols-2 gap-6" id="addressForm" novalidate
+                                onsubmit="return handleAddressSubmit(event)">
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-[#141414] mb-2" for="name">Full Name
                                         <span class="text-red-500">*</span></label>
@@ -127,7 +126,8 @@
         <%- include("../../partials/footer.ejs") %>
     </div>
     <script>
-        function validateAddressForm() {
+        async function handleAddressSubmit(event) {
+            event.preventDefault();
             let isValid = true;
 
             // Helper function to show error
@@ -218,12 +218,59 @@
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
-                // Create a hidden input if needed or just let form submit
-                // Since it's a standard form submit, we don't need fetch, just let it go.
-                // But if validation fails on server side and it re-renders, the button state is reset on reload.
+                const formData = {
+                    _id: "<%= formData._id || '' %>", // Include _id for edit operations
+                    name,
+                    email,
+                    phone,
+                    address1,
+                    address2: document.getElementById('address2').value.trim(),
+                    city,
+                    state,
+                    zip,
+                    type: document.getElementById('type').value
+                };
+
+                try {
+                    const url = "<%= locals.createAddr ? '/profile/addresses/add' : '/profile/addresses/edit/' + formData._id %>";
+                    const method = "<%= locals.createAddr ? 'POST' : 'PATCH' %>";
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: result.message || 'Address saved successfully',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = '/profile/addresses';
+                        });
+                    } else {
+                        throw new Error(result.message || 'Failed to save address');
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message
+                    });
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                }
             }
 
-            return isValid;
+            return false;
         }
     </script>
     </body>

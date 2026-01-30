@@ -55,13 +55,10 @@
                                         class="size-10 flex items-center justify-center rounded-full border border-gray-200 text-[#1A1A1A] hover:bg-black hover:text-white hover:border-black transition-colors">
                                         <i class="ph-bold ph-pencil-simple text-lg"></i>
                                     </a>
-                                    <form action="/profile/addresses/delete/<%= address._id %>?_method=DELETE"
-                                        method="POST" onsubmit="popup(event)">
-                                        <button
-                                            class="size-10 flex items-center justify-center rounded-full border border-gray-200 text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors">
-                                            <i class="ph-bold ph-trash text-lg"></i>
-                                        </button>
-                                    </form>
+                                    <button onclick="deleteAddress('<%= address._id %>')"
+                                        class="size-10 flex items-center justify-center rounded-full border border-gray-200 text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors">
+                                        <i class="ph-bold ph-trash text-lg"></i>
+                                    </button>
                                 </div>
                             </div>
                             <% }) %>
@@ -76,23 +73,49 @@
         <%- include("../../partials/footer.ejs") %>
     </div>
     <script>
-        function popup(event) {
-            event.preventDefault(); // Prevent form submission initially
-            Swal.fire({
+        async function deleteAddress(id) {
+            const result = await Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#1A1A1A',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    event.target.submit();
-                } else {
-                    event.preventDefault(); // Prevent form submission if cancelled
-                }
             });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/profile/addresses/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: data.message || 'Your address has been deleted.',
+                            icon: 'success',
+                            confirmButtonColor: '#1A1A1A'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error(data.message || 'Failed to delete address');
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: error.message,
+                        icon: 'error',
+                        confirmButtonColor: '#1A1A1A'
+                    });
+                }
+            }
         }
     </script>
     </body>
