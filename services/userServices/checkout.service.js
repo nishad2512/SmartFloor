@@ -9,12 +9,17 @@ const FREE_SHIPPING_MIN = 5000;
 const SHIPPING_FEE = 200;
 const TAX_RATE = 0.18;
 
-export const buildCheckout = async (userId, query) => {
+export const buildCheckout = async (userId, query, req) => {
     const { productId, variantId, quantity } = query;
     const now = new Date();
 
     if (productId && variantId && quantity) {
         return buildSingleCheckout(userId, productId, variantId, quantity, now);
+    }
+
+    if (req && req.session && req.session.item) {
+        const { product, variant, quantity } = req.session.item;
+        return buildSingleCheckout(userId, product._id, variant._id, quantity, now);
     }
 
     return buildCartCheckout(userId, now);

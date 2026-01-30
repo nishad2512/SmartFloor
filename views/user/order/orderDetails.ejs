@@ -98,20 +98,23 @@
                             </div>
                             <div class="absolute top-[14px] left-4 h-0.5 bg-black hidden md:block z-0 transition-all duration-1000"
                                 style="width: <%= progress %>%;"></div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 relative z-10">
-                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
-                                    <div class="flex flex-col items-center md:items-start w-full">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-0 md:gap-4 relative z-10">
+                                <!-- Step 1: Order Confirmed -->
+                                <div class="flex md:flex-col items-start gap-4 md:gap-0 relative pb-10 md:pb-0">
+                                    <!-- Mobile Vertical Line (Draws down to next step) -->
+                                    <div
+                                        class="md:hidden absolute top-8 bottom-0 left-[15px] w-0.5 <%= currentStep >= 1 ? 'bg-black' : 'bg-[#e0e0e0]' %>">
+                                    </div>
+
+                                    <div class="flex flex-col items-center md:items-start w-full relative z-10">
                                         <div class="md:w-full md:mb-4 flex md:block items-center">
                                             <div
                                                 class="w-8 h-8 rounded-full <%= currentStep >= 0 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> shadow-sm flex items-center justify-center shrink-0 md:ml-0 md:-ml-1.5 transition-colors duration-300">
                                                 <i
                                                     class="ph ph-bold ph-check <%= currentStep >= 0 ? 'text-white' : 'text-transparent' %>"></i>
                                             </div>
-                                            <div
-                                                class="md:hidden w-0.5 h-12 <%= currentStep > 0 ? 'bg-black' : 'bg-[#e0e0e0]' %> absolute left-[19px] top-8">
-                                            </div>
                                         </div>
-                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0">
+                                        <div class="md:pl-0 pt-1 md:pt-0">
                                             <h4
                                                 class="font-bold text-sm <%= currentStep >= 0 ? 'text-black' : 'text-[#bdbdbd]' %>">
                                                 Order Confirmed
@@ -123,19 +126,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
-                                    <div class="flex flex-col items-center md:items-center w-full">
+
+                                <!-- Step 2: Processing -->
+                                <div class="flex md:flex-col items-start gap-4 md:gap-0 relative pb-10 md:pb-0">
+                                    <!-- Mobile Vertical Line -->
+                                    <div
+                                        class="md:hidden absolute top-8 bottom-0 left-[15px] w-0.5 <%= currentStep >= 2 ? 'bg-black' : 'bg-[#e0e0e0]' %>">
+                                    </div>
+
+                                    <div class="flex flex-col items-center md:items-center w-full relative z-10">
                                         <div class="md:w-full md:mb-4 flex md:justify-center items-center">
                                             <div
                                                 class="w-8 h-8 rounded-full <%= currentStep >= 1 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> shadow-sm flex items-center justify-center shrink-0 transition-colors duration-300">
                                                 <i
                                                     class="ph ph-bold ph-check <%= currentStep >= 1 ? 'text-white' : 'text-transparent' %>"></i>
                                             </div>
-                                            <div
-                                                class="md:hidden w-0.5 h-16 <%= currentStep > 1 ? 'bg-black' : 'bg-[#e0e0e0]' %> absolute left-[19px] -translate-y-[2rem]">
-                                            </div>
                                         </div>
-                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0 md:text-center">
+                                        <div class="md:pl-0 pt-1 md:pt-0 md:text-center">
                                             <h4
                                                 class="font-bold text-sm <%= currentStep >= 1 ? 'text-black' : 'text-[#bdbdbd]' %>">
                                                 Processing
@@ -143,19 +150,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
-                                    <div class="flex flex-col items-center md:items-center w-full">
+
+                                <!-- Step 3: Shipped -->
+                                <div class="flex md:flex-col items-start gap-4 md:gap-0 relative pb-10 md:pb-0">
+                                    <!-- Mobile Vertical Line -->
+                                    <div
+                                        class="md:hidden absolute top-8 bottom-0 left-[15px] w-0.5 <%= currentStep >= 3 ? 'bg-black' : 'bg-[#e0e0e0]' %>">
+                                    </div>
+
+                                    <div class="flex flex-col items-center md:items-center w-full relative z-10">
                                         <div class="md:w-full md:mb-4 flex md:justify-center items-center">
                                             <div
                                                 class="w-8 h-8 rounded-full <%= currentStep >= 2 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> shadow-sm flex items-center justify-center shrink-0 transition-colors duration-300">
                                                 <i
                                                     class="ph ph-bold ph-check <%= currentStep >= 2 ? 'text-white' : 'text-transparent' %>"></i>
                                             </div>
-                                            <div
-                                                class="md:hidden w-0.5 h-16 <%= currentStep > 2 ? 'bg-black' : 'bg-[#e0e0e0]' %> absolute left-[19px] -translate-y-[2rem]">
-                                            </div>
                                         </div>
-                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0 md:text-center">
+                                        <div class="md:pl-0 pt-1 md:pt-0 md:text-center">
                                             <h4
                                                 class="font-bold text-sm <%= currentStep >= 2 ? 'text-black' : 'text-[#bdbdbd]' %>">
                                                 Shipped
@@ -163,8 +174,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-0 group">
-                                    <div class="flex flex-col items-center md:items-end w-full">
+
+                                <!-- Step 4: Delivered -->
+                                <div class="flex md:flex-col items-start gap-4 md:gap-0 relative">
+                                    <div class="flex flex-col items-center md:items-end w-full relative z-10">
                                         <div class="md:w-full md:mb-4 flex md:justify-end items-center">
                                             <div
                                                 class="w-8 h-8 rounded-full <%= currentStep >= 3 ? 'bg-black border-4 border-white' : 'bg-white border-2 border-[#e0e0e0]' %> flex items-center justify-center shrink-0 md:mr-0 md:-mr-1.5 transition-colors duration-300">
@@ -172,7 +185,7 @@
                                                     class="ph ph-bold ph-check <%= currentStep >= 3 ? 'text-white' : 'text-transparent' %>"></i>
                                             </div>
                                         </div>
-                                        <div class="pl-4 md:pl-0 pt-1 md:pt-0 text-right">
+                                        <div class="md:pl-0 pt-1 md:pt-0 md:text-right">
                                             <h4
                                                 class="font-medium text-sm <%= currentStep >= 3 ? 'text-black' : 'text-[#bdbdbd]' %>">
                                                 Delivered
@@ -314,7 +327,7 @@
                                         </span>
                                     </div>
                                     <div class="flex justify-between text-[#757575]">
-                                        <span>Estimated Tax</span>
+                                        <span>GST (18%)</span>
                                         <span class="font-medium text-black">₹<%= order.tax.toLocaleString('en-IN') %>
                                         </span>
                                     </div>

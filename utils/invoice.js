@@ -194,10 +194,29 @@ function generateInvoice(order, res) {
     // Tax
     if (order.tax) {
         doc.fillColor(secondaryColor)
-            .text("Tax (18% GST):", summaryX, y)
+            .text("GST (18%):", summaryX, y)
             .fillColor(primaryColor)
             .text(
                 `${order.tax.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                })}`,
+                totalX,
+                y,
+                {
+                    align: "right",
+                }
+            );
+        y += 20;
+    }
+
+    // Refund
+    if (order.refund > 0) {
+        doc.fillColor(secondaryColor)
+            .text("Refunded Amount:", summaryX, y)
+            .fillColor("#DC2626") // Red color
+            .text(
+                `- ${order.refund.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 })}`,

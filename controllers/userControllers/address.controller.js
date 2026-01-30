@@ -35,13 +35,10 @@ export const addAddress = async (req, res) => {
         await addressService.addAddress(userId, addressData);
 
         if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
-            return res.status(200).json({ success: true, message: "Address added successfully" });
+            const next = req.session.next_page || 'addresses';
+            return res.status(200).json({ success: true, message: "Address added successfully", next });
         }
 
-        req.flash("success", "Address added successfully");
-        if (req.session.next_page == "checkout") return res.redirect('/checkout');
-
-        res.redirect("/profile/addresses");
     } catch (error) {
         console.error(error);
         if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
