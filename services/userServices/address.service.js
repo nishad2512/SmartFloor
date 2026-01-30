@@ -8,7 +8,7 @@ export const addresses = async (userId) => {
         throw new Error("User not found");
     }
     const addresses = await address.findAddressesByUserId(userId);
-    return {addresses, user};
+    return { addresses, user };
 };
 
 export const addAddress = async (userId, addressData) => {
