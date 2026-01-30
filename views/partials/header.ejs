@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartFloor - Premium Flooring</title>
     <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <meta name="theme-color" content="#ffffff">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -40,6 +43,43 @@
             -webkit-font-smoothing: antialiased;
         }
     </style>
+    <button id="pwaInstallBtn" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 999;"
+        class="btn btn-success">
+        Install SmartFloor App
+    </button>
+
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwaInstallBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the default browser prompt
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show our custom button
+            installBtn.style.display = 'block';
+
+            installBtn.addEventListener('click', () => {
+                // Show the install prompt
+                deferredPrompt.prompt();
+
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User installed the app');
+                    }
+                    installBtn.style.display = 'none'; // Hide button after choice
+                    deferredPrompt = null;
+                });
+            });
+        });
+
+        // Hide button if the app is already installed
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+            console.log('SmartFloor was installed');
+        });
+    </script>
 </head>
 
 <body class="bg-white text-[#1A1A1A]">
@@ -134,10 +174,10 @@
                             <% } %>
                         </div>
 
-                                <!-- Mobile Menu Button -->
-                                <button id="mobileMenuBtn" class="md:hidden text-black hover:opacity-70 transition">
-                                    <i class="ph-bold ph-list text-2xl"></i>
-                                </button>
+                        <!-- Mobile Menu Button -->
+                        <button id="mobileMenuBtn" class="md:hidden text-black hover:opacity-70 transition">
+                            <i class="ph-bold ph-list text-2xl"></i>
+                        </button>
         </nav>
 
         <!-- Mobile Menu Overlay -->
@@ -223,6 +263,13 @@
         <%- include('flash.ejs') %>
 
             <script>
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js')
+                            .then(reg => console.log('SW Registered!', reg))
+                            .catch(err => console.log('SW Registration failed:', err));
+                    });
+                }
                 const searchInput = document.getElementById("searchInput");
                 const clearBtn = document.getElementById("clearBtn");
                 const navLinks = document.querySelectorAll("nav ul li a");
@@ -257,10 +304,10 @@
                     clearTimeout(debounceTimer);
 
                     debounceTimer = setTimeout(() => {
-                    const search = searchInput.value;
+                        const search = searchInput.value;
 
-                    fetch(`/products?search=${encodeURIComponent(search)}`)
-                        .then(res => window.location.href = res.url)
+                        fetch(`/products?search=${encodeURIComponent(search)}`)
+                            .then(res => window.location.href = res.url)
                     }, 800); // 👈 debounce delay
                 });
             </script>
