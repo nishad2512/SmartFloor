@@ -214,7 +214,7 @@
                                 <% order.items.forEach((item, index)=> { %>
                                     <div
                                         class="group flex flex-col sm:flex-row gap-6 items-start pb-8 border-b border-[#f2f2f2] last:border-0">
-                                        <div onclick="window.location.href='/products/product/<%= item.product._id %>'"
+                                        <div onclick="window.location.href='/products/product/<%= item.product.slug %>'"
                                             class="relative overflow-hidden rounded-xl bg-surface-light w-full sm:w-36 aspect-square shrink-0 border cursor-pointer border-[#f2f2f2]">
                                             <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                                                 data-alt="Close up texture of light french oak wood flooring" style="
