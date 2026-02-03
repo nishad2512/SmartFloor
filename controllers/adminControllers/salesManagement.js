@@ -203,8 +203,8 @@ export const downloadSalesExcel = async (req, res) => {
             { header: "Customer", key: "customer", width: 20 },
             { header: "Payment", key: "payment", width: 15 },
             { header: "Status", key: "status", width: 15 },
-            { header: "Coupon", key: "coupon", width: 15 },
             { header: "Discount", key: "discount", width: 15 },
+            { header: "Refund", key: "refund", width: 15 },
             { header: "Total Amount", key: "amount", width: 18 }
         ];
 
@@ -215,8 +215,8 @@ export const downloadSalesExcel = async (req, res) => {
                 customer: order.user?.name || "Guest",
                 payment: order.paymentMethod,
                 status: order.status,
-                coupon: order.coupenCode || "-",
                 discount: order.coupenDiscount || 0,
+                refund: order.refund || 0,
                 amount: order.totalAmount.toFixed(2)
             });
         });
