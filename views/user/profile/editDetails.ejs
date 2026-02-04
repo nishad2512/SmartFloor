@@ -55,6 +55,7 @@
                                     <input type="text" name="name" id="name" value="<%= user.name %>"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A1A1A] focus:border-transparent"
                                         placeholder="Enter your full name" required />
+                                    <div id="nameError" class="error-message"></div>
                                 </div>
                                 <div>
                                     <label for="phone" class="block text-sm font-medium text-[#1A1A1A] mb-2">
@@ -71,6 +72,7 @@
                                             Verify
                                         </button>
                                     </div>
+                                    <div id="phoneError" class="error-message"></div>
 
                                     <p id="otpMsg" class="text-sm mt-2 text-green-600 hidden">
                                         OTP sent successfully
@@ -103,9 +105,80 @@
             </main>
     </div>
 
+    <style>
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.35rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .input-error {
+            border-color: #dc2626 !important;
+        }
+    </style>
+
     <script>
+        // Validation helpers
+        function showError(inputEl, errorEl, msg) {
+            if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.classList.add("show");
+            }
+            if (inputEl) inputEl.classList.add("input-error");
+        }
+
+        function clearError(inputEl, errorEl) {
+            if (errorEl) {
+                errorEl.textContent = "";
+                errorEl.classList.remove("show");
+            }
+            if (inputEl) inputEl.classList.remove("input-error");
+        }
+
+        function validateName() {
+            const nameInput = document.getElementById("name");
+            const nameError = document.getElementById("nameError");
+            const name = nameInput.value.trim();
+
+            if (!name || name.length < 3 || !/^[a-zA-Z\s]+$/.test(name)) {
+                showError(nameInput, nameError, "Name must be at least 3 characters and contain only letters");
+                return false;
+            }
+            clearError(nameInput, nameError);
+            return true;
+        }
+
+        function validatePhone(isVerify = false) {
+            const phoneInput = document.getElementById("phone");
+            const phoneError = document.getElementById("phoneError");
+            const phone = phoneInput.value.trim();
+
+            if (isVerify && !phone) {
+                showError(phoneInput, phoneError, "Phone number is required");
+                return false;
+            }
+
+            if (phone && !/^\d{10}$/.test(phone)) {
+                showError(phoneInput, phoneError, "Phone number must be exactly 10 digits");
+                return false;
+            }
+            clearError(phoneInput, phoneError);
+            return true;
+        }
+
         async function handleDetailsSubmit(event) {
             event.preventDefault();
+
+            if (!validateName()) return false;
+            // Note: Phone validation is optional here as it is verified separately, 
+            // but we can enforce valid format if something is entered
+            if (!validatePhone()) return false;
+
             const form = event.target;
             const formData = new FormData(form);
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -117,6 +190,9 @@
 
                 const response = await fetch('/profile/details/edit', {
                     method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 });
 
@@ -150,6 +226,15 @@
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
+                if (!file.type.startsWith('image/')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File',
+                        text: 'Please select an image file'
+                    });
+                    event.target.value = ''; // Reset input
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     document.getElementById("profilePreview").src = e.target.result;
@@ -161,10 +246,16 @@
         const otpBox = document.getElementById("otpBox");
         const otpMsg = document.getElementById("otpMsg");
 
+        // Add blur listeners
+        document.getElementById("name").addEventListener("blur", validateName);
+        document.getElementById("phone").addEventListener("blur", () => validatePhone(false));
+
         sendOtpBtn.addEventListener("click", async () => {
+            if (!validatePhone(true)) return;
+
             const phone = document.getElementById("phone").value;
 
-            if (!phone) return alert("Enter phone number");
+            // if (!phone) return alert("Enter phone number"); // Handled by validatePhone
 
             const res = await fetch("/profile/send-otp", {
                 method: "POST",
@@ -178,13 +269,22 @@
                 otpMsg.classList.remove("hidden");
                 otpBox.classList.remove("hidden");
             } else {
-                alert(data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message
+                });
             }
         });
 
         async function verifyOtp() {
             const phone = document.getElementById("phone").value;
             const otp = document.getElementById("otp").value;
+
+            if (!otp) {
+                Swal.fire({ icon: 'warning', text: 'Please enter OTP' });
+                return;
+            }
 
             const res = await fetch("/profile/verify-otp", {
                 method: "POST",
@@ -195,11 +295,21 @@
             const data = await res.json();
 
             if (data.success) {
-                alert("Phone number verified!");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Verified',
+                    text: 'Phone number verified!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
                 otpBox.classList.add("hidden");
                 otpMsg.classList.add("hidden");
             } else {
-                alert("Invalid OTP");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || "Invalid OTP"
+                });
             }
         }
     </script>

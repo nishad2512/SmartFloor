@@ -3,6 +3,7 @@ import { Address } from "../../models/userModel.js";
 import { sendOtp } from "../../utils/sms.js";
 import crypto from "crypto";
 import { sendOTPEmail } from "../../utils/email.js"
+import { createHash, compare } from "../../services/authServices.js";
 
 function generateOtp() {
     return crypto.randomInt(100000, 999999).toString();
@@ -27,7 +28,7 @@ export const editDetails = async (req, res) => {
         const { name } = req.body;
 
         if (!name || name.trim().length === 0) {
-            if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
                 return res.status(400).json({ success: false, message: "Name cannot be empty" });
             }
             req.flash("error", "Name cannot be empty");
@@ -42,7 +43,7 @@ export const editDetails = async (req, res) => {
         }
         await user.save();
 
-        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
             return res.status(200).json({ success: true, message: "Profile updated successfully" });
         }
 
@@ -51,7 +52,7 @@ export const editDetails = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        if (req.xhr || req.headers['content-type'] === 'application/json' || req.headers.accept.indexOf('json') > -1) {
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
             return res.status(400).json({ success: false, message: "Failed to update profile details." });
         }
         req.flash("error", "Failed to update profile details.");
@@ -245,5 +246,53 @@ export const wallet = async (req, res) => {
         console.error("Wallet error:", error);
         req.flash("error", "Failed to load wallet.");
         res.redirect("/profile/details");
+    }
+};
+
+export const changePasswordPage = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+        res.render("user/profile/changePassword", { user });
+    } catch (error) {
+        console.error(error);
+        req.flash("error", "Failed to load change password page.");
+        res.redirect("/profile/details");
+    }
+};
+
+export const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: "Password must be at least 6 characters long" });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ success: false, message: "New passwords do not match" });
+        }
+
+        const user = await User.findById(req.userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (user.password === "google") {
+            return res.status(400).json({ success: false, message: "You cannot change password for Google account" });
+        }
+
+        const isMatch = await compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Incorrect current password" });
+        }
+
+        user.password = await createHash(newPassword);
+        await user.save();
+
+        res.json({ success: true, message: "Password updated successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Failed to update password" });
     }
 };

@@ -15,7 +15,7 @@ import {
     checkUser,
 } from "../middlewares/authMiddleware.js";
 import nocache from "nocache";
-import {upload} from "../utils/cloudinary.js";
+import { upload } from "../utils/cloudinary.js";
 
 const router = express.Router();
 
@@ -65,7 +65,7 @@ router.route('/resetPassword/:token')
     .get((req, res) => {
         res.render('user/auth/reset', { token: req.params.token });
     })
-    .post(userController.resetPassword);
+    .patch(userController.resetPassword);
 
 // products
 
@@ -98,6 +98,10 @@ router.get('/profile/change-mail', profileController.changeMail);
 router.get('/profile/new-mail', profileController.newMailPage);
 
 router.patch('/profile/new-mail', profileController.newMail);
+
+router.get('/profile/change-password', profileController.changePasswordPage);
+
+router.patch('/profile/change-password', profileController.changePassword);
 
 // profile address routes
 

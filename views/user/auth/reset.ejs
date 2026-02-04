@@ -20,6 +20,21 @@
             border-color: #111418;
             box-shadow: 0 0 0 1px #111418;
         }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.35rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .input-error {
+            border-color: #dc2626 !important;
+        }
     </style>
     <script id="tailwind-config">
         tailwind.config = {
@@ -69,59 +84,153 @@
                             <form id="resetPasswordForm" action="/resetPassword/<%= token %>"
                                 onsubmit="return handleResetPassword(event)">
                                 <div class="flex w-full flex-col gap-4">
-                                    <label class="flex w-full flex-col">
-                                        <p
-                                            class="text-zinc-900 dark:text-zinc-100 text-sm font-medium leading-normal pb-2">
+                                    <div class="flex w-full flex-col">
+                                        <label
+                                            class="text-zinc-900 dark:text-zinc-100 text-sm font-medium leading-normal pb-2"
+                                            for="password">
                                             New Password
-                                        </p>
-                                        <input
-                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-0 focus:ring-0 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:border-zinc-500 dark:focus:border-zinc-400 h-12 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 p-[15px] text-base font-normal leading-normal transition-colors duration-200"
-                                            placeholder="Enter your new password" type="password" name="password"
-                                            value="" />
-                                    </label>
-                                    <label class="flex w-full flex-col">
-                                        <p
-                                            class="text-zinc-900 dark:text-zinc-100 text-sm font-medium leading-normal pb-2">
+                                        </label>
+                                        <div class="relative">
+                                            <input id="password"
+                                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-0 focus:ring-0 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:border-zinc-500 dark:focus:border-zinc-400 h-12 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 p-[15px] pr-10 text-base font-normal leading-normal transition-colors duration-200"
+                                                placeholder="Enter your new password" type="password" name="password"
+                                                value="" />
+                                            <div class="absolute inset-y-0 right-0 flex items-center justify-center pr-4 text-zinc-600 dark:text-zinc-400 cursor-pointer"
+                                                id="togglePassword">
+                                                <span class="material-symbols-outlined" style="font-size: 24px"
+                                                    id="toggleIcon">visibility_off</span>
+                                            </div>
+                                        </div>
+                                        <div id="passwordError" class="error-message"></div>
+                                    </div>
+
+                                    <div class="flex w-full flex-col">
+                                        <label
+                                            class="text-zinc-900 dark:text-zinc-100 text-sm font-medium leading-normal pb-2"
+                                            for="confirmPassword">
                                             Confirm New Password
-                                        </p>
-                                        <input
-                                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-0 focus:ring-0 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:border-zinc-500 dark:focus:border-zinc-400 h-12 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 p-[15px] text-base font-normal leading-normal transition-colors duration-200"
-                                            placeholder="Confirm your new password" type="password" value="" />
-                                    </label>
+                                        </label>
+                                        <div class="relative">
+                                            <input id="confirmPassword"
+                                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-0 focus:ring-0 border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:border-zinc-500 dark:focus:border-zinc-400 h-12 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 p-[15px] pr-10 text-base font-normal leading-normal transition-colors duration-200"
+                                                placeholder="Confirm your new password" type="password" value=""
+                                                name="confirmPassword" />
+                                            <div class="absolute inset-y-0 right-0 flex items-center justify-center pr-4 text-zinc-600 dark:text-zinc-400 cursor-pointer"
+                                                id="ctogglePassword">
+                                                <span class="material-symbols-outlined" style="font-size: 24px"
+                                                    id="ctoggleIcon">visibility_off</span>
+                                            </div>
+                                        </div>
+                                        <div id="confirmError" class="error-message"></div>
+                                    </div>
                                 </div>
                                 <button type="submit"
-                                    class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:active:bg-zinc-300 text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors duration-200">
+                                    class="mt-4 flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:active:bg-zinc-300 text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors duration-200">
                                     <span class="truncate">Set Password</span>
                                 </button>
                             </form>
                         </div>
                         <div class="flex w-full items-center justify-center pt-2">
                             <a class="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors duration-200"
-                                href="#">Back to Login</a>
+                                href="/">Back to Login</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <script>
+            // Validation Logic
+            const passwordInput = document.getElementById("password");
+            const cpasswordInput = document.getElementById("confirmPassword");
+            const passwordError = document.getElementById("passwordError");
+            const confirmError = document.getElementById("confirmError");
+
+            const togglePassword = document.getElementById("togglePassword");
+            const ctogglePassword = document.getElementById("ctogglePassword");
+            const toggleIcon = document.getElementById("toggleIcon");
+            const ctoggleIcon = document.getElementById("ctoggleIcon");
+
+            function showError(inputEl, errorEl, msg) {
+                if (errorEl) {
+                    errorEl.textContent = msg;
+                    errorEl.classList.add("show");
+                }
+                if (inputEl) inputEl.classList.add("input-error");
+            }
+
+            function clearErrors() {
+                if (passwordError) { passwordError.textContent = ""; passwordError.classList.remove("show"); }
+                if (confirmError) { confirmError.textContent = ""; confirmError.classList.remove("show"); }
+                if (passwordInput) passwordInput.classList.remove("input-error");
+                if (cpasswordInput) cpasswordInput.classList.remove("input-error");
+            }
+
+            function validate() {
+                clearErrors();
+                let ok = true;
+                const pw = passwordInput ? passwordInput.value.trim() : "";
+                const cpw = cpasswordInput ? cpasswordInput.value.trim() : "";
+
+                if (!pw || pw.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(pw)) {
+                    showError(passwordInput, passwordError, "Password must be at least 8 characters and include UPPERCASE, lowercase, and a number");
+                    ok = false;
+                }
+
+                if (!cpw) {
+                    showError(cpasswordInput, confirmError, "Please confirm your password");
+                    ok = false;
+                } else if (pw !== cpw) {
+                    showError(cpasswordInput, confirmError, "Passwords do not match");
+                    ok = false;
+                }
+                return ok;
+            }
+
+            // Real-time blur validation
+            if (passwordInput) passwordInput.addEventListener("blur", () => {
+                if (passwordInput.value.length > 0 && (passwordInput.value.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordInput.value))) {
+                    showError(passwordInput, passwordError, "Password must be at least 8 characters and include UPPERCASE, lowercase, and a number");
+                } else {
+                    passwordError.classList.remove("show");
+                    passwordInput.classList.remove("input-error");
+                }
+            });
+
+            if (cpasswordInput) cpasswordInput.addEventListener("blur", () => {
+                if (cpasswordInput.value && cpasswordInput.value !== passwordInput.value) {
+                    showError(cpasswordInput, confirmError, "Passwords do not match");
+                } else {
+                    confirmError.classList.remove("show");
+                    cpasswordInput.classList.remove("input-error");
+                }
+            });
+
+            // Toggle Visibility
+            if (togglePassword && toggleIcon && passwordInput) {
+                togglePassword.addEventListener("click", function () {
+                    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+                    passwordInput.setAttribute("type", type);
+                    toggleIcon.textContent = type === "password" ? "visibility_off" : "visibility";
+                });
+            }
+            if (ctogglePassword && ctoggleIcon && cpasswordInput) {
+                ctogglePassword.addEventListener("click", function () {
+                    const type = cpasswordInput.getAttribute("type") === "password" ? "text" : "password";
+                    cpasswordInput.setAttribute("type", type);
+                    ctoggleIcon.textContent = type === "password" ? "visibility_off" : "visibility";
+                });
+            }
+
             async function handleResetPassword(event) {
                 event.preventDefault();
+                if (!validate()) return false;
+
                 const form = event.target;
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalText = submitBtn.innerText;
 
-                const password = form.querySelector('input[name="password"]').value;
-                const inputs = form.querySelectorAll('input[type="password"]');
-                const confirmPassword = inputs[1].value;
-
-                if (password !== confirmPassword) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Passwords do not match'
-                    });
-                    return false;
-                }
+                const password = passwordInput.value;
+                const confirmPassword = cpasswordInput.value;
 
                 try {
                     submitBtn.disabled = true;
