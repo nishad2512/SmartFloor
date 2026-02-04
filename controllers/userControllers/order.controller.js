@@ -132,7 +132,7 @@ export const orderDetails = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        req.flash("error", "Something went wrong.");
+        req.flash("error", "Order not found.");
         res.redirect('/profile/orders');
     }
 }
@@ -151,7 +151,7 @@ export const cancelOrder = async (req, res) => {
         }
 
         let shouldRefund = true;
-        if (order.paymentMethod === 'cod' && order.paymentStatus !== 'paid') {
+        if (order.paymentStatus !== 'paid') {
             shouldRefund = false;
         }
 
@@ -230,7 +230,7 @@ export const cancelOrderItem = async (req, res) => {
         }
 
         let shouldRefund = true;
-        if (order.paymentMethod === 'cod' && order.paymentStatus !== 'paid') {
+        if (order.paymentStatus !== 'paid') {
             shouldRefund = false;
         }
 
@@ -245,14 +245,16 @@ export const cancelOrderItem = async (req, res) => {
             }
         }
 
+        const activeItems = order.items.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
+        const isLastItem = activeItems.length === 1 && activeItems[0]._id.toString() === itemId.toString();
+
+        if (isLastItem && order.shipping > 0) {
+            refundAmount += order.shipping;
+        }
+
         if (shouldRefund) {
 
-            const activeItems = order.items.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
-            const isLastItem = activeItems.length === 1 && activeItems[0]._id.toString() === itemId.toString();
-
-            if (isLastItem && order.shipping > 0) {
-                refundAmount += order.shipping;
-            }
+            order.refund += refundAmount;
 
             // finalRefund = Math.round(refundAmount);
 
@@ -265,12 +267,13 @@ export const cancelOrderItem = async (req, res) => {
                 date: new Date()
             });
             await user.save();
+        } else {
+            order.cancelled += refundAmount;
         }
 
         item.status = 'Cancelled';
         item.cancelReason = reason;
 
-        order.refund += refundAmount;
         order.totalAmount -= refundAmount;
 
         const product = await Product.findById(item.product);

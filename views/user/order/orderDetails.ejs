@@ -340,6 +340,13 @@
                                     </div>
                                     <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
                                     <% } %>
+                                <% if (order.cancelled> 0) { %>
+                                    <div class="flex justify-between text-[#757575]">
+                                        <span>Cancelled Amount</span>
+                                        <span class="font-medium text-red-600">-₹<%= order.cancelled.toFixed(2) %></span>
+                                    </div>
+                                    <div class="my-6 border-t border-[#e0e0e0] border-dashed"></div>
+                                    <% } %>
                                         <div class="flex justify-between items-baseline mb-2">
                                             <span class="font-bold text-lg">Total</span>
                                             <span class="font-bold text-3xl tracking-tight">

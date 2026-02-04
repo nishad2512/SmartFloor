@@ -259,8 +259,8 @@ export const updateReturnStatus = async (req, res) => {
             if (order.items.every(i => i.status == 'Returned' || i.status == 'Cancelled')) {
                 order.status = 'Returned';
             }
-            await order.save();
         }
+        await order.save();
         req.flash('success', 'Status changed successfully')
         res.json({ success: true });
 

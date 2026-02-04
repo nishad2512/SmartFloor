@@ -1,3 +1,4 @@
+import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 
 export const calculateRefundAmount = (order, item) => {
@@ -17,13 +18,15 @@ export const calculateRefundAmount = (order, item) => {
 async function refund(order, item) {
 
     const refundAmount = calculateRefundAmount(order, item);
-    const finalRefund = Math.round(refundAmount);
+
+    order.refund += refundAmount;
+    order.totalAmount -= refundAmount;
 
     const user = await User.findById(order.user);
-    user.wallet += finalRefund;
+    user.wallet += refundAmount;
 
     user.walletHistory.push({
-        amount: finalRefund,
+        amount: refundAmount,
         type: "credit",
         reason: `Refund for order ${order.orderId}`,
         date: new Date()

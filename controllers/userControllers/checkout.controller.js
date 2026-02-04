@@ -150,12 +150,15 @@ export const placeOrder = async (req, res) => {
 
         if (qualifiesForFreeShipping || totalAmount > 5000) shipping = 0;
 
-        const coupen = await Coupen.findOne({ code: coupenCode, isActive: true, expirationDate: { $gte: new Date() } }).lean();
+        const coupen = await Coupen.findOne({ code: coupenCode, isActive: true, expirationDate: { $gte: new Date() } });
         if (coupen) {
             coupenDiscount = coupen.discountType === "percentage"
                 ? (coupen.maxDiscountAmount ? Math.min((totalAmount * coupen.discountValue) / 100, coupen.maxDiscountAmount)
                 : (totalAmount * coupen.discountValue) / 100)
                 : coupen.discountValue;
+
+            coupen.usedCount++;
+            await coupen.save();
         }
 
         newOrder.shipping = shipping;
@@ -211,10 +214,6 @@ export const applyCoupen = async (req, res) => {
         } else {
             discountAmount = coupen.discountValue;
         }
-
-        coupen.usedCount++;
-
-        await coupen.save();
 
         if (discountAmount > currentTotal) discountAmount = currentTotal;
 

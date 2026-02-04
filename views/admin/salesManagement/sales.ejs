@@ -252,8 +252,8 @@
                                                         -₹<%= order.refund ? order.refund.toFixed(2) : '0' %>
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 text-right <%= order.status == 'Cancelled' || order.status == 'Returned' ? 'text-red-700' : 'text-green-700' %>">
-                                                        <%= order.status=='Cancelled' || order.status=='Returned' ? '-₹'
+                                                        class="px-6 py-4 text-right <%= order.status == 'Cancelled' ? 'text-red-700' : 'text-green-700' %>">
+                                                        <%= order.status=='Cancelled' ? '-₹'
                                                             + order.totalAmount.toFixed(2) : '+₹' +
                                                             order.totalAmount.toFixed(2) %>
                                                     </td>
